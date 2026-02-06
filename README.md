@@ -10,7 +10,7 @@ Your files stay on your computer — no uploads, no subscriptions, no tracking.
 ## Download (Windows)
 
 ➡️ **Download the latest version here:**  
-https://github.com/grojobil/PenguinPDF/releases/latest
+https://grojobil.github.io/PenguinPDF/
 
 > ⚠️ Windows may show a SmartScreen warning for new apps.  
 > Click **More info → Run anyway**. This is normal for new independent software.

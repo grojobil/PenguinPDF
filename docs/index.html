@@ -8,17 +8,21 @@
 
   <style>
     :root{
-      /* Soft, app-like palette (no black/orange porn vibes) */
-      --bg1:#fbf3ea;   /* warm cream */
-      --bg2:#f7e8ee;   /* blush */
-      --bg3:#efe7fb;   /* lavender */
-      --card:#ffffffcc; /* translucent white */
-      --border:#e9d7cf;
+      /* App-like soft palette */
+      --cream:#fbf3ea;
+      --blush:#f7e8ee;
+      --lav:#efe7fb;
+      --card:#ffffffcc;
+      --cardSolid:#fff;
+      --border:#ead7cf;
       --text:#1b1b1d;
-      --muted:#5b5b66;
-      --accent:#f18a6b; /* soft coral */
-      --accent2:#f6b59f; /* lighter coral */
-      --shadow: 0 18px 60px rgba(20, 10, 5, 0.10);
+      --muted:#5f5f6b;
+
+      /* App accent (soft coral/orange) */
+      --accent:#f18a6b;
+      --accent2:#f6b59f;
+
+      --shadow: 0 18px 60px rgba(20,10,5,0.10);
       --radius: 18px;
     }
 
@@ -28,17 +32,17 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       color:var(--text);
       background:
-        radial-gradient(1200px 800px at 20% 10%, var(--bg2), transparent 55%),
-        radial-gradient(1200px 800px at 90% 20%, var(--bg3), transparent 60%),
-        radial-gradient(1400px 900px at 40% 90%, #ffe9d7, transparent 55%),
-        linear-gradient(180deg, var(--bg1), #fff);
+        radial-gradient(1200px 800px at 20% 10%, var(--blush), transparent 55%),
+        radial-gradient(1200px 800px at 92% 18%, var(--lav), transparent 60%),
+        radial-gradient(1400px 900px at 42% 95%, #ffe9d7, transparent 55%),
+        linear-gradient(180deg, var(--cream), #fff);
       min-height:100vh;
     }
 
     .container{
       max-width: 1080px;
       margin: 0 auto;
-      padding: 48px 20px 80px;
+      padding: 46px 20px 80px;
     }
 
     .top{
@@ -46,33 +50,50 @@
       align-items:center;
       justify-content:space-between;
       gap:16px;
-      margin-bottom: 28px;
+      margin-bottom: 26px;
     }
 
     .brand{
       display:flex;
       align-items:center;
-      gap:14px;
+      gap:16px;
+    }
+
+    /* Penguin: larger + ensure it sits on transparent background */
+    .brand .logoWrap{
+      width:72px;
+      height:72px;
+      border-radius:16px;
+      background: transparent;           /* important */
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow: visible;                 /* avoid clipping */
     }
     .brand img{
-      width:56px;
-      height:56px;
-      border-radius:14px;
+      width:72px;
+      height:72px;
+      object-fit: contain;
+      background: transparent;           /* important */
+      display:block;
+      border-radius:16px;
       box-shadow: 0 10px 24px rgba(0,0,0,0.08);
-      background:#fff;
     }
+
     .brand h1{
       margin:0;
-      font-size: 36px;
+      font-size: 38px;
       letter-spacing:-0.6px;
+      line-height:1.1;
     }
     .brand p{
-      margin:4px 0 0 0;
+      margin:6px 0 0 0;
       color:var(--muted);
       font-size: 15px;
     }
 
-    .pill{
+    /* Optional small meta pill (less prominent) */
+    .metaPill{
       display:inline-flex;
       align-items:center;
       gap:8px;
@@ -91,11 +112,12 @@
       grid-template-columns: 1.15fr 0.85fr;
       gap: 22px;
       align-items: stretch;
-      margin-bottom: 26px;
+      margin-bottom: 20px;
     }
     @media (max-width: 920px){
       .hero{grid-template-columns: 1fr}
       .top{flex-direction:column; align-items:flex-start}
+      .metaPill{align-self:flex-start}
     }
 
     .card{
@@ -111,14 +133,14 @@
     }
     .hero-left h2{
       margin: 0 0 10px 0;
-      font-size: 28px;
-      letter-spacing: -0.4px;
+      font-size: 26px;
+      letter-spacing: -0.35px;
     }
     .hero-left .sub{
-      margin: 0 0 18px 0;
+      margin: 0 0 16px 0;
       color: var(--muted);
       font-size: 15px;
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
     .cta{
@@ -133,7 +155,7 @@
       align-items:center;
       justify-content:center;
       gap:8px;
-      padding: 12px 16px;
+      padding: 12px 18px;
       border-radius: 999px;
       border: 1px solid var(--border);
       background: #fff;
@@ -145,24 +167,17 @@
     }
     .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,0.09); }
 
+    /* Match app: orange/coral with white text */
     .btn.primary{
       border: none;
-      color: #1b1207;
+      color: #fff;
       background: linear-gradient(180deg, var(--accent2), var(--accent));
     }
 
-    .meta{
-      margin-top: 12px;
+    .note{
+      margin-top: 10px;
       color: var(--muted);
       font-size: 13px;
-    }
-    .meta code{
-      padding: 2px 6px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.7);
-      border: 1px solid var(--border);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 12px;
     }
 
     .hero-right{
@@ -170,7 +185,12 @@
       display:grid;
       gap: 10px;
     }
+
+    /* Neutral checkmarks (black-ish), not green */
     .kpi{
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
       padding: 12px 14px;
       border-radius: 14px;
       background: rgba(255,255,255,0.55);
@@ -178,13 +198,21 @@
       color: var(--muted);
       font-weight: 600;
       font-size: 13px;
+      line-height: 1.35;
+    }
+    .kpi .check{
+      width: 18px;
+      flex: 0 0 18px;
+      color: #1b1b1d; /* neutral */
+      font-weight: 900;
+      margin-top: 1px;
     }
 
     .screens{
       display:grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 14px;
-      margin-top: 18px;
+      margin-top: 16px;
     }
     @media (max-width: 920px){
       .screens{grid-template-columns: 1fr}
@@ -209,7 +237,7 @@
     }
 
     .section{
-      margin-top: 22px;
+      margin-top: 18px;
       padding: 18px 22px;
     }
     .section h3{
@@ -227,12 +255,17 @@
     .section li{ margin-bottom: 6px; }
 
     footer{
-      margin-top: 30px;
+      margin-top: 28px;
       padding-top: 18px;
       color: var(--muted);
       font-size: 13px;
     }
-    footer a{ color: var(--muted); }
+    footer a{ color: var(--muted); text-decoration: underline; }
+
+    /* If the penguin file has a white matte baked in, this helps a bit on light backgrounds */
+    img.transparent-fix {
+      mix-blend-mode: multiply;
+    }
   </style>
 </head>
 
@@ -241,14 +274,18 @@
 
     <div class="top">
       <div class="brand">
-        <img src="../assets/penguin.png" alt="PenguinPDF logo" />
+        <div class="logoWrap">
+          <!-- If you still see a white box, try adding class="transparent-fix" -->
+          <img src="/PenguinPDF/assets/penguin.png" alt="PenguinPDF logo" />
+        </div>
         <div>
           <h1>PenguinPDF</h1>
           <p>All the PDF tools you need. Free and local.</p>
         </div>
       </div>
 
-      <div class="pill">Windows (x64) • Offline • No accounts</div>
+      <!-- Optional: remove this pill if you feel it’s redundant -->
+      <div class="metaPill">Windows (x64) • Offline • No accounts</div>
     </div>
 
     <div class="hero">
@@ -264,32 +301,33 @@
           <a class="btn" href="https://gumroad.com/" target="_blank" rel="noreferrer">Support the project</a>
         </div>
 
-        <div class="meta">
-          Download is hosted on GitHub Releases. Word ↔ PDF may require <code>LibreOffice</code> (you’ll be prompted when needed).
+        <!-- Short + not too wordy -->
+        <div class="note">
+          Word ↔ PDF may require LibreOffice (you’ll be prompted only if needed).
         </div>
       </div>
 
       <div class="card hero-right">
-        <div class="kpi">✔ Fully offline — files never leave your computer</div>
-        <div class="kpi">✔ No accounts</div>
-        <div class="kpi">✔ No subscriptions</div>
-        <div class="kpi">✔ Free to use</div>
+        <div class="kpi"><div class="check">✓</div><div>Fully offline — files never leave your computer</div></div>
+        <div class="kpi"><div class="check">✓</div><div>No accounts</div></div>
+        <div class="kpi"><div class="check">✓</div><div>No subscriptions</div></div>
+        <div class="kpi"><div class="check">✓</div><div>Free to use</div></div>
       </div>
     </div>
 
     <div class="screens">
       <figure class="card">
-        <img src="../assets/home.png" alt="PenguinPDF home screen" />
+        <img src="/PenguinPDF/assets/home.png" alt="PenguinPDF home screen" />
         <figcaption>Home — all tools in one place.</figcaption>
       </figure>
 
       <figure class="card">
-        <img src="../assets/edit.png" alt="PenguinPDF PDF editor" />
+        <img src="/PenguinPDF/assets/edit.png" alt="PenguinPDF editor" />
         <figcaption>Edit — annotate, draw, fill & sign PDFs.</figcaption>
       </figure>
 
       <figure class="card">
-        <img src="../assets/utility.png" alt="PenguinPDF utility tools" />
+        <img src="/PenguinPDF/assets/utility.png" alt="PenguinPDF utilities" />
         <figcaption>Utilities — merge, split, reorder, compress.</figcaption>
       </figure>
     </div>
