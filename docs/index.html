@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PenguinPDF</title>
+  <meta name="description" content="PenguinPDF is a local-first PDF toolbox. Free, offline, no accounts, no subscriptions." />
+
+  <style>
+    :root{
+      /* Soft, app-like palette (no black/orange porn vibes) */
+      --bg1:#fbf3ea;   /* warm cream */
+      --bg2:#f7e8ee;   /* blush */
+      --bg3:#efe7fb;   /* lavender */
+      --card:#ffffffcc; /* translucent white */
+      --border:#e9d7cf;
+      --text:#1b1b1d;
+      --muted:#5b5b66;
+      --accent:#f18a6b; /* soft coral */
+      --accent2:#f6b59f; /* lighter coral */
+      --shadow: 0 18px 60px rgba(20, 10, 5, 0.10);
+      --radius: 18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, var(--bg2), transparent 55%),
+        radial-gradient(1200px 800px at 90% 20%, var(--bg3), transparent 60%),
+        radial-gradient(1400px 900px at 40% 90%, #ffe9d7, transparent 55%),
+        linear-gradient(180deg, var(--bg1), #fff);
+      min-height:100vh;
+    }
+
+    .container{
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+    }
+
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom: 28px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .brand img{
+      width:56px;
+      height:56px;
+      border-radius:14px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+      background:#fff;
+    }
+    .brand h1{
+      margin:0;
+      font-size: 36px;
+      letter-spacing:-0.6px;
+    }
+    .brand p{
+      margin:4px 0 0 0;
+      color:var(--muted);
+      font-size: 15px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 26px;
+    }
+    @media (max-width: 920px){
+      .hero{grid-template-columns: 1fr}
+      .top{flex-direction:column; align-items:flex-start}
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-left{
+      padding: 22px;
+    }
+    .hero-left h2{
+      margin: 0 0 10px 0;
+      font-size: 28px;
+      letter-spacing: -0.4px;
+    }
+    .hero-left .sub{
+      margin: 0 0 18px 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .cta{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 650;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+      transition: transform .08s ease, box-shadow .15s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,0.09); }
+
+    .btn.primary{
+      border: none;
+      color: #1b1207;
+      background: linear-gradient(180deg, var(--accent2), var(--accent));
+    }
+
+    .meta{
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .meta code{
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid var(--border);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+    }
+
+    .hero-right{
+      padding: 18px;
+      display:grid;
+      gap: 10px;
+    }
+    .kpi{
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .screens{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+    @media (max-width: 920px){
+      .screens{grid-template-columns: 1fr}
+    }
+
+    figure{
+      margin:0;
+      padding: 12px;
+    }
+    figure img{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.10);
+      background: #fff;
+      display:block;
+    }
+    figcaption{
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .section{
+      margin-top: 22px;
+      padding: 18px 22px;
+    }
+    .section h3{
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      letter-spacing:-0.2px;
+    }
+    .section ul{
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .section li{ margin-bottom: 6px; }
+
+    footer{
+      margin-top: 30px;
+      padding-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer a{ color: var(--muted); }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="top">
+      <div class="brand">
+        <img src="../assets/penguin.png" alt="PenguinPDF logo" />
+        <div>
+          <h1>PenguinPDF</h1>
+          <p>All the PDF tools you need. Free and local.</p>
+        </div>
+      </div>
+
+      <div class="pill">Windows (x64) • Offline • No accounts</div>
+    </div>
+
+    <div class="hero">
+      <div class="card hero-left">
+        <h2>Local-first PDF toolbox</h2>
+        <p class="sub">
+          Merge, split, convert, annotate, fill & sign — with your files staying on your computer.
+          No uploads. No subscriptions. No tracking.
+        </p>
+
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/grojobil/PenguinPDF/releases/latest">Download for Windows</a>
+          <a class="btn" href="https://gumroad.com/" target="_blank" rel="noreferrer">Support the project</a>
+        </div>
+
+        <div class="meta">
+          Download is hosted on GitHub Releases. Word ↔ PDF may require <code>LibreOffice</code> (you’ll be prompted when needed).
+        </div>
+      </div>
+
+      <div class="card hero-right">
+        <div class="kpi">✔ Fully offline — files never leave your computer</div>
+        <div class="kpi">✔ No accounts</div>
+        <div class="kpi">✔ No subscriptions</div>
+        <div class="kpi">✔ Free to use</div>
+      </div>
+    </div>
+
+    <div class="screens">
+      <figure class="card">
+        <img src="../assets/home.png" alt="PenguinPDF home screen" />
+        <figcaption>Home — all tools in one place.</figcaption>
+      </figure>
+
+      <figure class="card">
+        <img src="../assets/edit.png" alt="PenguinPDF PDF editor" />
+        <figcaption>Edit — annotate, draw, fill & sign PDFs.</figcaption>
+      </figure>
+
+      <figure class="card">
+        <img src="../assets/utility.png" alt="PenguinPDF utility tools" />
+        <figcaption>Utilities — merge, split, reorder, compress.</figcaption>
+      </figure>
+    </div>
+
+    <div class="card section">
+      <h3>Included tools</h3>
+      <ul>
+        <li><b>Organize:</b> merge, split, reorder, remove, rotate</li>
+        <li><b>Convert:</b> images ↔ PDF, Word ↔ PDF</li>
+        <li><b>Edit:</b> annotate, draw, fill & sign, signatures</li>
+        <li><b>Optimize & privacy:</b> compress PDFs, remove metadata</li>
+      </ul>
+    </div>
+
+    <footer>
+      <div>
+        <a href="https://github.com/grojobil/PenguinPDF/releases/latest">Downloads</a> ·
+        <a href="https://github.com/grojobil/PenguinPDF">Repository</a>
+      </div>
+      <div style="margin-top:6px;">
+        PenguinPDF runs locally. No tracking. No accounts.
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>
