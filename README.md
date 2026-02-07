@@ -59,7 +59,7 @@ PenguinPDF is built to be simple, respectful, and trustworthy.
 PenguinPDF is free to use.  
 If it’s been useful, you can support development here:
 
-👉 **https://gumroad.com/** *(add your PenguinPDF support link)*
+👉 **https://penguinpdf.gumroad.com/l/sqlly**
 
 Support is optional and helps keep the project alive and improving.
 
