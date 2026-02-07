@@ -3,78 +3,74 @@
 **Local-first PDF toolbox — free, offline, no accounts.**
 
 PenguinPDF is a lightweight desktop app for common PDF tasks.  
-Your files stay on your computer — no uploads, no subscriptions, no tracking.
+Your files stay on your computer — no uploads, no subscriptions.
 
 ---
 
-## Download (Windows)
+## ⬇️ Download
 
-➡️ **Download the latest version here:**  
-https://grojobil.github.io/PenguinPDF/
+- **Windows (x64)**  
+- **MacOS**
 
-> ⚠️ Windows may show a SmartScreen warning for new apps.  
-> Click **More info → Run anyway**. This is normal for new independent software.
+👉 https://github.com/grojobil/PenguinPDF/releases/latest
+
+> Windows may show a SmartScreen warning for new apps.  
+> Click **More info → Run anyway**.
 
 ---
 
-## What PenguinPDF can do
+## 🧰 What PenguinPDF can do
 
-### 🗂️ Organize
-- **Merge PDFs** — combine multiple PDFs into one
-- **Split PDF** — split by pages or ranges
-- **Reorder Pages** — drag to rearrange pages
-- **Remove Pages** — delete specific pages
-- **Rotate Pages** — rotate pages by 90°, 180°, or 270°
+### 📂 Organize
+- Merge PDFs
+- Split PDFs (pages or ranges)
+- Reorder / remove pages
+- Rotate pages
 
 ### 🔄 Convert
-- **Image ↔ PDF** — convert images to PDF or PDFs to images
-- **Word ↔ PDF** — convert Word documents to PDF or PDFs to DOCX  
-  *(requires LibreOffice installed)*
+- Images ↔ PDF
+- Word ↔ PDF *(requires LibreOffice — PenguinPDF will prompt you if needed)*
 
 ### ✏️ Edit
-- **Annotate PDF** — add text, highlights, shapes, and images
-- **Draw on PDF** — freehand drawing with pen and marker strokes
-- **Fill & Sign** — fill PDF form fields and add a signature
-- **Sign PDF** — add a signature image to a PDF
+- Annotate PDF (text, highlights, shapes, images)
+- Draw on PDFs
+- Fill & sign forms
+- Sign PDFs
 
-### ⚙️ Optimize
-- **Compress PDF** — reduce file size with quality presets
-- **Remove Metadata** — strip author, title, dates, and XMP data
-
----
-
-## Privacy & Philosophy
-
-- ✅ Fully offline — files never leave your computer  
-- ✅ No accounts, no sign-ups  
-- ✅ No subscriptions  
-- ✅ No analytics or tracking  
-
-PenguinPDF is built to be simple, respectful, and trustworthy.
+### 🔒 Optimize & privacy
+- Compress PDFs
+- Remove metadata
 
 ---
 
-## Support the project
+## 💛 Support the project
 
 PenguinPDF is free to use.  
-If it’s been useful, you can support development here:
+If it’s been useful, you can optionally support the project here:
 
-👉 **https://penguinpdf.gumroad.com/l/sqlly**
-
-Support is optional and helps keep the project alive and improving.
+👉 https://penguinpdf.gumroad.com/l/sqlly
 
 ---
 
-## Licenses
+## 📱 Request mobile support
 
-- PenguinPDF is distributed under the terms in the `LICENSE` file.
-- Third-party libraries and their licenses are listed in `THIRD_PARTY_LICENSES.md`.
+Want **iOS / iPadOS / Android** support?  
+Tell me what you’d use most 👇
+
+👉 https://github.com/grojobil/PenguinPDF/issues/new?title=Mobile%20support%20request
 
 ---
 
-## Notes
+## 🔐 Privacy
 
-- macOS support may be added in the future.
-- If you run into issues, feel free to open an issue on GitHub.
+- Fully offline
+- No accounts
+- No tracking / telemetry
+- No cloud uploads
 
-Thanks for trying PenguinPDF 💛
+---
+
+## 📄 Licenses
+
+- PenguinPDF license: see `LICENSE`
+- Third-party libraries: see `THIRD_PARTY_LICENSES.md`

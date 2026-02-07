@@ -8,17 +8,15 @@
 
   <style>
     :root{
-      /* App-like soft palette */
       --cream:#fbf3ea;
       --blush:#f7e8ee;
       --lav:#efe7fb;
+
       --card:#ffffffcc;
-      --cardSolid:#fff;
       --border:#ead7cf;
       --text:#1b1b1d;
       --muted:#5f5f6b;
 
-      /* App accent (soft coral/orange) */
       --accent:#f18a6b;
       --accent2:#f6b59f;
 
@@ -50,7 +48,7 @@
       align-items:center;
       justify-content:space-between;
       gap:16px;
-      margin-bottom: 26px;
+      margin-bottom: 22px;
     }
 
     .brand{
@@ -59,22 +57,20 @@
       gap:16px;
     }
 
-    /* Penguin: larger + ensure it sits on transparent background */
-    .brand .logoWrap{
+    .logoWrap{
       width:72px;
       height:72px;
       border-radius:16px;
-      background: transparent;           /* important */
+      background: transparent;
       display:flex;
       align-items:center;
       justify-content:center;
-      overflow: visible;                 /* avoid clipping */
     }
     .brand img{
       width:72px;
       height:72px;
       object-fit: contain;
-      background: transparent;           /* important */
+      background: transparent;
       display:block;
       border-radius:16px;
       box-shadow: 0 10px 24px rgba(0,0,0,0.08);
@@ -92,32 +88,16 @@
       font-size: 15px;
     }
 
-    /* Optional small meta pill (less prominent) */
-    .metaPill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-      color: var(--muted);
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
     .hero{
       display:grid;
       grid-template-columns: 1.15fr 0.85fr;
       gap: 22px;
       align-items: stretch;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     @media (max-width: 920px){
       .hero{grid-template-columns: 1fr}
       .top{flex-direction:column; align-items:flex-start}
-      .metaPill{align-self:flex-start}
     }
 
     .card{
@@ -128,9 +108,7 @@
       backdrop-filter: blur(10px);
     }
 
-    .hero-left{
-      padding: 22px;
-    }
+    .hero-left{ padding: 22px; }
     .hero-left h2{
       margin: 0 0 10px 0;
       font-size: 26px;
@@ -163,15 +141,19 @@
       text-decoration: none;
       font-weight: 650;
       box-shadow: 0 10px 24px rgba(0,0,0,0.06);
-      transition: transform .08s ease, box-shadow .15s ease;
+      transition: transform .08s ease, box-shadow .15s ease, opacity .15s ease;
     }
     .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,0.09); }
 
-    /* Match app: orange/coral with white text */
     .btn.primary{
       border: none;
       color: #fff;
       background: linear-gradient(180deg, var(--accent2), var(--accent));
+    }
+
+    .btn.disabled{
+      pointer-events: none;
+      opacity: 0.55;
     }
 
     .note{
@@ -186,7 +168,6 @@
       gap: 10px;
     }
 
-    /* Neutral checkmarks (black-ish), not green */
     .kpi{
       display:flex;
       gap: 10px;
@@ -203,7 +184,7 @@
     .kpi .check{
       width: 18px;
       flex: 0 0 18px;
-      color: #1b1b1d; /* neutral */
+      color: #1b1b1d;
       font-weight: 900;
       margin-top: 1px;
     }
@@ -218,10 +199,7 @@
       .screens{grid-template-columns: 1fr}
     }
 
-    figure{
-      margin:0;
-      padding: 12px;
-    }
+    figure{ margin:0; padding: 12px; }
     figure img{
       width:100%;
       border-radius: 14px;
@@ -261,11 +239,7 @@
       font-size: 13px;
     }
     footer a{ color: var(--muted); text-decoration: underline; }
-
-    /* If the penguin file has a white matte baked in, this helps a bit on light backgrounds */
-    img.transparent-fix {
-      mix-blend-mode: multiply;
-    }
+    .links{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
   </style>
 </head>
 
@@ -275,7 +249,6 @@
     <div class="top">
       <div class="brand">
         <div class="logoWrap">
-          <!-- If you still see a white box, try adding class="transparent-fix" -->
           <img src="assets/penguin.png" alt="PenguinPDF logo" />
         </div>
         <div>
@@ -283,9 +256,6 @@
           <p>All the PDF tools you need. Free and local.</p>
         </div>
       </div>
-
-      <!-- Optional: remove this pill if you feel it’s redundant -->
-      <div class="metaPill">Windows (x64) • Offline • No accounts</div>
     </div>
 
     <div class="hero">
@@ -298,10 +268,10 @@
 
         <div class="cta">
           <a class="btn primary" href="https://github.com/grojobil/PenguinPDF/releases/latest">Download for Windows</a>
+          <a class="btn" href="https://github.com/grojobil/PenguinPDF/releases/latest">Download for MacOS</a>
           <a class="btn" href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer">Support the project</a>
         </div>
 
-        <!-- Short + not too wordy -->
         <div class="note">
           Word ↔ PDF may require LibreOffice (you’ll be prompted only if needed).
         </div>
@@ -343,12 +313,14 @@
     </div>
 
     <footer>
-      <div>
-        <a href="https://github.com/grojobil/PenguinPDF/releases/latest">Downloads</a> ·
-        <a href="https://github.com/grojobil/PenguinPDF">Repository</a>
+      <div class="links">
+        <a href="https://github.com/grojobil/PenguinPDF/releases/latest">Downloads</a>
+        <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
+        <a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer">Support</a>
+        <a href="https://github.com/grojobil/PenguinPDF/issues/new?title=Mobile%20support%20request&body=Which%20platform%20do%20you%20want%3F%20(iOS%2FiPadOS%2FAndroid%2FChromebook)%0A%0AWhat%20would%20you%20use%20most%20on%20mobile%3F%20(fill%20%26%20sign%2C%20annotate%2C%20merge%2Fsplit%2C%20etc.)">Request iOS/Android</a>
       </div>
-      <div style="margin-top:6px;">
-        PenguinPDF runs locally. No tracking. No accounts.
+      <div style="margin-top:8px;">
+        PenguinPDF runs locally. No tracking. No accounts. ☁️🚫
       </div>
     </footer>
 
