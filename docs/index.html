@@ -11,304 +11,491 @@
       --cream:#fbf3ea;
       --blush:#f7e8ee;
       --lav:#efe7fb;
+      --peach:#ffe9d7;
 
-      --card:#ffffffcc;
-      --border:#ead7cf;
       --text:#1b1b1d;
-      --muted:#5f5f6b;
+      --muted:#6a6a77;
 
       --accent:#f18a6b;
       --accent2:#f6b59f;
 
+      --card:#ffffffa8;
+      --border:#ead7cf;
       --shadow: 0 18px 60px rgba(20,10,5,0.10);
-      --radius: 18px;
+
+      --radius: 22px;
     }
 
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       color:var(--text);
       background:
-        radial-gradient(1200px 800px at 20% 10%, var(--blush), transparent 55%),
-        radial-gradient(1200px 800px at 92% 18%, var(--lav), transparent 60%),
-        radial-gradient(1400px 900px at 42% 95%, #ffe9d7, transparent 55%),
+        radial-gradient(1200px 900px at 20% 10%, var(--blush), transparent 55%),
+        radial-gradient(1100px 900px at 88% 18%, var(--lav), transparent 60%),
+        radial-gradient(1400px 900px at 42% 95%, var(--peach), transparent 55%),
         linear-gradient(180deg, var(--cream), #fff);
       min-height:100vh;
     }
 
     .container{
-      max-width: 1080px;
+      max-width: 1040px;
       margin: 0 auto;
-      padding: 46px 20px 80px;
+      padding: 42px 20px 64px;
     }
 
-    .top{
+    /* Top brand row */
+    .topbar{
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      margin-bottom: 22px;
+      justify-content:center;
+      position:relative;
+      margin-bottom: 28px;
     }
 
     .brand{
       display:flex;
       align-items:center;
-      gap:16px;
+      gap:12px;
+      text-align:left;
     }
 
-    .logoWrap{
-      width:72px;
-      height:72px;
-      border-radius:16px;
+    .brand img{
+      width:44px;
+      height:44px;
+      border-radius:12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
       background: transparent;
+      object-fit: contain;
+    }
+
+    .brand .name{
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      line-height: 1.1;
+    }
+
+    .brand .tag{
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .topright{
+      position:absolute;
+      right:0;
+      top:0;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+      backdrop-filter: blur(10px);
+    }
+
+    .pill a{
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 650;
+    }
+    .pill a:hover{ text-decoration: underline; }
+
+    .iconCircleBtn{
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
       display:flex;
       align-items:center;
       justify-content:center;
+      color: var(--muted);
+      font-weight: 900;
+      user-select:none;
+      cursor:pointer;
+      backdrop-filter: blur(10px);
     }
-    .brand img{
-      width:72px;
-      height:72px;
-      object-fit: contain;
-      background: transparent;
-      display:block;
-      border-radius:16px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
-    }
-
-    .brand h1{
-      margin:0;
-      font-size: 38px;
-      letter-spacing:-0.6px;
-      line-height:1.1;
-    }
-    .brand p{
-      margin:6px 0 0 0;
-      color:var(--muted);
-      font-size: 15px;
+    .iconCircleBtn:hover{
+      filter: brightness(0.98);
+      transform: translateY(-1px);
     }
 
+    /* Center hero */
     .hero{
-      display:grid;
-      grid-template-columns: 1.15fr 0.85fr;
+      text-align:center;
+      margin: 26px auto 26px;
+      max-width: 860px;
+    }
+
+    .hero h1{
+      margin: 0 0 12px 0;
+      font-size: 46px;
+      font-weight: 850;
+      letter-spacing: -0.9px;
+      color: rgba(27,27,29,0.78);
+    }
+
+    .hero p{
+      margin: 0 auto;
+      max-width: 720px;
+      font-size: 18px;
+      line-height: 1.6;
+      color: rgba(95,95,107,0.95);
+    }
+
+    /* Download button section */
+    .downloadWrap{
+      margin-top: 22px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap: 12px;
+    }
+
+    /* Make button more “alive” (closer to your reference) */
+    .downloadBtn{
+      display:inline-flex;
+      align-items:center;
+      gap: 12px;
+      padding: 18px 32px;
+      border-radius: 999px;
+      text-decoration:none;
+      font-weight: 900;
+      color:#fff;
+      border: 1px solid rgba(255,255,255,0.55);
+      background:
+        radial-gradient(120% 180% at 30% 0%, rgba(255,255,255,0.35), transparent 55%),
+        linear-gradient(180deg, var(--accent2), var(--accent));
+      box-shadow:
+        0 26px 70px rgba(241,138,107,0.38),
+        inset 0 1px 0 rgba(255,255,255,0.35);
+      transition: transform .08s ease, box-shadow .15s ease, filter .15s ease;
+    }
+    .downloadBtn:hover{
+      transform: translateY(-1px);
+      box-shadow:
+        0 32px 85px rgba(241,138,107,0.44),
+        inset 0 1px 0 rgba(255,255,255,0.40);
+      filter: saturate(1.03);
+    }
+
+    .dlIcon{
+      width: 30px;
+      height: 30px;
+      display:inline-block;
+      opacity: 0.98;
+    }
+
+    .osRow{
+      display:flex;
+      align-items:center;
+      justify-content:center;
       gap: 22px;
-      align-items: stretch;
-      margin-bottom: 16px;
+      color: rgba(27,27,29,0.62);
+      font-weight: 750;
+      font-size: 16px;
+    }
+    .osItem{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+    .osLogo{
+      width: 52px;   /* doubled */
+      height: 52px;  /* doubled */
+      object-fit: contain;
+      opacity: 0.92;
+    }
+    .osSep{
+      width:1px;
+      height:22px;
+      background: rgba(0,0,0,0.12);
+      border-radius: 99px;
+    }
+
+    .requestLink{
+      margin-top: 2px;
+      font-size: 14px;
+      color: rgba(95,95,107,0.92);
+    }
+    .requestLink a{
+      color: rgba(95,95,107,0.95);
+      text-decoration: underline;
+      font-weight: 650;
+    }
+
+    /* Screenshots row */
+    .shots{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 32px;
     }
     @media (max-width: 920px){
-      .hero{grid-template-columns: 1fr}
-      .top{flex-direction:column; align-items:flex-start}
+      .topright{ position: static; margin-top: 12px; }
+      .topbar{ flex-direction: column; gap: 12px; }
+      .hero h1{ font-size: 38px; }
+      .shots{ grid-template-columns: 1fr; }
     }
 
-    .card{
+    .shotCard{
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
+      padding: 14px;
       backdrop-filter: blur(10px);
     }
-
-    .hero-left{ padding: 22px; }
-    .hero-left h2{
-      margin: 0 0 10px 0;
-      font-size: 26px;
-      letter-spacing: -0.35px;
-    }
-    .hero-left .sub{
-      margin: 0 0 16px 0;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.55;
-    }
-
-    .cta{
-      display:flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding: 12px 18px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #fff;
-      color: var(--text);
-      text-decoration: none;
-      font-weight: 650;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.06);
-      transition: transform .08s ease, box-shadow .15s ease, opacity .15s ease;
-    }
-    .btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,0.09); }
-
-    .btn.primary{
-      border: none;
-      color: #fff;
-      background: linear-gradient(180deg, var(--accent2), var(--accent));
-    }
-
-    .btn.disabled{
-      pointer-events: none;
-      opacity: 0.55;
-    }
-
-    .note{
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .hero-right{
-      padding: 18px;
-      display:grid;
-      gap: 10px;
-    }
-
-    .kpi{
-      display:flex;
-      gap: 10px;
-      align-items:flex-start;
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.55);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-weight: 600;
-      font-size: 13px;
-      line-height: 1.35;
-    }
-    .kpi .check{
-      width: 18px;
-      flex: 0 0 18px;
-      color: #1b1b1d;
-      font-weight: 900;
-      margin-top: 1px;
-    }
-
-    .screens{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-top: 16px;
-    }
-    @media (max-width: 920px){
-      .screens{grid-template-columns: 1fr}
-    }
-
-    figure{ margin:0; padding: 12px; }
-    figure img{
+    .shotCard img{
       width:100%;
-      border-radius: 14px;
-      border: 1px solid var(--border);
+      border-radius: 16px;
+      border: 1px solid rgba(0,0,0,0.06);
       box-shadow: 0 18px 50px rgba(0,0,0,0.10);
-      background: #fff;
       display:block;
+      background:#fff;
     }
-    figcaption{
+    .shotCard .cap{
       margin-top: 10px;
       font-size: 13px;
-      color: var(--muted);
+      color: rgba(95,95,107,0.9);
     }
 
-    .section{
-      margin-top: 18px;
-      padding: 18px 22px;
+    /* Included tools card */
+    .tools{
+      margin-top: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 20px;
+      backdrop-filter: blur(10px);
     }
-    .section h3{
-      margin: 0 0 10px 0;
-      font-size: 16px;
-      letter-spacing:-0.2px;
+    .tools h2{
+      margin: 4px 0 10px 0;
+      font-size: 18px;
+      letter-spacing: -0.2px;
     }
-    .section ul{
+    .tools ul{
       margin: 0;
       padding-left: 18px;
-      color: var(--muted);
+      color: rgba(95,95,107,0.95);
       font-size: 14px;
-      line-height: 1.55;
+      line-height: 1.6;
     }
-    .section li{ margin-bottom: 6px; }
+    .tools li{ margin-bottom: 6px; }
 
+    /* Footer */
     footer{
-      margin-top: 28px;
-      padding-top: 18px;
-      color: var(--muted);
+      margin-top: 26px;
+      text-align:center;
+      color: rgba(95,95,107,0.85);
       font-size: 13px;
     }
-    footer a{ color: var(--muted); text-decoration: underline; }
-    .links{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+    footer .links{
+      display:flex;
+      justify-content:center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    footer a{
+      color: rgba(95,95,107,0.95);
+      text-decoration: underline;
+    }
+
+    /* Help modal */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(10, 8, 6, 0.22);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 9999;
+      backdrop-filter: blur(6px);
+    }
+    .overlay.open{ display:flex; }
+
+    .modal{
+      width: min(760px, 96vw);
+      border-radius: 26px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(234,215,207,0.75);
+      box-shadow: 0 30px 120px rgba(0,0,0,0.20);
+      padding: 22px 22px 18px 22px;
+      position: relative;
+      backdrop-filter: blur(16px);
+    }
+
+    .modalHeader{
+      text-align:center;
+      font-size: 34px;
+      font-weight: 850;
+      letter-spacing: -0.5px;
+      margin: 6px 0 18px;
+      color: rgba(27,27,29,0.78);
+    }
+
+    .closeX{
+      position:absolute;
+      top: 14px;
+      right: 14px;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(234,215,207,0.85);
+      background: rgba(255,255,255,0.70);
+      cursor:pointer;
+      font-size: 20px;
+      color: rgba(95,95,107,0.9);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    }
+    .closeX:hover{ transform: translateY(-1px); }
+
+    .helpList{
+      display:grid;
+      gap: 14px;
+      margin: 8px 6px 18px;
+    }
+
+    .helpItem{
+      display:flex;
+      align-items:center;
+      gap: 14px;
+      font-size: 20px;
+      color: rgba(95,95,107,0.96);
+      padding: 10px 8px;
+    }
+
+    .helpItem .emoji{
+      width: 34px;
+      text-align:center;
+      font-size: 26px;
+      flex: 0 0 34px;
+    }
+
+    .helpItem a{
+      color: rgba(95,95,107,0.96);
+      text-decoration: underline;
+      font-weight: 700;
+    }
+
+    .modalBtn{
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(234,215,207,0.85);
+      background: rgba(255,255,255,0.70);
+      cursor:pointer;
+      font-weight: 750;
+      font-size: 16px;
+      color: rgba(95,95,107,0.95);
+      box-shadow: 0 14px 35px rgba(0,0,0,0.08);
+    }
+    .modalBtn:hover{ transform: translateY(-1px); }
   </style>
 </head>
 
 <body>
   <div class="container">
 
-    <div class="top">
+    <div class="topbar">
       <div class="brand">
-        <div class="logoWrap">
-          <img src="assets/penguin.png" alt="PenguinPDF logo" />
-        </div>
+        <img src="assets/penguin.png" alt="PenguinPDF logo" />
         <div>
-          <h1>PenguinPDF</h1>
-          <p>All the PDF tools you need. Free and local.</p>
+          <div class="name">PenguinPDF</div>
+          <div class="tag">All the PDF tools you need. Free &amp; local.</div>
         </div>
+      </div>
+
+      <div class="topright">
+        <div class="pill">
+          <a href="https://github.com/grojobil/PenguinPDF/releases/latest">Download</a>
+          <span>·</span>
+          <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
+        </div>
+        <button class="iconCircleBtn" id="helpBtn" aria-label="Help">?</button>
       </div>
     </div>
 
     <div class="hero">
-      <div class="card hero-left">
-        <h2>Local-first PDF toolbox</h2>
-        <p class="sub">
-          Merge, split, convert, annotate, fill & sign — with your files staying on your computer.
-          No uploads. No subscriptions. No tracking.
-        </p>
+      <h1>Local-first PDF toolbox</h1>
+      <p>
+        Merge, split, convert, annotate, fill &amp; sign — with your files staying on your computer.
+        No uploads. No subscriptions. No tracking.
+      </p>
 
-        <div class="cta">
-          <a class="btn primary" href="https://github.com/grojobil/PenguinPDF/releases/latest">Download for Windows</a>
-          <a class="btn" href="https://github.com/grojobil/PenguinPDF/releases/latest">Download for MacOS</a>
-          <a class="btn" href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer">Support the project</a>
+      <div class="downloadWrap">
+        <a class="downloadBtn" href="https://github.com/grojobil/PenguinPDF/releases/latest">
+          <svg class="dlIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 3v10" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M8 11l4 4 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 17v3h16v-3" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Download PenguinPDF
+        </a>
+
+        <div class="osRow" aria-label="Platforms">
+          <div class="osItem">
+            <img class="osLogo" src="assets/apple.png" alt="macOS" />
+            <span>macOS</span>
+          </div>
+          <div class="osSep"></div>
+          <div class="osItem">
+            <img class="osLogo" src="assets/windows.png" alt="Windows" />
+            <span>Windows</span>
+          </div>
         </div>
 
-        <div class="note">
-          Word ↔ PDF may require LibreOffice (you’ll be prompted only if needed).
+        <div class="requestLink">
+          <a href="https://github.com/grojobil/PenguinPDF/issues/1/" target="_blank" rel="noreferrer">Request iOS/Android</a>
         </div>
-      </div>
-
-      <div class="card hero-right">
-        <div class="kpi"><div class="check">✓</div><div>Fully offline — files never leave your computer</div></div>
-        <div class="kpi"><div class="check">✓</div><div>No accounts</div></div>
-        <div class="kpi"><div class="check">✓</div><div>No subscriptions</div></div>
-        <div class="kpi"><div class="check">✓</div><div>Free to use</div></div>
       </div>
     </div>
 
-    <div class="screens">
-      <figure class="card">
+    <div class="shots">
+      <div class="shotCard">
         <img src="assets/home.png" alt="PenguinPDF home screen" />
-        <figcaption>Home — all tools in one place.</figcaption>
-      </figure>
+        <div class="cap">Home: all PDF tools in one place</div>
+      </div>
 
-      <figure class="card">
-        <img src="assets/edit.png" alt="PenguinPDF editor" />
-        <figcaption>Edit — annotate, draw, fill & sign PDFs.</figcaption>
-      </figure>
+      <div class="shotCard">
+        <img src="assets/edit.png" alt="PenguinPDF PDF editor" />
+        <div class="cap">Edit: annotate, draw, fill &amp; sign PDFs</div>
+      </div>
 
-      <figure class="card">
+      <div class="shotCard">
         <img src="assets/utility.png" alt="PenguinPDF utilities" />
-        <figcaption>Utilities — merge, split, reorder, compress.</figcaption>
-      </figure>
+        <div class="cap">Utilities: merge, split, reorder, compress</div>
+      </div>
     </div>
 
-    <div class="card section">
-      <h3>Included tools</h3>
+    <div class="tools">
+      <h2>Included tools</h2>
       <ul>
         <li><b>Organize:</b> merge, split, reorder, remove, rotate</li>
         <li><b>Convert:</b> images ↔ PDF, Word ↔ PDF</li>
-        <li><b>Edit:</b> annotate, draw, fill & sign, signatures</li>
-        <li><b>Optimize & privacy:</b> compress PDFs, remove metadata</li>
+        <li><b>Edit:</b> annotate, draw, fill &amp; sign, signatures</li>
+        <li><b>Optimize &amp; privacy:</b> compress PDFs, remove metadata</li>
       </ul>
     </div>
 
@@ -316,14 +503,71 @@
       <div class="links">
         <a href="https://github.com/grojobil/PenguinPDF/releases/latest">Downloads</a>
         <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
-        <a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer">Support</a>
-        <a href="https://github.com/grojobil/PenguinPDF/issues/new?title=Mobile%20support%20request&body=Which%20platform%20do%20you%20want%3F%20(iOS%2FiPadOS%2FAndroid%2FChromebook)%0A%0AWhat%20would%20you%20use%20most%20on%20mobile%3F%20(fill%20%26%20sign%2C%20annotate%2C%20merge%2Fsplit%2C%20etc.)">Request iOS/Android</a>
+        <a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer">Support the project</a>
       </div>
-      <div style="margin-top:8px;">
-        PenguinPDF runs locally. No tracking. No accounts. ☁️🚫
-      </div>
+      PenguinPDF runs locally, no tracking, no accounts.
     </footer>
 
   </div>
+
+  <!-- Help modal -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Help">
+      <button class="closeX" id="closeX" aria-label="Close">×</button>
+      <div class="modalHeader">Help</div>
+
+      <div class="helpList">
+        <div class="helpItem">
+          <div class="emoji">🛡️</div>
+          <div>Files never leave your computer</div>
+        </div>
+
+        <div class="helpItem">
+          <div class="emoji">📦</div>
+          <div>macOS (.dmg) &amp; Windows (.exe)</div>
+        </div>
+
+        <div class="helpItem">
+          <div class="emoji">💬</div>
+          <div>Report issues on <a href="https://github.com/grojobil/PenguinPDF/issues" target="_blank" rel="noreferrer">GitHub</a> →</div>
+        </div>
+
+        <div class="helpItem">
+          <div class="emoji">💛</div>
+          <div><a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer">Support the project</a> →</div>
+        </div>
+      </div>
+
+      <button class="modalBtn" id="closeBtn">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const overlay = document.getElementById('overlay');
+    const helpBtn = document.getElementById('helpBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    const closeX = document.getElementById('closeX');
+
+    function openHelp(){
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden','false');
+    }
+    function closeHelp(){
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden','true');
+    }
+
+    helpBtn.addEventListener('click', openHelp);
+    closeBtn.addEventListener('click', closeHelp);
+    closeX.addEventListener('click', closeHelp);
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeHelp();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeHelp();
+    });
+  </script>
 </body>
 </html>
