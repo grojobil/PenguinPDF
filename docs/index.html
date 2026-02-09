@@ -15,6 +15,8 @@
 
       --text:#1b1b1d;
       --muted:#6a6a77;
+      --muted2: rgba(95,95,107,0.65);   /* light gray used for subtle links */
+      --caption: rgba(95,95,107,0.9);   /* screenshot caption tone */
 
       --accent:#f18a6b;
       --accent2:#f6b59f;
@@ -167,7 +169,6 @@
       gap: 12px;
     }
 
-    /* Make button more “alive” (closer to your reference) */
     .downloadBtn{
       display:inline-flex;
       align-items:center;
@@ -201,23 +202,36 @@
       opacity: 0.98;
     }
 
+    /* Platform row centered ignoring the info icon:
+       We place macOS and Windows in an inner row and then append the info icon next to Windows. */
     .osRow{
       display:flex;
       align-items:center;
       justify-content:center;
-      gap: 22px;
+      gap: 0;
       color: rgba(27,27,29,0.62);
       font-weight: 750;
       font-size: 16px;
+      width: 100%;
     }
+
+    .osRowInner{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 22px;
+    }
+
     .osItem{
       display:flex;
       align-items:center;
       gap: 10px;
+      position: relative;
     }
+
     .osLogo{
-      width: 52px;   /* doubled */
-      height: 52px;  /* doubled */
+      width: 52px;
+      height: 52px;
       object-fit: contain;
       opacity: 0.92;
     }
@@ -226,6 +240,47 @@
       height:22px;
       background: rgba(0,0,0,0.12);
       border-radius: 99px;
+    }
+
+    /* Windows SmartScreen info badge + tooltip */
+    .infoBadge{
+      margin-left: 6px;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(95,95,107,0.9);
+      border: 1px solid rgba(0,0,0,0.12);
+      background: rgba(255,255,255,0.55);
+      cursor: default;
+      user-select: none;
+    }
+
+    .tooltip{
+      position: absolute;
+      left: 0;
+      top: calc(100% + 10px);
+      width: 330px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(234,215,207,0.9);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.12);
+      color: rgba(27,27,29,0.85);
+      font-size: 12.5px;
+      line-height: 1.35;
+      display: none;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .osItem.windows:hover .tooltip,
+    .osItem.windows:focus-within .tooltip{
+      display:block;
     }
 
     .requestLink{
@@ -237,6 +292,25 @@
       color: rgba(95,95,107,0.95);
       text-decoration: underline;
       font-weight: 650;
+    }
+
+    /* Subtle link row (light gray, like image captions) */
+    .tinyLinks{
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted2);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .tinyLinks a{
+      color: var(--muted2);
+      text-decoration: underline;
+      font-weight: 650;
+    }
+    .tinyLinks a:hover{
+      color: rgba(95,95,107,0.82);
     }
 
     /* Screenshots row */
@@ -260,6 +334,7 @@
       box-shadow: var(--shadow);
       padding: 14px;
       backdrop-filter: blur(10px);
+      cursor: zoom-in;
     }
     .shotCard img{
       width:100%;
@@ -272,7 +347,7 @@
     .shotCard .cap{
       margin-top: 10px;
       font-size: 13px;
-      color: rgba(95,95,107,0.9);
+      color: var(--caption);
     }
 
     /* Included tools card */
@@ -316,6 +391,7 @@
     footer a{
       color: rgba(95,95,107,0.95);
       text-decoration: underline;
+      font-weight: 650;
     }
 
     /* Help modal */
@@ -396,7 +472,7 @@
     .helpItem a{
       color: rgba(95,95,107,0.96);
       text-decoration: underline;
-      font-weight: 700;
+      font-weight: 800;
     }
 
     .modalBtn{
@@ -406,12 +482,30 @@
       border: 1px solid rgba(234,215,207,0.85);
       background: rgba(255,255,255,0.70);
       cursor:pointer;
-      font-weight: 750;
+      font-weight: 800;
       font-size: 16px;
       color: rgba(95,95,107,0.95);
       box-shadow: 0 14px 35px rgba(0,0,0,0.08);
     }
     .modalBtn:hover{ transform: translateY(-1px); }
+
+    /* Image lightbox */
+    .lightboxImg{
+      max-width: min(1100px, 96vw);
+      max-height: 86vh;
+      border-radius: 18px;
+      border: 1px solid rgba(234,215,207,0.9);
+      box-shadow: 0 30px 120px rgba(0,0,0,0.22);
+      background: #fff;
+      display:block;
+    }
+    .lightboxCaption{
+      margin-top: 10px;
+      text-align:center;
+      color: rgba(95,95,107,0.9);
+      font-size: 13px;
+      font-weight: 650;
+    }
   </style>
 </head>
 
@@ -445,7 +539,8 @@
       </p>
 
       <div class="downloadWrap">
-        <a class="downloadBtn" href="https://github.com/grojobil/PenguinPDF/releases/latest">
+        <!-- Dynamic: this button will link to the right installer for the user’s OS -->
+        <a class="downloadBtn" id="downloadBtn" href="https://github.com/grojobil/PenguinPDF/releases/latest">
           <svg class="dlIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 3v10" stroke="white" stroke-width="2" stroke-linecap="round"/>
             <path d="M8 11l4 4 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -455,35 +550,50 @@
         </a>
 
         <div class="osRow" aria-label="Platforms">
-          <div class="osItem">
-            <img class="osLogo" src="assets/apple.png" alt="macOS" />
-            <span>macOS</span>
-          </div>
-          <div class="osSep"></div>
-          <div class="osItem">
-            <img class="osLogo" src="assets/windows.png" alt="Windows" />
-            <span>Windows</span>
+          <div class="osRowInner">
+            <div class="osItem">
+              <img class="osLogo" src="assets/apple.png" alt="macOS" />
+              <span>macOS</span>
+            </div>
+
+            <div class="osSep"></div>
+
+            <div class="osItem windows">
+              <img class="osLogo" src="assets/windows.png" alt="Windows" />
+              <span>Windows</span>
+              <span class="infoBadge" tabindex="0" aria-label="Windows install info">i</span>
+              <div class="tooltip" role="tooltip">
+                Windows may show a security prompt for new apps.<br/><br/>
+                Click <b>More info</b> → <b>Run anyway</b>.<br/><br/>
+                We keep PenguinPDF free by avoiding ongoing costs like code-signing certificates.
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="requestLink">
           <a href="https://github.com/grojobil/PenguinPDF/issues/1/" target="_blank" rel="noreferrer">Request iOS/Android</a>
         </div>
+
+        <!-- Only subtle “See all downloads” (support removed from here) -->
+        <div class="tinyLinks">
+          <a href="https://github.com/grojobil/PenguinPDF/releases/latest">See all downloads</a>
+        </div>
       </div>
     </div>
 
     <div class="shots">
-      <div class="shotCard">
+      <div class="shotCard" data-img="assets/home.png" data-cap="Home: all PDF tools in one place">
         <img src="assets/home.png" alt="PenguinPDF home screen" />
         <div class="cap">Home: all PDF tools in one place</div>
       </div>
 
-      <div class="shotCard">
+      <div class="shotCard" data-img="assets/edit.png" data-cap="Edit: annotate, draw, fill & sign PDFs">
         <img src="assets/edit.png" alt="PenguinPDF PDF editor" />
         <div class="cap">Edit: annotate, draw, fill &amp; sign PDFs</div>
       </div>
 
-      <div class="shotCard">
+      <div class="shotCard" data-img="assets/utility.png" data-cap="Utilities: merge, split, reorder, compress">
         <img src="assets/utility.png" alt="PenguinPDF utilities" />
         <div class="cap">Utilities: merge, split, reorder, compress</div>
       </div>
@@ -542,7 +652,55 @@
     </div>
   </div>
 
+  <!-- Image lightbox -->
+  <div class="overlay" id="imgOverlay" aria-hidden="true">
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <img id="imgLightbox" class="lightboxImg" alt="Screenshot" />
+      <div id="imgCaption" class="lightboxCaption"></div>
+    </div>
+  </div>
+
   <script>
+    /**
+     * Automatic “download the right installer” without updating index.html each release:
+     * Use GitHub's /releases/latest/download/<filename> redirects.
+     *
+     * IMPORTANT: For this to work long-term, upload assets with stable names in each release:
+     *   - PenguinPDF_x64.dmg
+     *   - PenguinPDF_x64-setup.exe
+     *
+     * If you keep versioned filenames (PenguinPDF_1.0.0_x64...), you'll need to update these constants each release.
+     */
+    const DOWNLOADS = {
+      mac: "https://github.com/grojobil/PenguinPDF/releases/latest/download/PenguinPDF_x64.dmg",
+      win: "https://github.com/grojobil/PenguinPDF/releases/latest/download/PenguinPDF_x64-setup.exe",
+      fallback: "https://github.com/grojobil/PenguinPDF/releases/latest"
+    };
+
+    function isMacOS() {
+      const ua = navigator.userAgent || "";
+      const platform = (navigator.platform || "").toLowerCase();
+      return /Mac/i.test(ua) || platform.includes("mac");
+    }
+
+    function isWindows() {
+      const ua = navigator.userAgent || "";
+      const platform = (navigator.platform || "").toLowerCase();
+      return /Win/i.test(ua) || platform.includes("win");
+    }
+
+    function getDownloadUrl() {
+      if (isMacOS()) return DOWNLOADS.mac;
+      if (isWindows()) return DOWNLOADS.win;
+      return DOWNLOADS.fallback;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("downloadBtn");
+      if (btn) btn.href = getDownloadUrl();
+    });
+
+    // Help modal wiring
     const overlay = document.getElementById('overlay');
     const helpBtn = document.getElementById('helpBtn');
     const closeBtn = document.getElementById('closeBtn');
@@ -566,7 +724,38 @@
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeHelp();
+      if (e.key === 'Escape') {
+        closeHelp();
+        closeImg();
+      }
+    });
+
+    // Image lightbox wiring
+    const imgOverlay = document.getElementById('imgOverlay');
+    const imgLightbox = document.getElementById('imgLightbox');
+    const imgCaption = document.getElementById('imgCaption');
+
+    function openImg(src, cap){
+      imgLightbox.src = src;
+      imgCaption.textContent = cap || '';
+      imgOverlay.classList.add('open');
+      imgOverlay.setAttribute('aria-hidden','false');
+    }
+    function closeImg(){
+      imgOverlay.classList.remove('open');
+      imgOverlay.setAttribute('aria-hidden','true');
+      imgLightbox.src = '';
+      imgCaption.textContent = '';
+    }
+
+    imgOverlay.addEventListener('click', (e) => {
+      if (e.target === imgOverlay) closeImg();
+    });
+
+    document.querySelectorAll('.shotCard').forEach(card => {
+      card.addEventListener('click', () => {
+        openImg(card.getAttribute('data-img'), card.getAttribute('data-cap'));
+      });
     });
   </script>
 </body>
