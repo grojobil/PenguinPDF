@@ -24,6 +24,7 @@
       --accent2:#f8b29a;
 
       --radius: 26px;
+      --fit-scale: 1;
     }
 
     *{ box-sizing:border-box; }
@@ -41,16 +42,26 @@
         radial-gradient(1200px 900px at 22% 18%, var(--bgBlush), transparent 58%),
         radial-gradient(1400px 900px at 40% 95%, #ffe9d7, transparent 58%),
         linear-gradient(180deg, var(--bgWarm), #fff);
-      overflow:hidden; /* avoid scroll on typical screens */
+      overflow:hidden;
+    }
+
+    .fitViewport{
+      width:100%;
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      overflow:hidden;
     }
 
     .container{
-      max-width: 980px;
-      margin: 0 auto;
+      width: min(980px, calc(100vw - 28px));
       padding: 28px 18px 18px;
-      min-height: 100vh;
       display:flex;
       flex-direction:column;
+      transform: scale(var(--fit-scale));
+      transform-origin: top center;
+      will-change: transform;
     }
 
     /* top-right controls */
@@ -379,6 +390,44 @@
       font-weight: 500;
     }
 
+    .langSwitch{
+      position: fixed;
+      right: 14px;
+      bottom: 12px;
+      z-index: 60;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.62);
+      background: rgba(255,255,255,0.58);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+      backdrop-filter: blur(14px);
+      color: rgba(23,23,26,0.42);
+      font-size: 12px;
+      font-weight: 560;
+      user-select: none;
+    }
+    .langBtn{
+      border: 0;
+      background: transparent;
+      color: rgba(23,23,26,0.48);
+      font-size: 12px;
+      font-weight: 560;
+      padding: 0;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .langBtn.active{
+      color: rgba(23,23,26,0.74);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .langBtn:hover{
+      color: rgba(23,23,26,0.66);
+    }
+
     /* Help modal */
     .overlay{
       position:fixed;
@@ -491,21 +540,35 @@
 
     @media (max-width: 920px){
       body{ overflow:auto; } /* allow scroll on small screens */
-      .container{ padding-bottom: 30px; }
+      .fitViewport{
+        height:auto;
+        min-height:100vh;
+        overflow:visible;
+      }
+      .container{
+        width:100%;
+        transform:none;
+        padding-bottom: 30px;
+      }
       .shots{ grid-template-columns: 1fr; }
       .heroTitle{ font-size: 46px; }
       .heroTagline{ font-size: 28px; }
+      .langSwitch{
+        right: 10px;
+        bottom: 10px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
+  <div class="fitViewport" id="fitViewport">
+  <div class="container" id="mainContainer">
 
     <div class="topbar">
       <div class="topright">
         <div class="pill">
-          <a href="https://github.com/grojobil/PenguinPDF/releases/latest">Download</a>
+          <a href="https://github.com/grojobil/PenguinPDF/releases/latest" data-i18n="top_download">Download</a>
           <span>·</span>
           <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
         </div>
@@ -519,9 +582,9 @@
         <h1 class="heroTitle">PenguinPDF</h1>
       </div>
 
-      <div class="heroTagline">PDFs, without the subscription.</div>
+      <div class="heroTagline" data-i18n="hero_tagline">PDFs, without the subscription.</div>
 
-      <div class="heroDesc">
+      <div class="heroDesc" data-i18n-html="hero_desc">
         Merge, split, convert, annotate, fill &amp; sign PDFs — locally.<br/>
         No uploads. No tracking. Free to use.
       </div>
@@ -533,7 +596,7 @@
             <path d="M8 11l4 4 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M4 17v3h16v-3" stroke="white" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          Download PenguinPDF
+          <span data-i18n="download_button">Download PenguinPDF</span>
         </a>
 
         <div class="osRow" aria-label="Platforms">
@@ -549,7 +612,7 @@
               <img class="osLogo" src="assets/windows.png" alt="Windows" />
               <span>Windows</span>
               <span class="infoBadge" tabindex="0" aria-label="Windows install info">i</span>
-              <div class="tooltip" role="tooltip">
+              <div class="tooltip" role="tooltip" data-i18n-html="windows_tooltip">
                 Windows may show a security prompt for new apps.<br/><br/>
                 Click <b>More info</b> → <b>Run anyway</b>.<br/><br/>
                 We keep PenguinPDF free by avoiding ongoing costs like code-signing certificates.
@@ -559,28 +622,28 @@
         </div>
 
         <div class="requestLink">
-          <a href="https://github.com/grojobil/PenguinPDF/issues/1/" target="_blank" rel="noreferrer">Request iOS/Android</a>
+          <a href="https://github.com/grojobil/PenguinPDF/issues/1/" target="_blank" rel="noreferrer" data-i18n="request_mobile">Request iOS/Android</a>
         </div>
 
         <div class="tinyLinks">
-          <a href="https://github.com/grojobil/PenguinPDF/releases/latest">See all downloads</a>
+          <a href="https://github.com/grojobil/PenguinPDF/releases/latest" data-i18n="see_all_downloads">See all downloads</a>
         </div>
       </div>
 
       <div class="shots">
-        <div class="shotCard" data-img="assets/home.png" data-cap="Home: all PDF tools in one place">
+        <div class="shotCard" data-img="assets/home.png" data-cap="Home: all PDF tools in one place" data-i18n-cap="shot_home">
           <img src="assets/home.png" alt="PenguinPDF home screen" />
-          <div class="cap">Home: all PDF tools in one place</div>
+          <div class="cap" data-i18n="shot_home">Home: all PDF tools in one place</div>
         </div>
 
-        <div class="shotCard" data-img="assets/edit.png" data-cap="Edit: annotate, draw, fill & sign PDFs">
+        <div class="shotCard" data-img="assets/edit.png" data-cap="Edit: annotate, draw, fill & sign PDFs" data-i18n-cap="shot_edit">
           <img src="assets/edit.png" alt="PenguinPDF PDF editor" />
-          <div class="cap">Edit: annotate, draw, fill &amp; sign PDFs</div>
+          <div class="cap" data-i18n="shot_edit">Edit: annotate, draw, fill &amp; sign PDFs</div>
         </div>
 
-        <div class="shotCard" data-img="assets/utility.png" data-cap="Utilities: merge, split, reorder, compress">
+        <div class="shotCard" data-img="assets/utility.png" data-cap="Utilities: merge, split, reorder, compress" data-i18n-cap="shot_utilities">
           <img src="assets/utility.png" alt="PenguinPDF utilities" />
-          <div class="cap">Utilities: merge, split, reorder, compress</div>
+          <div class="cap" data-i18n="shot_utilities">Utilities: merge, split, reorder, compress</div>
         </div>
       </div>
     </div>
@@ -588,45 +651,52 @@
     <div class="footerWrap">
       <footer>
         <div class="links">
-          <a href="https://github.com/grojobil/PenguinPDF/releases/latest">Downloads</a>
+          <a href="https://github.com/grojobil/PenguinPDF/releases/latest" data-i18n="footer_downloads">Downloads</a>
           <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
-          <a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer">Support the project</a>
+          <a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer" data-i18n="footer_support">Support the project</a>
         </div>
-        PenguinPDF runs locally, no tracking, no accounts.
+        <span data-i18n="footer_note">PenguinPDF runs locally, no tracking, no accounts.</span>
       </footer>
     </div>
 
+  </div>
+  </div>
+
+  <div class="langSwitch" aria-label="Language selector">
+    <button class="langBtn active" type="button" data-lang="en">EN</button>
+    <span>|</span>
+    <button class="langBtn" type="button" data-lang="es">ES</button>
   </div>
 
   <!-- Help modal -->
   <div class="overlay" id="overlay" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-label="Help">
       <button class="closeX" id="closeX" aria-label="Close">×</button>
-      <div class="modalHeader">Help</div>
+      <div class="modalHeader" data-i18n="help_title">Help</div>
 
       <div class="helpList">
         <div class="helpItem">
           <div class="emoji">🛡️</div>
-          <div>Files never leave your computer</div>
+          <div data-i18n="help_local_files">Files never leave your computer</div>
         </div>
 
         <div class="helpItem">
           <div class="emoji">📦</div>
-          <div>macOS (.dmg) &amp; Windows (.exe)</div>
+          <div data-i18n="help_platforms">macOS (.dmg) &amp; Windows (.exe)</div>
         </div>
 
         <div class="helpItem">
           <div class="emoji">💬</div>
-          <div>Report issues on <a href="https://github.com/grojobil/PenguinPDF/issues" target="_blank" rel="noreferrer">GitHub</a> →</div>
+          <div><span data-i18n="help_report_prefix">Report issues on </span><a href="https://github.com/grojobil/PenguinPDF/issues" target="_blank" rel="noreferrer">GitHub</a> <span data-i18n="arrow_right">-&gt;</span></div>
         </div>
 
         <div class="helpItem">
           <div class="emoji">💛</div>
-          <div><a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer">Support the project</a> →</div>
+          <div><a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer" data-i18n="footer_support">Support the project</a> <span data-i18n="arrow_right">-&gt;</span></div>
         </div>
       </div>
 
-      <button class="modalBtn" id="closeBtn">Close</button>
+      <button class="modalBtn" id="closeBtn" data-i18n="close">Close</button>
     </div>
   </div>
 
@@ -639,19 +709,64 @@
   </div>
 
   <script>
-    /**
-     * Automatic “download the right installer” without updating index.html each release:
-     * Use GitHub's /releases/latest/download/<filename> redirects.
-     *
-     * IMPORTANT: For this to work long-term, upload assets with stable names in each release:
-     *   - PenguinPDF_x64.dmg
-     *   - PenguinPDF_x64-setup.exe
-     */
     const DOWNLOADS = {
       mac: "https://github.com/grojobil/PenguinPDF/releases/latest/download/PenguinPDF_x64.dmg",
       win: "https://github.com/grojobil/PenguinPDF/releases/latest/download/PenguinPDF_x64-setup.exe",
       fallback: "https://github.com/grojobil/PenguinPDF/releases/latest"
     };
+
+    const I18N = {
+      en: {
+        top_download: "Download",
+        hero_tagline: "PDFs, without the subscription.",
+        hero_desc: "Merge, split, convert, annotate, fill &amp; sign PDFs - locally.<br/>No uploads. No tracking. Free to use.",
+        download_button: "Download PenguinPDF",
+        windows_tooltip: "Windows may show a security prompt for new apps.<br/><br/>Click <b>More info</b> -&gt; <b>Run anyway</b>.<br/><br/>We keep PenguinPDF free by avoiding ongoing costs like code-signing certificates.",
+        request_mobile: "Request iOS/Android",
+        see_all_downloads: "See all downloads",
+        shot_home: "Home: all PDF tools in one place",
+        shot_edit: "Edit: annotate, draw, fill & sign PDFs",
+        shot_utilities: "Utilities: merge, split, reorder, compress",
+        footer_downloads: "Downloads",
+        footer_support: "Support the project",
+        footer_note: "PenguinPDF runs locally, no tracking, no accounts.",
+        help_title: "Help",
+        help_local_files: "Files never leave your computer",
+        help_platforms: "macOS (.dmg) & Windows (.exe)",
+        help_report_prefix: "Report issues on ",
+        arrow_right: "->",
+        close: "Close",
+        page_description: "PenguinPDF is a local-first PDF toolbox. Free, offline, no accounts, no subscriptions."
+      },
+      es: {
+        top_download: "Descargar",
+        hero_tagline: "PDFs, sin suscripcion.",
+        hero_desc: "Une, divide, convierte, anota, completa y firma PDFs - localmente.<br/>Sin subidas. Sin rastreo. Gratis.",
+        download_button: "Descargar PenguinPDF",
+        windows_tooltip: "Windows puede mostrar una alerta de seguridad para apps nuevas.<br/><br/>Haz clic en <b>More info</b> -&gt; <b>Run anyway</b>.<br/><br/>Mantenemos PenguinPDF gratis evitando costos continuos como certificados de firma.",
+        request_mobile: "Solicitar iOS/Android",
+        see_all_downloads: "Ver todas las descargas",
+        shot_home: "Inicio: todas las herramientas PDF en un solo lugar",
+        shot_edit: "Edicion: anota, dibuja, completa y firma PDFs",
+        shot_utilities: "Utilidades: unir, dividir, reordenar, comprimir",
+        footer_downloads: "Descargas",
+        footer_support: "Apoyar el proyecto",
+        footer_note: "PenguinPDF corre localmente, sin rastreo ni cuentas.",
+        help_title: "Ayuda",
+        help_local_files: "Tus archivos nunca salen de tu computadora",
+        help_platforms: "macOS (.dmg) y Windows (.exe)",
+        help_report_prefix: "Reporta problemas en ",
+        arrow_right: "->",
+        close: "Cerrar",
+        page_description: "PenguinPDF es una caja de herramientas PDF local-first. Gratis, offline, sin cuentas ni suscripciones."
+      }
+    };
+
+    const LANG_STORAGE_KEY = "penguinpdf_lang";
+    const DESKTOP_MEDIA = window.matchMedia("(min-width: 921px)");
+    const fitViewport = document.getElementById("fitViewport");
+    const mainContainer = document.getElementById("mainContainer");
+    const metaDescription = document.querySelector('meta[name="description"]');
 
     function isMacOS() {
       const ua = navigator.userAgent || "";
@@ -671,66 +786,141 @@
       return DOWNLOADS.fallback;
     }
 
+    function updateShotCardCaptions(dict) {
+      document.querySelectorAll(".shotCard[data-i18n-cap]").forEach((card) => {
+        const key = card.getAttribute("data-i18n-cap");
+        const caption = dict[key];
+        if (!caption) return;
+        card.setAttribute("data-cap", caption.replace(/&amp;/g, "&"));
+      });
+    }
+
+    function applyDesktopFit() {
+      document.documentElement.style.setProperty("--fit-scale", "1");
+      if (!DESKTOP_MEDIA.matches || !fitViewport || !mainContainer) return;
+      const naturalHeight = mainContainer.scrollHeight;
+      const availableHeight = window.innerHeight - 4;
+      const nextScale = Math.min(1, availableHeight / naturalHeight);
+      document.documentElement.style.setProperty("--fit-scale", nextScale.toFixed(4));
+    }
+
+    function applyLanguage(lang) {
+      const selectedLang = I18N[lang] ? lang : "en";
+      const dict = I18N[selectedLang];
+
+      document.documentElement.setAttribute("lang", selectedLang);
+
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key] !== undefined) el.textContent = dict[key];
+      });
+
+      document.querySelectorAll("[data-i18n-html]").forEach((el) => {
+        const key = el.getAttribute("data-i18n-html");
+        if (dict[key] !== undefined) el.innerHTML = dict[key];
+      });
+
+      updateShotCardCaptions(dict);
+
+      if (metaDescription && dict.page_description) {
+        metaDescription.setAttribute("content", dict.page_description);
+      }
+
+      document.querySelectorAll(".langBtn").forEach((btn) => {
+        btn.classList.toggle("active", btn.getAttribute("data-lang") === selectedLang);
+      });
+
+      localStorage.setItem(LANG_STORAGE_KEY, selectedLang);
+      window.requestAnimationFrame(applyDesktopFit);
+    }
+
+    function getInitialLanguage() {
+      const searchLang = new URLSearchParams(window.location.search).get("lang");
+      if (searchLang === "en" || searchLang === "es") return searchLang;
+      const savedLang = localStorage.getItem(LANG_STORAGE_KEY);
+      if (savedLang === "en" || savedLang === "es") return savedLang;
+      return (navigator.language || "").toLowerCase().startsWith("es") ? "es" : "en";
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       const btn = document.getElementById("downloadBtn");
       if (btn) btn.href = getDownloadUrl();
+
+      document.querySelectorAll(".langBtn").forEach((langBtn) => {
+        langBtn.addEventListener("click", () => {
+          applyLanguage(langBtn.getAttribute("data-lang"));
+        });
+      });
+
+      applyLanguage(getInitialLanguage());
+      applyDesktopFit();
+    });
+
+    window.addEventListener("resize", () => {
+      window.requestAnimationFrame(applyDesktopFit);
+    });
+
+    window.addEventListener("load", () => {
+      window.requestAnimationFrame(applyDesktopFit);
     });
 
     // Help modal wiring
-    const overlay = document.getElementById('overlay');
-    const helpBtn = document.getElementById('helpBtn');
-    const closeBtn = document.getElementById('closeBtn');
-    const closeX = document.getElementById('closeX');
+    const overlay = document.getElementById("overlay");
+    const helpBtn = document.getElementById("helpBtn");
+    const closeBtn = document.getElementById("closeBtn");
+    const closeX = document.getElementById("closeX");
 
-    function openHelp(){
-      overlay.classList.add('open');
-      overlay.setAttribute('aria-hidden','false');
-    }
-    function closeHelp(){
-      overlay.classList.remove('open');
-      overlay.setAttribute('aria-hidden','true');
+    function openHelp() {
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden", "false");
     }
 
-    helpBtn.addEventListener('click', openHelp);
-    closeBtn.addEventListener('click', closeHelp);
-    closeX.addEventListener('click', closeHelp);
+    function closeHelp() {
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden", "true");
+    }
 
-    overlay.addEventListener('click', (e) => {
+    helpBtn.addEventListener("click", openHelp);
+    closeBtn.addEventListener("click", closeHelp);
+    closeX.addEventListener("click", closeHelp);
+
+    overlay.addEventListener("click", (e) => {
       if (e.target === overlay) closeHelp();
     });
 
     // Image lightbox wiring
-    const imgOverlay = document.getElementById('imgOverlay');
-    const imgLightbox = document.getElementById('imgLightbox');
-    const imgCaption = document.getElementById('imgCaption');
+    const imgOverlay = document.getElementById("imgOverlay");
+    const imgLightbox = document.getElementById("imgLightbox");
+    const imgCaption = document.getElementById("imgCaption");
 
-    function openImg(src, cap){
+    function openImg(src, cap) {
       imgLightbox.src = src;
-      imgCaption.textContent = cap || '';
-      imgOverlay.classList.add('open');
-      imgOverlay.setAttribute('aria-hidden','false');
-    }
-    function closeImg(){
-      imgOverlay.classList.remove('open');
-      imgOverlay.setAttribute('aria-hidden','true');
-      imgLightbox.src = '';
-      imgCaption.textContent = '';
+      imgCaption.textContent = cap || "";
+      imgOverlay.classList.add("open");
+      imgOverlay.setAttribute("aria-hidden", "false");
     }
 
-    imgOverlay.addEventListener('click', (e) => {
+    function closeImg() {
+      imgOverlay.classList.remove("open");
+      imgOverlay.setAttribute("aria-hidden", "true");
+      imgLightbox.src = "";
+      imgCaption.textContent = "";
+    }
+
+    imgOverlay.addEventListener("click", (e) => {
       if (e.target === imgOverlay) closeImg();
     });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
         closeHelp();
         closeImg();
       }
     });
 
-    document.querySelectorAll('.shotCard').forEach(card => {
-      card.addEventListener('click', () => {
-        openImg(card.getAttribute('data-img'), card.getAttribute('data-cap'));
+    document.querySelectorAll(".shotCard").forEach((card) => {
+      card.addEventListener("click", () => {
+        openImg(card.getAttribute("data-img"), card.getAttribute("data-cap"));
       });
     });
   </script>
