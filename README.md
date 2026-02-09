@@ -57,7 +57,7 @@ If it’s been useful, you can optionally support the project here:
 Want **iOS / iPadOS / Android** support?  
 Tell me what you’d use most 👇
 
-👉 https://github.com/grojobil/PenguinPDF/issues/new?title=Mobile%20support%20request
+👉 https://github.com/grojobil/PenguinPDF/issues/1/
 
 ---
 
