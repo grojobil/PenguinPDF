@@ -8,83 +8,57 @@
 
   <style>
     :root{
-      --cream:#fbf3ea;
-      --blush:#f7e8ee;
-      --lav:#efe7fb;
-      --peach:#ffe9d7;
+      /* More purple-heavy “liquid glass” like your reference */
+      --bgWarm:#fbf3ea;
+      --bgBlush:#f7e8ee;
+      --bgLav:#e9dbff;     /* stronger purple */
+      --bgLav2:#d9c8ff;    /* even stronger purple */
+      --bgCool:#f4f7ff;
 
-      --text:#1b1b1d;
-      --muted:#6a6a77;
-      --muted2: rgba(95,95,107,0.65);   /* light gray used for subtle links */
-      --caption: rgba(95,95,107,0.9);   /* screenshot caption tone */
+      --text:#17171a;
+      --muted: rgba(23,23,26,0.58);
+      --muted2: rgba(23,23,26,0.44);
+      --muted3: rgba(23,23,26,0.34);
 
-      --accent:#f18a6b;
-      --accent2:#f6b59f;
+      --accent:#ed6f4f;
+      --accent2:#f8b29a;
 
-      --card:#ffffffa8;
-      --border:#ead7cf;
-      --shadow: 0 18px 60px rgba(20,10,5,0.10);
-
-      --radius: 22px;
+      --radius: 26px;
     }
 
-    *{box-sizing:border-box}
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       color:var(--text);
+
+      /* Purple dominates right side and bleeds toward center */
       background:
-        radial-gradient(1200px 900px at 20% 10%, var(--blush), transparent 55%),
-        radial-gradient(1100px 900px at 88% 18%, var(--lav), transparent 60%),
-        radial-gradient(1400px 900px at 42% 95%, var(--peach), transparent 55%),
-        linear-gradient(180deg, var(--cream), #fff);
-      min-height:100vh;
+        radial-gradient(1200px 900px at 86% 18%, var(--bgLav2), transparent 55%),
+        radial-gradient(1200px 900px at 78% 40%, var(--bgLav),  transparent 58%),
+        radial-gradient(1200px 900px at 60% 0%,  var(--bgCool), transparent 62%),
+        radial-gradient(1200px 900px at 22% 18%, var(--bgBlush), transparent 58%),
+        radial-gradient(1400px 900px at 40% 95%, #ffe9d7, transparent 58%),
+        linear-gradient(180deg, var(--bgWarm), #fff);
+      overflow:hidden; /* avoid scroll on typical screens */
     }
 
     .container{
-      max-width: 1040px;
+      max-width: 980px;
       margin: 0 auto;
-      padding: 42px 20px 64px;
+      padding: 28px 18px 18px;
+      min-height: 100vh;
+      display:flex;
+      flex-direction:column;
     }
 
-    /* Top brand row */
+    /* top-right controls */
     .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
-      margin-bottom: 28px;
+      position: relative;
+      height: 18px; /* reserve a touch of space */
+      flex: 0 0 auto;
     }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      text-align:left;
-    }
-
-    .brand img{
-      width:44px;
-      height:44px;
-      border-radius:12px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
-      background: transparent;
-      object-fit: contain;
-    }
-
-    .brand .name{
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-      line-height: 1.1;
-    }
-
-    .brand .tag{
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
     .topright{
       position:absolute;
       right:0;
@@ -92,6 +66,7 @@
       display:flex;
       gap:10px;
       align-items:center;
+      z-index: 5;
     }
 
     .pill{
@@ -100,19 +75,19 @@
       gap:8px;
       padding: 10px 14px;
       border-radius: 999px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-      color: var(--muted);
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(255,255,255,0.60);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.06);
+      color: var(--muted2);
       font-size: 13px;
       white-space: nowrap;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(14px);
+      font-weight: 500;
     }
-
     .pill a{
-      color: var(--muted);
-      text-decoration: none;
-      font-weight: 650;
+      color: var(--muted2);
+      text-decoration:none;
+      font-weight: 560;
     }
     .pill a:hover{ text-decoration: underline; }
 
@@ -120,129 +95,153 @@
       width: 36px;
       height: 36px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      border: 1px solid rgba(255,255,255,0.60);
+      background: rgba(255,255,255,0.55);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.06);
       display:flex;
       align-items:center;
       justify-content:center;
-      color: var(--muted);
-      font-weight: 900;
-      user-select:none;
+      color: var(--muted2);
+      font-weight: 800;
       cursor:pointer;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(14px);
     }
-    .iconCircleBtn:hover{
-      filter: brightness(0.98);
-      transform: translateY(-1px);
-    }
+    .iconCircleBtn:hover{ transform: translateY(-1px); }
 
-    /* Center hero */
+    /* HERO */
     .hero{
       text-align:center;
-      margin: 26px auto 26px;
-      max-width: 860px;
+      margin-top: 16px;
+      flex: 0 0 auto;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
     }
 
-    .hero h1{
-      margin: 0 0 12px 0;
-      font-size: 46px;
-      font-weight: 850;
-      letter-spacing: -0.9px;
-      color: rgba(27,27,29,0.78);
+    .brandHero{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 16px;
+      margin-top: 4px;
+      margin-bottom: 14px;
     }
 
-    .hero p{
+    /* Penguin slightly larger than wordmark height */
+    .brandHero img{
+      width: 86px;
+      height: 86px;
+      object-fit: contain;
+      border-radius: 20px;
+      box-shadow: 0 18px 44px rgba(0,0,0,0.12);
+      background: transparent;
+      display:block;
+    }
+
+    .heroTitle{
+      margin: 0;
+      font-size: 58px;
+      font-weight: 720;
+      letter-spacing: -1px;
+      line-height: 1.02;
+      color: rgba(23,23,26,0.80);
+    }
+
+    .heroTagline{
+      margin: 12px 0 16px 0;
+      font-size: 34px;
+      font-weight: 580;
+      letter-spacing: -0.6px;
+      color: rgba(23,23,26,0.58);
+    }
+
+    .heroDesc{
       margin: 0 auto;
-      max-width: 720px;
+      max-width: 780px;
       font-size: 18px;
       line-height: 1.6;
-      color: rgba(95,95,107,0.95);
+      color: rgba(23,23,26,0.56);
+      font-weight: 430;
     }
 
-    /* Download button section */
     .downloadWrap{
-      margin-top: 22px;
+      margin-top: 24px;
       display:flex;
       flex-direction:column;
       align-items:center;
       gap: 12px;
     }
 
+    /* More “alive”, less faded, bigger button */
     .downloadBtn{
       display:inline-flex;
       align-items:center;
       gap: 12px;
-      padding: 18px 32px;
+      padding: 20px 44px;
       border-radius: 999px;
       text-decoration:none;
-      font-weight: 900;
+      font-weight: 620;
+      font-size: 18px;
       color:#fff;
-      border: 1px solid rgba(255,255,255,0.55);
+      border: 1px solid rgba(255,255,255,0.7);
       background:
-        radial-gradient(120% 180% at 30% 0%, rgba(255,255,255,0.35), transparent 55%),
+        radial-gradient(140% 220% at 25% 0%, rgba(255,255,255,0.32), transparent 55%),
         linear-gradient(180deg, var(--accent2), var(--accent));
       box-shadow:
-        0 26px 70px rgba(241,138,107,0.38),
-        inset 0 1px 0 rgba(255,255,255,0.35);
+      0 26px 86px rgba(237,111,79,0.42),
+      inset 0 1px 0 rgba(255,255,255,0.52),
+      0 0 0 6px rgba(237,111,79,0.14);
       transition: transform .08s ease, box-shadow .15s ease, filter .15s ease;
     }
     .downloadBtn:hover{
       transform: translateY(-1px);
       box-shadow:
-        0 32px 85px rgba(241,138,107,0.44),
-        inset 0 1px 0 rgba(255,255,255,0.40);
-      filter: saturate(1.03);
+      0 34px 104px rgba(237,111,79,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.56),
+      0 0 0 7px rgba(237,111,79,0.16);
+      filter: saturate(1.05);
     }
 
-    .dlIcon{
-      width: 30px;
-      height: 30px;
-      display:inline-block;
-      opacity: 0.98;
-    }
+    .dlIcon{ width: 30px; height: 30px; opacity:0.98; }
 
-    /* Platform row centered ignoring the info icon:
-       We place macOS and Windows in an inner row and then append the info icon next to Windows. */
     .osRow{
       display:flex;
       align-items:center;
       justify-content:center;
-      gap: 0;
-      color: rgba(27,27,29,0.62);
-      font-weight: 750;
+      width:100%;
+      color: rgba(23,23,26,0.46); /* lighter */
+      font-weight: 500;
       font-size: 16px;
-      width: 100%;
+      margin-top: 2px;
     }
-
     .osRowInner{
       display:flex;
       align-items:center;
       justify-content:center;
-      gap: 22px;
+      gap: 18px;
     }
-
     .osItem{
       display:flex;
       align-items:center;
       gap: 10px;
       position: relative;
     }
-
     .osLogo{
-      width: 52px;
-      height: 52px;
+      width: 40px;
+      height: 40px;
       object-fit: contain;
       opacity: 0.92;
+      display:block;
+      filter: grayscale(10%);
     }
     .osSep{
       width:1px;
-      height:22px;
-      background: rgba(0,0,0,0.12);
+      height:20px;
+      background: rgba(0,0,0,0.10);
       border-radius: 99px;
     }
 
-    /* Windows SmartScreen info badge + tooltip */
     .infoBadge{
       margin-left: 6px;
       width: 18px;
@@ -252,12 +251,13 @@
       align-items:center;
       justify-content:center;
       font-size: 12px;
-      font-weight: 900;
-      color: rgba(95,95,107,0.9);
-      border: 1px solid rgba(0,0,0,0.12);
+      font-weight: 700; /* less bold */
+      color: rgba(23,23,26,0.52);
+      border: 1px solid rgba(0,0,0,0.10);
       background: rgba(255,255,255,0.55);
       cursor: default;
       user-select: none;
+      backdrop-filter: blur(10px);
     }
 
     .tooltip{
@@ -268,118 +268,103 @@
       padding: 10px 12px;
       border-radius: 14px;
       background: rgba(255,255,255,0.92);
-      border: 1px solid rgba(234,215,207,0.9);
+      border: 1px solid rgba(255,255,255,0.65);
       box-shadow: 0 18px 60px rgba(0,0,0,0.12);
-      color: rgba(27,27,29,0.85);
+      color: rgba(23,23,26,0.78);
       font-size: 12.5px;
       line-height: 1.35;
       display: none;
       z-index: 1000;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(14px);
+      font-weight: 500;
     }
-
     .osItem.windows:hover .tooltip,
-    .osItem.windows:focus-within .tooltip{
-      display:block;
-    }
+    .osItem.windows:focus-within .tooltip{ display:block; }
 
     .requestLink{
-      margin-top: 2px;
+      margin-top: 6px;
       font-size: 14px;
-      color: rgba(95,95,107,0.92);
+      color: rgba(23,23,26,0.44);
+      font-weight: 500;
     }
     .requestLink a{
-      color: rgba(95,95,107,0.95);
+      color: rgba(23,23,26,0.46);
       text-decoration: underline;
-      font-weight: 650;
+      font-weight: 560;
     }
 
-    /* Subtle link row (light gray, like image captions) */
     .tinyLinks{
-      margin-top: 6px;
+      margin-top: 8px;
       font-size: 13px;
-      color: var(--muted2);
+      color: rgba(23,23,26,0.36);
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       justify-content:center;
+      font-weight: 500;
     }
     .tinyLinks a{
-      color: var(--muted2);
+      color: rgba(23,23,26,0.36);
       text-decoration: underline;
-      font-weight: 650;
+      font-weight: 560;
     }
-    .tinyLinks a:hover{
-      color: rgba(95,95,107,0.82);
-    }
+    .tinyLinks a:hover{ color: rgba(23,23,26,0.52); }
 
-    /* Screenshots row */
+    /* Screenshots: slightly bigger, softer, less heavy caption weight */
     .shots{
+      width: 100%;
       display:grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
+      gap: 22px;
       margin-top: 32px;
-    }
-    @media (max-width: 920px){
-      .topright{ position: static; margin-top: 12px; }
-      .topbar{ flex-direction: column; gap: 12px; }
-      .hero h1{ font-size: 38px; }
-      .shots{ grid-template-columns: 1fr; }
+      margin-bottom: 4px;
+      padding: 0 6px;
     }
 
     .shotCard{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      background: rgba(255,255,255,0.50);
+      border: 1px solid rgba(255,255,255,0.60);
+      border-radius: 26px;
+      box-shadow:
+        0 26px 90px rgba(0,0,0,0.10),
+        0 0 0 12px rgba(255,255,255,0.16);
       padding: 14px;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(14px);
       cursor: zoom-in;
+      transition: transform .10s ease, box-shadow .15s ease;
+    }
+    .shotCard:hover{
+      transform: translateY(-2px);
+      box-shadow:
+        0 32px 110px rgba(0,0,0,0.12),
+        0 0 0 12px rgba(255,255,255,0.18);
     }
     .shotCard img{
       width:100%;
-      border-radius: 16px;
-      border: 1px solid rgba(0,0,0,0.06);
-      box-shadow: 0 18px 50px rgba(0,0,0,0.10);
+      border-radius: 18px;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.11);
       display:block;
       background:#fff;
     }
     .shotCard .cap{
       margin-top: 10px;
       font-size: 13px;
-      color: var(--caption);
+      color: rgba(23,23,26,0.46);
+      font-weight: 500;
     }
 
-    /* Included tools card */
-    .tools{
-      margin-top: 22px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px 20px;
-      backdrop-filter: blur(10px);
+    /* Footer pinned to bottom visually */
+    .footerWrap{
+      margin-top: clamp(22px, 4vh, 48px);
+      padding-top: 8px;
     }
-    .tools h2{
-      margin: 4px 0 10px 0;
-      font-size: 18px;
-      letter-spacing: -0.2px;
-    }
-    .tools ul{
-      margin: 0;
-      padding-left: 18px;
-      color: rgba(95,95,107,0.95);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    .tools li{ margin-bottom: 6px; }
 
-    /* Footer */
     footer{
-      margin-top: 26px;
       text-align:center;
-      color: rgba(95,95,107,0.85);
+      color: rgba(23,23,26,0.38);
       font-size: 13px;
+      font-weight: 450;
     }
     footer .links{
       display:flex;
@@ -389,9 +374,9 @@
       margin-bottom: 8px;
     }
     footer a{
-      color: rgba(95,95,107,0.95);
+      color: rgba(23,23,26,0.40);
       text-decoration: underline;
-      font-weight: 650;
+      font-weight: 500;
     }
 
     /* Help modal */
@@ -404,7 +389,7 @@
       justify-content:center;
       padding: 18px;
       z-index: 9999;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(8px);
     }
     .overlay.open{ display:flex; }
 
@@ -412,22 +397,20 @@
       width: min(760px, 96vw);
       border-radius: 26px;
       background: rgba(255,255,255,0.82);
-      border: 1px solid rgba(234,215,207,0.75);
+      border: 1px solid rgba(255,255,255,0.65);
       box-shadow: 0 30px 120px rgba(0,0,0,0.20);
       padding: 22px 22px 18px 22px;
       position: relative;
       backdrop-filter: blur(16px);
     }
-
     .modalHeader{
       text-align:center;
       font-size: 34px;
-      font-weight: 850;
+      font-weight: 750;
       letter-spacing: -0.5px;
       margin: 6px 0 18px;
-      color: rgba(27,27,29,0.78);
+      color: rgba(23,23,26,0.66);
     }
-
     .closeX{
       position:absolute;
       top: 14px;
@@ -435,11 +418,11 @@
       width: 44px;
       height: 44px;
       border-radius: 999px;
-      border: 1px solid rgba(234,215,207,0.85);
+      border: 1px solid rgba(255,255,255,0.65);
       background: rgba(255,255,255,0.70);
       cursor:pointer;
       font-size: 20px;
-      color: rgba(95,95,107,0.9);
+      color: rgba(23,23,26,0.50);
       display:flex;
       align-items:center;
       justify-content:center;
@@ -452,39 +435,36 @@
       gap: 14px;
       margin: 8px 6px 18px;
     }
-
     .helpItem{
       display:flex;
       align-items:center;
       gap: 14px;
       font-size: 20px;
-      color: rgba(95,95,107,0.96);
+      color: rgba(23,23,26,0.58);
       padding: 10px 8px;
+      font-weight: 500;
     }
-
     .helpItem .emoji{
       width: 34px;
       text-align:center;
       font-size: 26px;
       flex: 0 0 34px;
     }
-
     .helpItem a{
-      color: rgba(95,95,107,0.96);
+      color: rgba(23,23,26,0.58);
       text-decoration: underline;
-      font-weight: 800;
+      font-weight: 750;
     }
-
     .modalBtn{
       width: 100%;
       padding: 14px 18px;
       border-radius: 999px;
-      border: 1px solid rgba(234,215,207,0.85);
+      border: 1px solid rgba(255,255,255,0.65);
       background: rgba(255,255,255,0.70);
       cursor:pointer;
-      font-weight: 800;
+      font-weight: 750;
       font-size: 16px;
-      color: rgba(95,95,107,0.95);
+      color: rgba(23,23,26,0.50);
       box-shadow: 0 14px 35px rgba(0,0,0,0.08);
     }
     .modalBtn:hover{ transform: translateY(-1px); }
@@ -494,7 +474,7 @@
       max-width: min(1100px, 96vw);
       max-height: 86vh;
       border-radius: 18px;
-      border: 1px solid rgba(234,215,207,0.9);
+      border: 1px solid rgba(255,255,255,0.65);
       box-shadow: 0 30px 120px rgba(0,0,0,0.22);
       background: #fff;
       display:block;
@@ -502,9 +482,19 @@
     .lightboxCaption{
       margin-top: 10px;
       text-align:center;
-      color: rgba(95,95,107,0.9);
+      color: rgba(23,23,26,0.50);
       font-size: 13px;
       font-weight: 650;
+    }
+
+    img { max-width: 100%; height: auto; }
+
+    @media (max-width: 920px){
+      body{ overflow:auto; } /* allow scroll on small screens */
+      .container{ padding-bottom: 30px; }
+      .shots{ grid-template-columns: 1fr; }
+      .heroTitle{ font-size: 46px; }
+      .heroTagline{ font-size: 28px; }
     }
   </style>
 </head>
@@ -513,14 +503,6 @@
   <div class="container">
 
     <div class="topbar">
-      <div class="brand">
-        <img src="assets/penguin.png" alt="PenguinPDF logo" />
-        <div>
-          <div class="name">PenguinPDF</div>
-          <div class="tag">All the PDF tools you need. Free &amp; local.</div>
-        </div>
-      </div>
-
       <div class="topright">
         <div class="pill">
           <a href="https://github.com/grojobil/PenguinPDF/releases/latest">Download</a>
@@ -532,14 +514,19 @@
     </div>
 
     <div class="hero">
-      <h1>Local-first PDF toolbox</h1>
-      <p>
-        Merge, split, convert, annotate, fill &amp; sign — with your files staying on your computer.
-        No uploads. No subscriptions. No tracking.
-      </p>
+      <div class="brandHero">
+        <img src="assets/penguin.png" alt="PenguinPDF logo" />
+        <h1 class="heroTitle">PenguinPDF</h1>
+      </div>
+
+      <div class="heroTagline">PDFs, without the subscription.</div>
+
+      <div class="heroDesc">
+        Merge, split, convert, annotate, fill &amp; sign PDFs — locally.<br/>
+        No uploads. No tracking. Free to use.
+      </div>
 
       <div class="downloadWrap">
-        <!-- Dynamic: this button will link to the right installer for the user’s OS -->
         <a class="downloadBtn" id="downloadBtn" href="https://github.com/grojobil/PenguinPDF/releases/latest">
           <svg class="dlIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 3v10" stroke="white" stroke-width="2" stroke-linecap="round"/>
@@ -575,48 +562,39 @@
           <a href="https://github.com/grojobil/PenguinPDF/issues/1/" target="_blank" rel="noreferrer">Request iOS/Android</a>
         </div>
 
-        <!-- Only subtle “See all downloads” (support removed from here) -->
         <div class="tinyLinks">
           <a href="https://github.com/grojobil/PenguinPDF/releases/latest">See all downloads</a>
         </div>
       </div>
+
+      <div class="shots">
+        <div class="shotCard" data-img="assets/home.png" data-cap="Home: all PDF tools in one place">
+          <img src="assets/home.png" alt="PenguinPDF home screen" />
+          <div class="cap">Home: all PDF tools in one place</div>
+        </div>
+
+        <div class="shotCard" data-img="assets/edit.png" data-cap="Edit: annotate, draw, fill & sign PDFs">
+          <img src="assets/edit.png" alt="PenguinPDF PDF editor" />
+          <div class="cap">Edit: annotate, draw, fill &amp; sign PDFs</div>
+        </div>
+
+        <div class="shotCard" data-img="assets/utility.png" data-cap="Utilities: merge, split, reorder, compress">
+          <img src="assets/utility.png" alt="PenguinPDF utilities" />
+          <div class="cap">Utilities: merge, split, reorder, compress</div>
+        </div>
+      </div>
     </div>
 
-    <div class="shots">
-      <div class="shotCard" data-img="assets/home.png" data-cap="Home: all PDF tools in one place">
-        <img src="assets/home.png" alt="PenguinPDF home screen" />
-        <div class="cap">Home: all PDF tools in one place</div>
-      </div>
-
-      <div class="shotCard" data-img="assets/edit.png" data-cap="Edit: annotate, draw, fill & sign PDFs">
-        <img src="assets/edit.png" alt="PenguinPDF PDF editor" />
-        <div class="cap">Edit: annotate, draw, fill &amp; sign PDFs</div>
-      </div>
-
-      <div class="shotCard" data-img="assets/utility.png" data-cap="Utilities: merge, split, reorder, compress">
-        <img src="assets/utility.png" alt="PenguinPDF utilities" />
-        <div class="cap">Utilities: merge, split, reorder, compress</div>
-      </div>
+    <div class="footerWrap">
+      <footer>
+        <div class="links">
+          <a href="https://github.com/grojobil/PenguinPDF/releases/latest">Downloads</a>
+          <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
+          <a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer">Support the project</a>
+        </div>
+        PenguinPDF runs locally, no tracking, no accounts.
+      </footer>
     </div>
-
-    <div class="tools">
-      <h2>Included tools</h2>
-      <ul>
-        <li><b>Organize:</b> merge, split, reorder, remove, rotate</li>
-        <li><b>Convert:</b> images ↔ PDF, Word ↔ PDF</li>
-        <li><b>Edit:</b> annotate, draw, fill &amp; sign, signatures</li>
-        <li><b>Optimize &amp; privacy:</b> compress PDFs, remove metadata</li>
-      </ul>
-    </div>
-
-    <footer>
-      <div class="links">
-        <a href="https://github.com/grojobil/PenguinPDF/releases/latest">Downloads</a>
-        <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
-        <a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer">Support the project</a>
-      </div>
-      PenguinPDF runs locally, no tracking, no accounts.
-    </footer>
 
   </div>
 
@@ -668,8 +646,6 @@
      * IMPORTANT: For this to work long-term, upload assets with stable names in each release:
      *   - PenguinPDF_x64.dmg
      *   - PenguinPDF_x64-setup.exe
-     *
-     * If you keep versioned filenames (PenguinPDF_1.0.0_x64...), you'll need to update these constants each release.
      */
     const DOWNLOADS = {
       mac: "https://github.com/grojobil/PenguinPDF/releases/latest/download/PenguinPDF_x64.dmg",
@@ -723,13 +699,6 @@
       if (e.target === overlay) closeHelp();
     });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeHelp();
-        closeImg();
-      }
-    });
-
     // Image lightbox wiring
     const imgOverlay = document.getElementById('imgOverlay');
     const imgLightbox = document.getElementById('imgLightbox');
@@ -750,6 +719,13 @@
 
     imgOverlay.addEventListener('click', (e) => {
       if (e.target === imgOverlay) closeImg();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeHelp();
+        closeImg();
+      }
     });
 
     document.querySelectorAll('.shotCard').forEach(card => {
