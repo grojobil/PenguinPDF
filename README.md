@@ -1,76 +1,79 @@
-# PenguinPDF 🐧
+# PenguinPDF
 
-**Local-first PDF toolbox — free, offline, no accounts.**
+**A free, local-first PDF toolbox for macOS and Windows.**
 
-PenguinPDF is a lightweight desktop app for common PDF tasks.  
-Your files stay on your computer — no uploads, no subscriptions.
+PenguinPDF handles documents on your computer. There are no uploads, accounts,
+subscriptions, paid APIs, or tracking.
 
----
+## Download
 
-## ⬇️ Download
+Download the latest release for:
 
-- **Windows (x64)**  
-- **MacOS**
+- macOS on Apple Silicon
+- macOS on Intel
+- Windows x64
 
-👉 https://github.com/grojobil/PenguinPDF/releases/latest
+[Download PenguinPDF](https://github.com/grojobil/PenguinPDF/releases/latest)
 
-> Windows may show a SmartScreen warning for new apps.  
-> Click **More info → Run anyway**.
+The macOS installers are signed and notarized by Apple. Windows may show a
+SmartScreen warning while PenguinPDF does not have a Windows code-signing
+certificate.
 
----
+## PenguinPDF 2
 
-## 🧰 What PenguinPDF can do
+Version 2 adds native and scanned PDF text editing, bundled local OCR, a unified
+save workflow, broader document-format preservation, and a more polished editor.
 
-### 📂 Organize
-- Merge PDFs
-- Split PDFs (pages or ranges)
-- Reorder / remove pages
-- Rotate pages
+### Edit
 
-### 🔄 Convert
-- Images ↔ PDF
-- Word ↔ PDF *(requires LibreOffice — PenguinPDF will prompt you if needed)*
+- Edit selectable or scanned PDF text
+- Annotate with text, highlights, drawing, shapes, images, covers, and redactions
+- Fill forms and add signatures
+- Merge, split, reorder, remove, and rotate pages
 
-### ✏️ Edit
-- Annotate PDF (text, highlights, shapes, images)
-- Draw on PDFs
-- Fill & sign forms
-- Sign PDFs
+### Convert
 
-### 🔒 Optimize & privacy
+- Images to PDF and PDF to images
+- Word to PDF and PDF to editable DOCX
+
+### Other tools
+
 - Compress PDFs
 - Remove metadata
+- Protect PDFs with a password
+- Unlock PDFs when you know the password
 
----
+OCR for scanned PDFs is included and runs locally. Word to PDF requires a
+separately installed copy of LibreOffice; PenguinPDF explains how to install it
+when needed.
 
-## 💛 Support the project
+## Privacy
 
-PenguinPDF is free to use.  
-If it’s been useful, you can optionally support the project here:
-
-👉 https://penguinpdf.gumroad.com/l/sqlly
-
----
-
-## 📱 Request mobile support
-
-Want **iOS / iPadOS / Android** support?  
-Tell me what you’d use most 👇
-
-👉 https://github.com/grojobil/PenguinPDF/issues/1/
-
----
-
-## 🔐 Privacy
-
-- Fully offline
-- No accounts
-- No tracking / telemetry
+- Files remain on your computer
 - No cloud uploads
+- No accounts
+- No telemetry or tracking
+- No subscriptions
 
----
+## Contact
 
-## 📄 Licenses
+Questions, support, or feedback:
+[penguin.pdf.tools@gmail.com](mailto:penguin.pdf.tools@gmail.com)
 
-- PenguinPDF license: see `LICENSE`
-- Third-party libraries: see `THIRD_PARTY_LICENSES.md`
+Bug reports can also be filed through
+[GitHub Issues](https://github.com/grojobil/PenguinPDF/issues).
+
+## Support the project
+
+PenguinPDF is free to use. Optional support helps keep it available:
+[Support PenguinPDF](https://penguinpdf.gumroad.com/l/sqlly)
+
+## Mobile requests
+
+Request iOS, iPadOS, or Android support in
+[the mobile support issue](https://github.com/grojobil/PenguinPDF/issues/1/).
+
+## Licenses
+
+- PenguinPDF distribution license: [LICENSE.md](LICENSE.md)
+- Third-party components: [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)

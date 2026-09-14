@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PenguinPDF</title>
   <meta name="description" content="PenguinPDF is a local-first PDF toolbox. Free, offline, no accounts, no subscriptions." />
+  <link rel="icon" type="image/png" href="assets/app-icon.png" />
+  <link rel="apple-touch-icon" href="assets/app-icon.png" />
 
   <style>
     :root{
@@ -290,7 +292,9 @@
       font-weight: 500;
     }
     .osItem.windows:hover .tooltip,
-    .osItem.windows:focus-within .tooltip{ display:block; }
+    .osItem.windows:focus-within .tooltip,
+    .osItem.macos:hover .tooltip,
+    .osItem.macos:focus-within .tooltip{ display:block; }
 
     .requestLink{
       margin-top: 6px;
@@ -503,6 +507,7 @@
       color: rgba(23,23,26,0.58);
       text-decoration: underline;
       font-weight: 750;
+      overflow-wrap: anywhere;
     }
     .modalBtn{
       width: 100%;
@@ -585,7 +590,7 @@
       <div class="heroTagline" data-i18n="hero_tagline">PDFs, without the subscription.</div>
 
       <div class="heroDesc" data-i18n-html="hero_desc">
-        Merge, split, convert, annotate, fill &amp; sign PDFs — locally.<br/>
+        Edit text, annotate, fill, sign, organize, and convert PDFs — locally.<br/>
         No uploads. No tracking. Free to use.
       </div>
 
@@ -601,9 +606,14 @@
 
         <div class="osRow" aria-label="Platforms">
           <div class="osRowInner">
-            <div class="osItem">
+            <div class="osItem macos">
               <img class="osLogo" src="assets/apple.png" alt="macOS" />
               <span>macOS</span>
+              <span class="infoBadge" tabindex="0" aria-label="macOS download info">i</span>
+              <div class="tooltip" role="tooltip" data-i18n-html="macos_tooltip">
+                Choose Apple Silicon for M1 or newer Macs.<br/><br/>
+                Choose Intel for older Intel-based Macs.
+              </div>
             </div>
 
             <div class="osSep"></div>
@@ -636,7 +646,7 @@
           <div class="cap" data-i18n="shot_home">Home: all PDF tools in one place</div>
         </div>
 
-        <div class="shotCard" data-img="assets/edit.png" data-cap="Edit: annotate, draw, fill & sign PDFs" data-i18n-cap="shot_edit">
+        <div class="shotCard" data-img="assets/edit.png" data-cap="Edit: annotate, draw, fill &amp; sign PDFs" data-i18n-cap="shot_edit">
           <img src="assets/edit.png" alt="PenguinPDF PDF editor" />
           <div class="cap" data-i18n="shot_edit">Edit: annotate, draw, fill &amp; sign PDFs</div>
         </div>
@@ -654,6 +664,7 @@
           <a href="https://github.com/grojobil/PenguinPDF/releases/latest" data-i18n="footer_downloads">Downloads</a>
           <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
           <a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer" data-i18n="footer_support">Support the project</a>
+          <a href="mailto:penguin.pdf.tools@gmail.com" data-i18n="footer_contact">Contact</a>
         </div>
         <span data-i18n="footer_note">PenguinPDF runs locally, no tracking, no accounts.</span>
       </footer>
@@ -691,6 +702,11 @@
         </div>
 
         <div class="helpItem">
+          <div class="emoji">@</div>
+          <div><span data-i18n="help_contact_prefix">Email us at </span><a href="mailto:penguin.pdf.tools@gmail.com">penguin.pdf.tools@gmail.com</a></div>
+        </div>
+
+        <div class="helpItem">
           <div class="emoji">💛</div>
           <div><a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer" data-i18n="footer_support">Support the project</a> <span data-i18n="arrow_right">-&gt;</span></div>
         </div>
@@ -710,7 +726,7 @@
 
   <script>
     const DOWNLOADS = {
-      mac: "https://github.com/grojobil/PenguinPDF/releases/latest/download/PenguinPDF_x64.dmg",
+      mac: "https://github.com/grojobil/PenguinPDF/releases/latest",
       win: "https://github.com/grojobil/PenguinPDF/releases/latest/download/PenguinPDF_x64-setup.exe",
       fallback: "https://github.com/grojobil/PenguinPDF/releases/latest"
     };
@@ -719,8 +735,9 @@
       en: {
         top_download: "Download",
         hero_tagline: "PDFs, without the subscription.",
-        hero_desc: "Merge, split, convert, annotate, fill &amp; sign PDFs - locally.<br/>No uploads. No tracking. Free to use.",
+        hero_desc: "Edit text, annotate, fill, sign, organize, and convert PDFs - locally.<br/>No uploads. No tracking. Free to use.",
         download_button: "Download PenguinPDF",
+        macos_tooltip: "Choose Apple Silicon for M1 or newer Macs.<br/><br/>Choose Intel for older Intel-based Macs.",
         windows_tooltip: "Windows may show a security prompt for new apps.<br/><br/>Click <b>More info</b> -&gt; <b>Run anyway</b>.<br/><br/>We keep PenguinPDF free by avoiding ongoing costs like code-signing certificates.",
         request_mobile: "Request iOS/Android",
         see_all_downloads: "See all downloads",
@@ -729,11 +746,13 @@
         shot_utilities: "Utilities: merge, split, reorder, compress",
         footer_downloads: "Downloads",
         footer_support: "Support the project",
+        footer_contact: "Contact",
         footer_note: "PenguinPDF runs locally, no tracking, no accounts.",
         help_title: "Help",
         help_local_files: "Files never leave your computer",
         help_platforms: "macOS (.dmg) & Windows (.exe)",
         help_report_prefix: "Report issues on ",
+        help_contact_prefix: "Email us at ",
         arrow_right: "->",
         close: "Close",
         page_description: "PenguinPDF is a local-first PDF toolbox. Free, offline, no accounts, no subscriptions."
@@ -741,8 +760,9 @@
       es: {
         top_download: "Descargar",
         hero_tagline: "PDFs, sin suscripcion.",
-        hero_desc: "Une, divide, convierte, anota, completa y firma PDFs - localmente.<br/>Sin subidas. Sin rastreo. Gratis.",
+        hero_desc: "Edita texto, anota, completa, firma, organiza y convierte PDFs - localmente.<br/>Sin subidas. Sin rastreo. Gratis.",
         download_button: "Descargar PenguinPDF",
+        macos_tooltip: "Elige Apple Silicon para Macs con M1 o posterior.<br/><br/>Elige Intel para Macs antiguos con procesador Intel.",
         windows_tooltip: "Windows puede mostrar una alerta de seguridad para apps nuevas.<br/><br/>Haz clic en <b>More info</b> -&gt; <b>Run anyway</b>.<br/><br/>Mantenemos PenguinPDF gratis evitando costos continuos como certificados de firma.",
         request_mobile: "Solicitar iOS/Android",
         see_all_downloads: "Ver todas las descargas",
@@ -751,11 +771,13 @@
         shot_utilities: "Utilidades: unir, dividir, reordenar, comprimir",
         footer_downloads: "Descargas",
         footer_support: "Apoyar el proyecto",
+        footer_contact: "Contacto",
         footer_note: "PenguinPDF corre localmente, sin rastreo ni cuentas.",
         help_title: "Ayuda",
         help_local_files: "Tus archivos nunca salen de tu computadora",
         help_platforms: "macOS (.dmg) y Windows (.exe)",
         help_report_prefix: "Reporta problemas en ",
+        help_contact_prefix: "Escríbenos a ",
         arrow_right: "->",
         close: "Cerrar",
         page_description: "PenguinPDF es una caja de herramientas PDF local-first. Gratis, offline, sin cuentas ni suscripciones."
