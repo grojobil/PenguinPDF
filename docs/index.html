@@ -174,7 +174,7 @@
       font-size: 30px;
       font-weight: 580;
       letter-spacing: 0;
-      color: rgba(23,23,26,0.58);
+      color: rgba(23,23,26,0.76);
       text-wrap: balance;
     }
 
@@ -183,7 +183,7 @@
       max-width: 780px;
       font-size: 18px;
       line-height: 1.6;
-      color: rgba(23,23,26,0.68);
+      color: rgba(23,23,26,0.78);
       font-weight: 430;
       text-wrap: balance;
     }
@@ -196,7 +196,6 @@
       gap: 9px;
     }
 
-    /* More “alive”, less faded, bigger button */
     .downloadBtn{
       display:inline-flex;
       align-items:center;
@@ -212,17 +211,17 @@
         radial-gradient(140% 220% at 25% 0%, rgba(255,255,255,0.32), transparent 55%),
         linear-gradient(180deg, var(--accent2), var(--accent));
       box-shadow:
-      0 26px 86px rgba(237,111,79,0.42),
+      0 14px 36px rgba(237,111,79,0.22),
       inset 0 1px 0 rgba(255,255,255,0.52),
-      0 0 0 6px rgba(237,111,79,0.14);
+      0 0 0 3px rgba(237,111,79,0.10);
       transition: transform .08s ease, box-shadow .15s ease, filter .15s ease;
     }
     .downloadBtn:hover{
       transform: translateY(-1px);
       box-shadow:
-      0 34px 104px rgba(237,111,79,0.5),
+      0 18px 44px rgba(237,111,79,0.28),
       inset 0 1px 0 rgba(255,255,255,0.56),
-      0 0 0 7px rgba(237,111,79,0.16);
+      0 0 0 4px rgba(237,111,79,0.12);
       filter: saturate(1.05);
     }
 
@@ -493,6 +492,13 @@
       opacity:1;
       z-index:3;
       pointer-events:auto;
+    }
+    .carouselReady .shotPanel.is-active .shotCard{
+      border-color:rgba(23,23,26,0.18);
+      box-shadow:0 24px 56px -18px rgba(40,28,43,0.30);
+    }
+    .carouselReady .shotPanel.is-active .shotCard img{
+      filter:contrast(1.08);
     }
     .carouselReady .shotPanel.is-prev{
       --slot-x:-27%;

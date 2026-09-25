@@ -167,6 +167,18 @@ test("gallery retains four genuine screenshot links and uses dots instead of cap
   assert.match(site, /\.carouselReady \.shotPanel\.is-next\{[^}]*--slot-yaw:\s*-12deg/);
 });
 
+test("contrast polish preserves a clear center and faded neighboring screenshots", () => {
+  assert.match(site, /\.heroTagline\{[^}]*color: rgba\(23,23,26,0\.76\)/);
+  assert.match(site, /\.heroDesc\{[^}]*color: rgba\(23,23,26,0\.78\)/);
+  assert.match(site, /\.downloadBtn\{[^}]*0 0 0 3px rgba\(237,111,79,0\.10\)/);
+  assert.match(site, /\.downloadBtn:hover\{[^}]*0 0 0 4px rgba\(237,111,79,0\.12\)/);
+  assert.match(site, /\.carouselReady \.shotPanel\.is-active\{[^}]*opacity:1/);
+  assert.match(site, /\.carouselReady \.shotPanel\.is-active \.shotCard img\{[^}]*filter:contrast\(1\.08\)/);
+  for (const side of ["prev", "next"]) {
+    assert.match(site, new RegExp(`\\.carouselReady \\.shotPanel\\.is-${side}\\{[^}]*opacity:\\.40`));
+  }
+});
+
 test("carousel and lightbox support bounded keyboard navigation without autoplay", () => {
   const { context } = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
   const keyIndex = (key, current) => new Script(`getShotIndexForKey(${JSON.stringify(key)}, ${current}, 4)`).runInContext(context);
