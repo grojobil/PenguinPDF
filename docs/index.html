@@ -395,7 +395,7 @@
       max-width:none;
       margin:20px auto 0;
     }
-    .carouselStage{ position:relative; }
+    .carouselStage{ position:relative; overflow-x:clip; }
     .carouselSlides{ min-width:0; }
     .shotPanel{ margin:0 0 24px; min-width:0; }
     .shotPanel:last-child{ margin-bottom:0; }
@@ -501,17 +501,17 @@
       filter:contrast(1.08);
     }
     .carouselReady .shotPanel.is-prev{
-      --slot-x:-27%;
-      --slot-scale:.84;
-      --slot-yaw:12deg;
+      --slot-x:-32%;
+      --slot-scale:.76;
+      --slot-yaw:26deg;
       opacity:.40;
       z-index:1;
       pointer-events:auto;
     }
     .carouselReady .shotPanel.is-next{
-      --slot-x:27%;
-      --slot-scale:.84;
-      --slot-yaw:-12deg;
+      --slot-x:32%;
+      --slot-scale:.76;
+      --slot-yaw:-26deg;
       opacity:.40;
       z-index:2;
       pointer-events:auto;
@@ -522,8 +522,8 @@
       z-index:0;
       visibility:hidden;
     }
-    .carouselReady .shotPanel.is-offstage-before{ --slot-x:-34%; }
-    .carouselReady .shotPanel.is-offstage-after{ --slot-x:34%; }
+    .carouselReady .shotPanel.is-offstage-before{ --slot-x:-39%; }
+    .carouselReady .shotPanel.is-offstage-after{ --slot-x:39%; }
     .carouselReady .shotPanel.is-prev .shotCard,
     .carouselReady .shotPanel.is-next .shotCard{
       cursor:pointer;
@@ -987,10 +987,10 @@
       .osLogo{ width:30px; height:30px; }
       .shots{ margin-top:16px; }
       .carouselReady .shotPanel{ width:82%; }
-      .carouselReady .shotPanel.is-prev{ --slot-x:-20%; }
-      .carouselReady .shotPanel.is-next{ --slot-x:20%; }
-      .carouselReady .shotPanel.is-offstage-before{ --slot-x:-28%; }
-      .carouselReady .shotPanel.is-offstage-after{ --slot-x:28%; }
+      .carouselReady .shotPanel.is-prev{ --slot-x:-27%; }
+      .carouselReady .shotPanel.is-next{ --slot-x:27%; }
+      .carouselReady .shotPanel.is-offstage-before{ --slot-x:-34%; }
+      .carouselReady .shotPanel.is-offstage-after{ --slot-x:34%; }
       .carouselArrow{ width:44px; height:44px; top:50%; }
       .carouselPrev{ left:7px; }
       .carouselNext{ right:7px; }

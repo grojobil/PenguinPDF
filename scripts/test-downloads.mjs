@@ -155,6 +155,7 @@ test("gallery retains four genuine screenshot links and uses dots instead of cap
   assert.match(site, /prefers-reduced-motion: reduce/);
   assert.equal(gallery.match(/class="screenshotChrome"/g)?.length, 4);
   assert.match(site, /\.carouselReady \.shotPanel\.is-offstage\{[^}]*visibility:hidden/);
+  assert.match(site, /\.carouselStage\{[^}]*overflow-x:clip/);
 
   const panelRule = site.match(/\.carouselReady \.shotPanel\{([^}]*)\}/)?.[1];
   const transform = panelRule?.match(/\btransform:\s*([^;]+)/)?.[1];
@@ -163,8 +164,11 @@ test("gallery retains four genuine screenshot links and uses dots instead of cap
   assert.ok(transform.includes("rotateY(var(--slot-yaw))"), "carousel transform is missing Y-axis rotation");
   assert.ok(transform.indexOf("perspective(1600px)") < transform.indexOf("rotateY(var(--slot-yaw))"));
   assert.doesNotMatch(site, /--slot-rotation/);
-  assert.match(site, /\.carouselReady \.shotPanel\.is-prev\{[^}]*--slot-yaw:\s*12deg/);
-  assert.match(site, /\.carouselReady \.shotPanel\.is-next\{[^}]*--slot-yaw:\s*-12deg/);
+  assert.match(site, /\.carouselReady \.shotPanel\.is-prev\{[^}]*--slot-yaw:\s*26deg/);
+  assert.match(site, /\.carouselReady \.shotPanel\.is-next\{[^}]*--slot-yaw:\s*-26deg/);
+  for (const side of ["prev", "next"]) {
+    assert.match(site, new RegExp(`\\.carouselReady \\.shotPanel\\.is-${side}\\{[^}]*--slot-scale:\\s*\\.76`));
+  }
 });
 
 test("contrast polish preserves a clear center and faded neighboring screenshots", () => {
