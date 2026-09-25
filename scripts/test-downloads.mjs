@@ -14,6 +14,16 @@ const assets = [
   "PenguinPDF_x64_en-US.msi",
 ];
 
+function getElementMarkup(tag, id) {
+  const markup = site.match(new RegExp(`<${tag}\\b(?=[^>]*\\bid="${id}")[^>]*>[\\s\\S]*?<\\/${tag}>`))?.[0];
+  assert.ok(markup, `missing ${tag}#${id}`);
+  return markup;
+}
+
+function evaluateJson(context, expression) {
+  return JSON.parse(new Script(`JSON.stringify(${expression})`).runInContext(context));
+}
+
 test("browser tabs use the multi-size Windows penguin without changing the touch icon", () => {
   assert.match(site, /<link rel="icon" type="image\/vnd\.microsoft\.icon" href="assets\/favicon-v2\.ico" \/>/);
   assert.match(site, /<link rel="apple-touch-icon" href="assets\/app-icon\.png" \/>/);
@@ -54,6 +64,50 @@ test("download copy is concise and the Windows notice stays accurate", () => {
   assert.match(site, /Free\. Fully local\./);
 });
 
+test("Mac downloads use a compact light popover with explicit architecture choices", () => {
+  const dialog = getElementMarkup("dialog", "macDownloadDialog");
+  const openingTag = dialog.match(/^<dialog\b[^>]*>/)?.[0];
+  const classes = openingTag?.match(/\bclass="([^"]*)"/)?.[1].split(/\s+/) ?? [];
+  assert.ok(classes.includes("downloadDialog"));
+  assert.ok(classes.includes("macDownloadPopover"));
+
+  const backdrop = site.match(/\.macDownloadPopover::backdrop\s*\{([^}]*)\}/)?.[1];
+  assert.ok(backdrop, "missing Mac popover backdrop rule");
+  const background = backdrop.match(/\bbackground:\s*([^;]+)/)?.[1].trim();
+  assert.ok(background, "missing Mac popover backdrop color");
+  if (background !== "transparent") {
+    const rgba = background.match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)$/);
+    assert.ok(rgba, `unexpected Mac backdrop color: ${background}`);
+    assert.ok(rgba.slice(1, 4).every(channel => Number(channel) >= 240), `Mac backdrop is not light: ${background}`);
+    if (rgba[4] !== undefined) assert.ok(Number(rgba[4]) <= 0.25, `Mac backdrop is too opaque: ${background}`);
+  }
+  assert.match(backdrop, /(?:-webkit-)?backdrop-filter:\s*none/);
+  assert.doesNotMatch(backdrop, /blur\(/);
+
+  const choices = [
+    ["macAppleDownload", assets[0], "Apple Silicon", "mac_apple_detail"],
+    ["macIntelDownload", assets[1], "Intel Mac", "mac_intel_detail"],
+  ];
+  for (const [id, asset, visibleLabel, detailKey] of choices) {
+    const choice = getElementMarkup("a", id);
+    const openingChoice = choice.match(/^<a\b[^>]*>/)?.[0];
+    assert.ok(openingChoice.includes(`href="${base + asset}"`), `${id} has the wrong release URL`);
+    const visibleText = choice.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    assert.ok(visibleText.includes(visibleLabel), `${id} is missing visible ${visibleLabel} copy`);
+    assert.match(choice, new RegExp(`\\bdata-i18n="${detailKey}"`));
+    assert.match(choice, /class="macDevice"/, `${id} is missing a recognizable computer icon`);
+    assert.ok((choice.match(/<svg\b/g) ?? []).length >= 2, `${id} needs device and chevron icons`);
+    assert.doesNotMatch(choice, /macChip|x86|<span>M<\/span>/);
+  }
+
+  assert.match(dialog, /\bid="macAllDownloads"/);
+  assert.match(dialog, /class="deviceAppleLogo"/);
+  assert.match(dialog, /class="intelLabel">Intel<\/span>/);
+  assert.match(dialog, /<img\b[^>]*\bsrc="assets\/apple\.png"[^>]*\baria-hidden="true"/);
+  assert.doesNotMatch(dialog, /\brecommended\b|\brecomendad[oa]\b/i);
+  assert.doesNotMatch(siteScript, /navigator\.userAgentData|getHighEntropyValues|detectMac(?:Cpu|Architecture)/i);
+});
+
 test("site script parses", () => {
   assert.ok(siteScript);
   assert.doesNotThrow(() => new Script(siteScript));
@@ -88,6 +142,16 @@ test("gallery retains four genuine screenshot links and uses dots instead of cap
   assert.match(site, /prefers-reduced-motion: reduce/);
   assert.equal(gallery.match(/class="screenshotChrome"/g)?.length, 4);
   assert.match(site, /\.carouselReady \.shotPanel\.is-offstage\{[^}]*visibility:hidden/);
+
+  const panelRule = site.match(/\.carouselReady \.shotPanel\{([^}]*)\}/)?.[1];
+  const transform = panelRule?.match(/\btransform:\s*([^;]+)/)?.[1];
+  assert.ok(transform, "missing carousel panel transform");
+  assert.ok(transform.includes("perspective(1600px)"), "carousel transform is missing perspective");
+  assert.ok(transform.includes("rotateY(var(--slot-yaw))"), "carousel transform is missing Y-axis rotation");
+  assert.ok(transform.indexOf("perspective(1600px)") < transform.indexOf("rotateY(var(--slot-yaw))"));
+  assert.doesNotMatch(site, /--slot-rotation/);
+  assert.match(site, /\.carouselReady \.shotPanel\.is-prev\{[^}]*--slot-yaw:\s*12deg/);
+  assert.match(site, /\.carouselReady \.shotPanel\.is-next\{[^}]*--slot-yaw:\s*-12deg/);
 });
 
 test("carousel and lightbox support bounded keyboard navigation without autoplay", () => {
@@ -106,27 +170,52 @@ test("carousel and lightbox support bounded keyboard navigation without autoplay
 });
 
 function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0) {
-  const element = (id = "") => ({
-    id, hidden: false, open: false, dataset: {}, style: { setProperty() {} },
-    classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
-    addEventListener() {},
-    getAttribute() { return null; },
-    setAttribute() {},
-    removeAttribute() {},
-    querySelector() { return element(); },
-    querySelectorAll() { return []; },
-    contains() { return false; },
-    showModal() { this.open = true; },
-    close() { this.open = false; },
-    focus() {},
-  });
+  let activeElement;
+  const element = (id = "") => {
+    const listeners = new Map();
+    const attributes = new Map();
+    return {
+      id, hidden: false, open: false, dataset: {}, textContent: "", href: "", scrollHeight: 360,
+      style: { setProperty(name, value) { this[name] = value; }, removeProperty(name) { delete this[name]; } },
+      classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+      addEventListener(type, callback) {
+        if (!listeners.has(type)) listeners.set(type, []);
+        listeners.get(type).push(callback);
+      },
+      dispatch(type, init = {}) {
+        const event = {
+          button: 0, target: this, currentTarget: this, defaultPrevented: false, ...init,
+          preventDefault() { this.defaultPrevented = true; },
+          stopPropagation() {},
+        };
+        for (const callback of listeners.get(type) ?? []) callback(event);
+        return event;
+      },
+      getAttribute(name) { return attributes.get(name) ?? null; },
+      setAttribute(name, value) { attributes.set(name, String(value)); },
+      removeAttribute(name) { attributes.delete(name); },
+      toggleAttribute(name, force) {
+        if (force) attributes.set(name, "");
+        else attributes.delete(name);
+      },
+      querySelector() { return element(); },
+      querySelectorAll() { return []; },
+      closest() { return element(); },
+      contains(target) { return target === this; },
+      getBoundingClientRect() { return { left: 320, right: 520, top: 200, bottom: 260, width: 200, height: 60 }; },
+      showModal() { this.open = true; },
+      close() { this.open = false; },
+      focus() { activeElement = this; },
+    };
+  };
   const downloadButton = element("downloadBtn");
   const downloadLabel = { textContent: "", getAttribute: () => "download_button" };
   downloadButton.querySelector = () => downloadLabel;
   const elements = new Map([["downloadBtn", downloadButton]]);
   let onReady;
   const document = {
-    documentElement: { style: { setProperty() {} }, setAttribute() {} },
+    documentElement: { clientWidth: 1024, style: { setProperty() {} }, setAttribute() {} },
+    get activeElement() { return activeElement; },
     getElementById: (id) => {
       if (!elements.has(id)) elements.set(id, element(id));
       return elements.get(id);
@@ -142,8 +231,11 @@ function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0) {
   const window = {
     matchMedia: () => ({ matches: false }),
     location: { search: "" },
+    innerWidth: 1024,
+    innerHeight: 768,
+    visualViewport: { width: 1024, height: 768, addEventListener() {} },
     addEventListener() {},
-    requestAnimationFrame() {},
+    requestAnimationFrame(callback) { callback(); },
   };
   const context = createContext({
     document, window, localStorage, URLSearchParams,
@@ -151,7 +243,13 @@ function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0) {
   });
   new Script(siteScript).runInContext(context);
   onReady?.();
-  return { context, downloadButton, downloadLabel };
+  return {
+    context,
+    downloadButton,
+    downloadLabel,
+    getElement: id => document.getElementById(id),
+    getActiveElement: () => activeElement,
+  };
 }
 
 test("Windows downloads EXE directly without guessing a Mac architecture", () => {
@@ -174,6 +272,43 @@ test("platform routing distinguishes desktop Windows and Mac from mobile and unk
   for (const [ua, touches, expected] of cases) {
     const { context } = runSite(ua, false, touches);
     assert.equal(new Script(`getDownloadPlatform(${JSON.stringify(ua)}, ${touches})`).runInContext(context), expected, ua);
+  }
+});
+
+test("download popover geometry stays anchored and clamped to the viewport", () => {
+  const { context } = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
+  const cases = [
+    {
+      anchor: { left: 500, right: 700, top: 120, bottom: 180, width: 200, height: 60 },
+      viewport: { width: 1200, height: 800 },
+      panel: { width: 400, height: 360 },
+      opensBelow: true,
+    },
+    {
+      anchor: { left: 0, right: 96, top: 80, bottom: 128, width: 96, height: 48 },
+      viewport: { width: 390, height: 700 },
+      panel: { width: 340, height: 420 },
+    },
+    {
+      anchor: { left: 310, right: 390, top: 430, bottom: 478, width: 80, height: 48 },
+      viewport: { width: 390, height: 520 },
+      panel: { width: 340, height: 900 },
+    },
+  ];
+
+  for (const { anchor, viewport, panel, opensBelow } of cases) {
+    const expression = `getDownloadPopoverPosition(${JSON.stringify(anchor)}, ${JSON.stringify(viewport)}, ${JSON.stringify(panel)})`;
+    const position = evaluateJson(context, expression);
+    assert.deepEqual(Object.keys(position).sort(), ["anchorX", "left", "maxHeight", "top"]);
+    for (const [key, value] of Object.entries(position)) assert.ok(Number.isFinite(value), `${key} must be finite`);
+    assert.ok(position.left >= 0, "popover escapes the left viewport edge");
+    assert.ok(position.left + panel.width <= viewport.width, "popover escapes the right viewport edge");
+    assert.ok(position.top >= 0, "popover escapes the top viewport edge");
+    assert.ok(position.maxHeight > 0 && position.maxHeight <= viewport.height, "invalid popover max height");
+    assert.ok(position.top + Math.min(panel.height, position.maxHeight) <= viewport.height, "popover escapes the bottom viewport edge");
+    assert.ok(position.anchorX >= 0 && position.anchorX <= panel.width, "anchor indicator escapes the panel");
+    if (opensBelow) assert.ok(position.top >= anchor.bottom, "roomy popover should open beneath its trigger");
+    assert.deepEqual(evaluateJson(context, expression), position, "geometry helper must be deterministic");
   }
 });
 
@@ -200,6 +335,25 @@ test("modified links keep normal browser navigation", () => {
   assert.equal(new Script("Boolean(isModifiedLinkClick({button:0}))").runInContext(context), false);
 });
 
+test("Mac chooser can transition to the existing all-downloads dialog", () => {
+  const { context, downloadButton, getElement, getActiveElement } = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
+  const macDialog = getElement("macDownloadDialog");
+  const allDownloadsDialog = getElement("allDownloadsDialog");
+  const macAllDownloads = getElement("macAllDownloads");
+
+  assert.ok(downloadButton.dispatch("click").defaultPrevented);
+  assert.equal(macDialog.open, true);
+  assert.equal(macAllDownloads.dispatch("click", { metaKey: true }).defaultPrevented, false);
+  assert.equal(macDialog.open, true);
+  assert.equal(allDownloadsDialog.open, false);
+  assert.ok(macAllDownloads.dispatch("click").defaultPrevented);
+  assert.equal(macDialog.open, false);
+  assert.equal(allDownloadsDialog.open, true);
+  new Script("closeDownloadDialog(allDownloadsDialog)").runInContext(context);
+  assert.equal(allDownloadsDialog.open, false);
+  assert.equal(getActiveElement(), downloadButton);
+});
+
 test("language switching survives blocked localStorage", () => {
   const { context, downloadLabel } = runSite("Mozilla/5.0 (Macintosh)", true);
   new Script('applyLanguage("es")').runInContext(context);
@@ -215,11 +369,19 @@ test("links and copy do not point to the old or moving release", () => {
   }
 });
 
+test("contact links are labeled plainly and Help has no stray arrows", () => {
+  const contacts = [...site.matchAll(/<a href="mailto:penguin\.pdf\.tools@gmail\.com" data-i18n="footer_contact">Contact us<\/a>/g)];
+  assert.equal(contacts.length, 2);
+  assert.doesNotMatch(site, /help_contact_prefix|arrow_right/);
+  assert.equal(site.match(/\bfooter_contact:/g)?.length, 2);
+});
+
 test("English and Spanish include the gallery and download labels without a version badge", () => {
   assert.doesNotMatch(site, /class="versionLabel"|\.versionLabel\{|\bversion_label:/);
   assert.match(site, /<meta name="description" content="PenguinPDF 2\.0\.0:/);
   for (const key of [
     "download_button", "download_windows", "download_mac", "mac_apple", "mac_intel", "win_exe", "win_msi",
+    "mac_dialog_intro", "mac_apple_detail", "mac_intel_detail", "mac_other_downloads",
     "screenshots_label", "previous_screenshot", "next_screenshot",
     "slide_1_of_4", "slide_2_of_4", "slide_3_of_4", "slide_4_of_4",
     "shot_text", "shot_fill", "shot_edit", "shot_home",

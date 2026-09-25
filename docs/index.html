@@ -469,7 +469,7 @@
     .carouselReady .shotPanel{
       --slot-x:0%;
       --slot-scale:.74;
-      --slot-rotation:0deg;
+      --slot-yaw:0deg;
       position:absolute;
       top:50%;
       left:50%;
@@ -478,7 +478,7 @@
       opacity:0;
       z-index:0;
       pointer-events:none;
-      transform:translate(-50%, -50%) translateX(var(--slot-x)) scale(var(--slot-scale)) rotate(var(--slot-rotation));
+      transform:translate(-50%, -50%) translateX(var(--slot-x)) scale(var(--slot-scale)) perspective(1600px) rotateY(var(--slot-yaw));
       transition:
         transform .46s cubic-bezier(.22, .72, .22, 1),
         opacity .34s ease;
@@ -487,7 +487,7 @@
     .carouselReady .shotPanel.is-active{
       --slot-x:0%;
       --slot-scale:1;
-      --slot-rotation:0deg;
+      --slot-yaw:0deg;
       opacity:1;
       z-index:3;
       pointer-events:auto;
@@ -495,7 +495,7 @@
     .carouselReady .shotPanel.is-prev{
       --slot-x:-27%;
       --slot-scale:.84;
-      --slot-rotation:-2.5deg;
+      --slot-yaw:12deg;
       opacity:.40;
       z-index:1;
       pointer-events:auto;
@@ -503,7 +503,7 @@
     .carouselReady .shotPanel.is-next{
       --slot-x:27%;
       --slot-scale:.84;
-      --slot-rotation:2.5deg;
+      --slot-yaw:-12deg;
       opacity:.40;
       z-index:2;
       pointer-events:auto;
@@ -835,6 +835,77 @@
       line-height:1.5;
     }
 
+    .macDownloadPopover{
+      position:fixed;
+      inset:auto;
+      margin:0;
+      width:min(444px, calc(100vw - 32px));
+      background:rgba(255,255,255,0.93);
+      overflow:visible;
+    }
+    .macDownloadPopover::backdrop{
+      background:transparent;
+      backdrop-filter:none;
+    }
+    .macDownloadPopover::before{
+      content:"";
+      position:absolute;
+      top:-7px;
+      left:var(--anchor-x, 50%);
+      width:14px;
+      height:14px;
+      background:#fbf9fc;
+      border-top:1px solid rgba(255,255,255,0.88);
+      border-left:1px solid rgba(255,255,255,0.88);
+      transform:translateX(-50%) rotate(45deg);
+    }
+    .macDownloadPopover[data-anchor-visible="false"]::before{ display:none; }
+    .macDownloadPopover .downloadDialogInner{
+      position:relative;
+      max-height:inherit;
+      overflow:auto;
+      padding:20px;
+    }
+    .macDownloadPopover .downloadDialogHeader{ gap:12px; margin-bottom:4px; }
+    .macDownloadPopover .downloadDialogTitle{ font-size:20px; }
+    .macHeading{ display:flex; align-items:center; gap:12px; }
+    .macHeading img{ width:26px; height:28px; object-fit:contain; filter:brightness(0.42); }
+    .macIntro{ margin:0 0 18px; font-size:13px; line-height:1.5; color:var(--muted); }
+    .macChoices{ display:grid; gap:10px; }
+    .macChoice{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-height:78px;
+      padding:14px 16px;
+      border:1px solid rgba(23,23,26,0.10);
+      border-radius:8px;
+      color:var(--text);
+      background:rgba(255,255,255,0.70);
+      text-decoration:none;
+      transition:background .15s ease, border-color .15s ease;
+    }
+    .macChoice:first-child{
+      border-color:rgba(238,127,91,0.50);
+      background:rgba(255,235,225,0.55);
+    }
+    .macChoice:hover{ border-color:var(--accent); background:rgba(255,235,225,0.80); }
+    .macChoiceCopy{ display:grid; gap:4px; min-width:0; flex:1; }
+    .macChoiceCopy strong{ font-size:16px; font-weight:650; }
+    .macChoiceCopy small{ color:var(--muted); font-size:12px; line-height:1.4; }
+    .macDevice{ position:relative; width:40px; height:40px; flex:0 0 40px; color:#656777; }
+    .macChoice:first-child .macDevice{ color:var(--accent); }
+    .macDevice svg{ width:100%; height:100%; }
+    .macDevice .deviceAppleLogo{ position:absolute; width:10px; height:12px; object-fit:contain; left:50%; top:42%; transform:translate(-50%, -50%); filter:brightness(0.42); }
+    .macDevice .intelLabel{ position:absolute; inset:0; display:grid; place-items:center; font-size:9px; font-weight:700; }
+    .macChoice svg, .macPopoverFooter svg{ fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+    .macChevron{ width:18px; height:18px; flex:0 0 18px; color:#656777; }
+    .macDownloadPopover .dialogHint{ margin-top:14px; font-size:12px; }
+    .macPopoverFooter{ display:flex; justify-content:flex-end; margin-top:12px; }
+    .macPopoverFooter a{ display:inline-flex; align-items:center; gap:7px; min-height:32px; color:var(--text); font-size:12px; text-decoration:none; }
+    .macPopoverFooter a:hover{ color:var(--accent); }
+    .macPopoverFooter svg{ width:16px; height:16px; }
+
     .imageDialog{
       width:min(1440px, calc(100vw - 32px), calc(168.75dvh - 190px));
       max-width:none;
@@ -923,6 +994,9 @@
       .helpItem{ font-size:16px; gap:10px; }
       .modal{ padding:18px 14px; }
       .downloadDialogInner{ padding:20px; }
+      .macDownloadPopover .downloadDialogInner{ padding:16px; }
+      .macDownloadPopover .downloadDialogTitle{ font-size:18px; }
+      .macChoice{ gap:10px; padding:12px; }
       .imageDialog{ width:min(calc(100vw - 16px), calc(168.75dvh - 156px)); max-height:calc(100dvh - 16px); padding:8px; }
       .lightboxHeader{ padding-left:2px; }
       .lightboxArrow{ top:50%; }
@@ -1080,7 +1154,7 @@
           <a href="https://github.com/grojobil/PenguinPDF/blob/main/LICENSE.md" data-i18n="footer_license">License</a>
           <a href="https://github.com/grojobil/PenguinPDF/blob/main/THIRD_PARTY_LICENSES.md" data-i18n="footer_notices">Third-party licenses</a>
           <a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer" data-i18n="footer_support">Support the project</a>
-          <a href="mailto:penguin.pdf.tools@gmail.com">penguin.pdf.tools@gmail.com</a>
+          <a href="mailto:penguin.pdf.tools@gmail.com" data-i18n="footer_contact">Contact us</a>
         </div>
         <span data-i18n="footer_note">PenguinPDF runs locally, no tracking, no accounts.</span>
       </footer>
@@ -1114,17 +1188,17 @@
 
         <div class="helpItem">
           <div class="emoji">💬</div>
-          <div><span data-i18n="help_report_prefix">Report issues on </span><a href="https://github.com/grojobil/PenguinPDF/issues" target="_blank" rel="noreferrer">GitHub</a> <span data-i18n="arrow_right">-&gt;</span></div>
+          <div><span data-i18n="help_report_prefix">Report issues on </span><a href="https://github.com/grojobil/PenguinPDF/issues" target="_blank" rel="noreferrer">GitHub</a></div>
         </div>
 
         <div class="helpItem">
           <div class="emoji">@</div>
-          <div><span data-i18n="help_contact_prefix">Email us at </span><a href="mailto:penguin.pdf.tools@gmail.com">penguin.pdf.tools@gmail.com</a></div>
+          <div><a href="mailto:penguin.pdf.tools@gmail.com" data-i18n="footer_contact">Contact us</a></div>
         </div>
 
         <div class="helpItem">
           <div class="emoji">💛</div>
-          <div><a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer" data-i18n="footer_support">Support the project</a> <span data-i18n="arrow_right">-&gt;</span></div>
+          <div><a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer" data-i18n="footer_support">Support the project</a></div>
         </div>
       </div>
 
@@ -1132,23 +1206,40 @@
     </div>
   </div>
 
-  <dialog class="downloadDialog" id="macDownloadDialog" aria-labelledby="macDownloadDialogTitle">
+  <dialog class="downloadDialog macDownloadPopover" id="macDownloadDialog" aria-labelledby="macDownloadDialogTitle" aria-describedby="macDownloadIntro">
     <div class="downloadDialogInner">
       <div class="downloadDialogHeader">
-        <h2 class="downloadDialogTitle" id="macDownloadDialogTitle" data-i18n="mac_dialog_title">Download for macOS</h2>
+        <div class="macHeading">
+          <img src="assets/apple.png" alt="" aria-hidden="true" />
+          <h2 class="downloadDialogTitle" id="macDownloadDialogTitle" data-i18n="mac_dialog_title">Download for macOS</h2>
+        </div>
         <button class="closeX" type="button" data-dialog-close aria-label="Close" data-i18n-aria-label="close">×</button>
       </div>
-      <div class="downloadGroup">
-        <a class="downloadChoice" id="macAppleDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg">
-          <span data-i18n="mac_apple">macOS Apple Silicon</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+      <p class="macIntro" id="macDownloadIntro" data-i18n="mac_dialog_intro">Choose the version for your Mac.</p>
+      <div class="macChoices">
+        <a class="macChoice" id="macAppleDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg">
+          <span class="macDevice" aria-hidden="true">
+            <!-- Lucide laptop-minimal, ISC licensed. -->
+            <svg viewBox="0 0 24 24"><rect width="18" height="12" x="3" y="4" rx="2" ry="2"/><line x1="2" x2="22" y1="20" y2="20"/></svg>
+            <img class="deviceAppleLogo" src="assets/apple.png" alt="" />
+          </span>
+          <span class="macChoiceCopy"><strong>Apple Silicon</strong><small data-i18n="mac_apple_detail">For Macs with an Apple chip</small></span>
+          <svg class="macChevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
         </a>
-        <a class="downloadChoice" id="macIntelDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg">
-          <span data-i18n="mac_intel">macOS Intel</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        <a class="macChoice" id="macIntelDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg">
+          <span class="macDevice" aria-hidden="true">
+            <!-- Lucide cpu outline, ISC licensed. -->
+            <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 1v3m6-3v3M9 20v3m6-3v3M20 9h3m-3 5h3M1 9h3m-3 5h3"/></svg>
+            <span class="intelLabel">Intel</span>
+          </span>
+          <span class="macChoiceCopy"><strong data-i18n="mac_intel_name">Intel Mac</strong><small data-i18n="mac_intel_detail">For Macs with an Intel processor</small></span>
+          <svg class="macChevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
         </a>
       </div>
       <p class="dialogHint" data-i18n="mac_guidance">Not sure? Open the Apple menu on your Mac and choose About This Mac. Look for Chip or Processor.</p>
+      <div class="macPopoverFooter">
+        <a id="macAllDownloads" href="https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0"><span data-i18n="mac_other_downloads">Windows or other downloads</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+      </div>
     </div>
   </dialog>
 
@@ -1228,6 +1319,11 @@
         platforms_label: "Download by platform",
         language_selector: "Language selector",
         mac_dialog_title: "Download for macOS",
+        mac_dialog_intro: "Choose the version for your Mac.",
+        mac_apple_detail: "For Macs with an Apple chip",
+        mac_intel_name: "Intel Mac",
+        mac_intel_detail: "For Macs with an Intel processor",
+        mac_other_downloads: "Windows or other downloads",
         all_downloads_title: "All downloads",
         mac_apple: "macOS Apple Silicon",
         mac_intel: "macOS Intel",
@@ -1269,8 +1365,7 @@
         help_local_files: "Files never leave your computer",
         help_platforms: "macOS (.dmg) & Windows (.exe)",
         help_report_prefix: "Report issues on ",
-        help_contact_prefix: "Email us at ",
-        arrow_right: "->",
+        footer_contact: "Contact us",
         close: "Close",
         close_image: "Close image",
         page_description: "PenguinPDF 2.0.0: Edit PDFs, annotate, sign, convert, and organize files locally. Free, no accounts or subscriptions."
@@ -1286,6 +1381,11 @@
         platforms_label: "Descargar por plataforma",
         language_selector: "Selector de idioma",
         mac_dialog_title: "Descargar para macOS",
+        mac_dialog_intro: "Elige la versión para tu Mac.",
+        mac_apple_detail: "Para Mac con chip de Apple",
+        mac_intel_name: "Mac Intel",
+        mac_intel_detail: "Para Mac con procesador Intel",
+        mac_other_downloads: "Windows y otras descargas",
         all_downloads_title: "Todas las descargas",
         mac_apple: "macOS Apple Silicon",
         mac_intel: "macOS Intel",
@@ -1327,8 +1427,7 @@
         help_local_files: "Tus archivos nunca salen de tu computadora",
         help_platforms: "macOS (.dmg) y Windows (.exe)",
         help_report_prefix: "Reporta problemas en ",
-        help_contact_prefix: "Escríbenos a ",
-        arrow_right: "->",
+        footer_contact: "Contacto",
         close: "Cerrar",
         close_image: "Cerrar imagen",
         page_description: "PenguinPDF 2.0.0: edita PDFs, anota, firma, convierte y organiza archivos en tu equipo. Gratis, sin cuentas ni suscripciones."
@@ -1340,6 +1439,7 @@
     const downloadBtn = document.getElementById("downloadBtn");
     const macPlatformLink = document.getElementById("macPlatformLink");
     const allDownloadsLink = document.getElementById("allDownloadsLink");
+    const macAllDownloads = document.getElementById("macAllDownloads");
     const macDownloadDialog = document.getElementById("macDownloadDialog");
     const allDownloadsDialog = document.getElementById("allDownloadsDialog");
     const windowsInfoButton = document.getElementById("windowsInfoButton");
@@ -1360,10 +1460,46 @@
         (event.button !== undefined && event.button !== 0);
     }
 
+    function getDownloadPopoverPosition(anchor, viewport, panel) {
+      const edge = 16;
+      const gap = 12;
+      const center = (anchor.left + anchor.right) / 2;
+      const left = Math.max(edge, Math.min(center - panel.width / 2, viewport.width - panel.width - edge));
+      const visibleHeight = Math.min(panel.height, viewport.height - edge * 2);
+      const top = Math.max(edge, Math.min(anchor.bottom + gap, viewport.height - visibleHeight - edge));
+      return {
+        left,
+        top,
+        maxHeight: Math.max(0, viewport.height - top - edge),
+        anchorX: Math.max(24, Math.min(center - left, panel.width - 24))
+      };
+    }
+
+    function positionMacDownloadPopover() {
+      if (!macDownloadDialog.open) return;
+      const trigger = dialogReturnFocus.get(macDownloadDialog);
+      if (!trigger?.getBoundingClientRect) return;
+      const anchor = trigger.getBoundingClientRect();
+      const viewport = { width: document.documentElement.clientWidth, height: window.innerHeight };
+      macDownloadDialog.style.maxHeight = `${viewport.height - 32}px`;
+      const panel = {
+        width: macDownloadDialog.getBoundingClientRect().width,
+        height: macDownloadDialog.querySelector(".downloadDialogInner").scrollHeight + 2
+      };
+      const position = getDownloadPopoverPosition(anchor, viewport, panel);
+      macDownloadDialog.style.left = `${position.left}px`;
+      macDownloadDialog.style.top = `${position.top}px`;
+      macDownloadDialog.style.maxHeight = `${position.maxHeight}px`;
+      macDownloadDialog.style.setProperty("--anchor-x", `${position.anchorX}px`);
+      macDownloadDialog.dataset.anchorVisible = String(position.top >= anchor.bottom);
+    }
+
     function openDownloadDialog(dialog, trigger = document.activeElement) {
       if (!dialog || dialog.open || typeof dialog.showModal !== "function") return false;
       dialogReturnFocus.set(dialog, trigger);
       dialog.showModal();
+      trigger?.setAttribute("aria-expanded", "true");
+      if (dialog === macDownloadDialog) positionMacDownloadPopover();
       dialog.querySelector("[data-dialog-close]")?.focus();
       return true;
     }
@@ -1373,6 +1509,7 @@
       const returnFocus = dialogReturnFocus.get(dialog);
       dialog.close();
       dialogReturnFocus.delete(dialog);
+      returnFocus?.setAttribute("aria-expanded", "false");
       returnFocus?.focus();
     }
 
@@ -1388,6 +1525,7 @@
       if (!downloadBtn) return currentDownloadPlatform;
       downloadBtn.href = currentDownloadPlatform === "windows" ? DOWNLOADS.win : DOWNLOADS.release;
       downloadBtn.dataset.downloadPlatform = currentDownloadPlatform;
+      if (currentDownloadPlatform !== "windows") downloadBtn.setAttribute("aria-haspopup", "dialog");
       return currentDownloadPlatform;
     }
 
@@ -1435,6 +1573,7 @@
       updateShotCardCaptions(dict);
       carouselStatus.textContent = shotPanels[activeShotIndex]?.getAttribute("aria-label") || "";
       if (imgOverlay.open && lightboxShotIndex >= 0) renderLightboxShot(lightboxShotIndex);
+      positionMacDownloadPopover();
       if (metaDescription && dict.page_description) metaDescription.setAttribute("content", dict.page_description);
 
       document.querySelectorAll(".langBtn").forEach((btn) => {
@@ -1490,6 +1629,20 @@
       event.preventDefault();
       openDownloadDialog(allDownloadsDialog, allDownloadsLink);
     });
+    macAllDownloads.addEventListener("click", (event) => {
+      if (isModifiedLinkClick(event) || typeof allDownloadsDialog.showModal !== "function") return;
+      event.preventDefault();
+      const trigger = dialogReturnFocus.get(macDownloadDialog);
+      closeDownloadDialog(macDownloadDialog);
+      openDownloadDialog(allDownloadsDialog, trigger);
+    });
+    for (const link of macDownloadDialog.querySelectorAll(".macChoice")) {
+      link.addEventListener("click", (event) => {
+        if (!isModifiedLinkClick(event)) closeDownloadDialog(macDownloadDialog);
+      });
+    }
+    window.addEventListener("resize", positionMacDownloadPopover);
+    window.addEventListener("scroll", positionMacDownloadPopover, { passive: true });
 
     windowsInfoButton.addEventListener("click", () => {
       windowsInfoButton.removeAttribute("data-dismissed");
