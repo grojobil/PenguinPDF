@@ -14,6 +14,24 @@ const assets = [
   "PenguinPDF_x64_en-US.msi",
 ];
 
+test("browser tabs use the multi-size Windows penguin without changing the touch icon", () => {
+  assert.match(site, /<link rel="icon" type="image\/vnd\.microsoft\.icon" href="assets\/favicon-v2\.ico" \/>/);
+  assert.match(site, /<link rel="apple-touch-icon" href="assets\/app-icon\.png" \/>/);
+  const icon = readFileSync(new URL("../docs/assets/favicon-v2.ico", import.meta.url));
+  assert.equal(icon.readUInt16LE(0), 0);
+  assert.equal(icon.readUInt16LE(2), 1);
+  const sizes = [];
+  for (let i = 0; i < icon.readUInt16LE(4); i++) {
+    const entry = 6 + i * 16;
+    const width = icon[entry] || 256;
+    const height = icon[entry + 1] || 256;
+    assert.equal(width, height);
+    assert.ok(icon.readUInt32LE(entry + 12) + icon.readUInt32LE(entry + 8) <= icon.length);
+    sizes.push(width);
+  }
+  for (const size of [16, 32, 48, 256]) assert.ok(sizes.includes(size), `missing ${size}px icon`);
+});
+
 test("all v2 installer URLs are visible links on the site and in README", () => {
   const choices = site.match(/<nav class="downloadOptions"[\s\S]*?<\/nav>/)?.[0];
   assert.ok(choices, "missing no-JS download choices");
