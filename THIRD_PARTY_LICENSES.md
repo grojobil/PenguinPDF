@@ -1,5 +1,18 @@
 # Third-Party Notices
 
+## What The Converters Use
+
+- PDF -> Word (DOCX) uses PenguinPDF's own conversion code with the PDFium
+  renderer and the open-source Rust libraries listed below. LibreOffice is not
+  used for this direction.
+- Word -> PDF invokes a separately installed copy of LibreOffice. LibreOffice
+  is not included in PenguinPDF's installers. The in-app setup opens The
+  Document Foundation's official download page; the user installs LibreOffice
+  separately. That installation has its own license notices.
+- Recognition of scanned text uses the locally bundled Tesseract OCR engine and
+  language data. A system Tesseract installation is an optional fallback. No
+  online OCR service is required.
+
 ## Editor Fallback Fonts
 
 Noto Sans, Noto Serif, Carlito, Caladea, Arimo, Tinos, and Cousine (regular,
@@ -21,7 +34,7 @@ https://github.com/googlefonts/arimo, https://github.com/googlefonts/tinos, and
 https://github.com/googlefonts/cousine.
 The OFL applies to the fonts, not PenguinPDF's source code or created documents.
 
-This file lists major third-party libraries bundled with or used by PenguinPDF. PenguinPDF does not use paid/commercial dependency licenses.
+This file lists major third-party libraries bundled with or used by PenguinPDF.
 
 ## Bundled Or Linked In The App
 
@@ -42,18 +55,19 @@ This file lists major third-party libraries bundled with or used by PenguinPDF. 
 - libtiff 4.7.2: libtiff license
 - zlib 1.3.2: zlib License
 - pdfium-render: MIT License / Apache License 2.0
+- ttf-parser: MIT License / Apache License 2.0 (bundled editor font metrics)
 - docx-rs: MIT License
 - lopdf: MIT License
 - printpdf: MIT License
 - image: MIT License
-- Space Grotesk font: SIL Open Font License 1.1
+- Space Grotesk source reference (not bundled in V2): SIL Open Font License 1.1
 
 PenguinPDF builds its bundled Tesseract executable from the pinned upstream
 sources above with a pinned Microsoft vcpkg baseline. The executable is linked
 statically to the OCR support libraries, so no opaque third-party OCR installer
-or Homebrew runtime is redistributed. Exact versions, source baseline, binary
-and model SHA-256 checksums, and complete target-package notices are included in
-`bin/ocr/manifest.json` and `bin/licenses/ocr/<platform>/` in each installer.
+or Homebrew runtime is redistributed. Exact component versions, the source
+baseline, notice SHA-256 checksums, and complete target-package notices are
+included in `bin/licenses/ocr/<platform>/` in each installer.
 
 The installer also contains `bin/licenses/DEPENDENCY_LICENSES.txt`, generated
 from the locked npm and Cargo dependency closures with package versions, license
@@ -64,7 +78,7 @@ license and release manifest are in `bin/licenses/pdfcpu/`.
 
 ## External User-Installed Tools
 
-- LibreOffice: not bundled; used for Word -> PDF when installed by the user. LibreOffice is distributed by The Document Foundation and includes its license texts in the installer.
+- LibreOffice: not bundled; used for Word -> PDF only when separately installed by the user. License information is available in its installation and Help menu.
 - System Tesseract OCR: optional fallback if PenguinPDF's bundled local OCR component is unavailable.
 
 ## License References
@@ -82,7 +96,7 @@ license and release manifest are in `bin/licenses/pdfcpu/`.
 - pdfium-render: https://crates.io/crates/pdfium-render
 - docx-rs: https://crates.io/crates/docx-rs
 - LibreOffice: https://www.libreoffice.org/licenses/
-- Space Grotesk: see `src/assets/fonts/OFL.txt`
+- Space Grotesk source reference (not bundled in V2): [SIL Open Font License 1.1](licenses/Space-Grotesk-OFL.txt) ([upstream font project](https://github.com/floriankarsten/space-grotesk))
 
 ## Apache License 2.0
 
@@ -125,9 +139,13 @@ Lucide icons are distributed under the ISC License.
 
 ## SIL Open Font License 1.1
 
-Space Grotesk and the editor fallback fonts are distributed under the SIL Open
-Font License 1.1. Their unmodified license files ship beside the font resources.
-# PDF.js Standard Fonts
+Space Grotesk is named only as a local/system font-family fallback in V2. Its
+source-tree font files are not imported or bundled in the release; the
+[Space Grotesk license and copyright notice](licenses/Space-Grotesk-OFL.txt)
+documents those source assets. The bundled editor fallback fonts are distributed
+under the SIL Open Font License 1.1, and their licenses ship with the installer.
+
+## PDF.js Standard Fonts
 
 The locally bundled PDF.js font resources include PDFium/Foxit substitute fonts
 (BSD-3-Clause, Copyright 2014 PDFium Authors) and Liberation fonts (SIL OFL-1.1,

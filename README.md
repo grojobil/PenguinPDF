@@ -5,36 +5,36 @@
 PenguinPDF handles documents on your computer. There are no uploads, accounts,
 subscriptions, paid APIs, or tracking.
 
-## Download
+## Download PenguinPDF 2.0.0
 
-Download the latest release for:
+- [macOS Apple Silicon (DMG)](https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg) for M1 or newer Macs
+- [macOS Intel (DMG)](https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg) for Intel Macs
+- [Windows x64 (EXE)](https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe), the standard Windows installer
+- [Windows x64 (MSI)](https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64_en-US.msi), an alternative installer
 
-- macOS on Apple Silicon
-- macOS on Intel
-- Windows x64
+The macOS installers are signed and notarized. The Windows v2.0.0 installers
+are not Authenticode-signed and may show a Microsoft Defender SmartScreen
+warning; consult the
+[release notes](https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0)
+before installing.
 
-[Download PenguinPDF](https://github.com/grojobil/PenguinPDF/releases/latest)
+## PenguinPDF 2.0.0
 
-The macOS installers are signed and notarized by Apple. Windows may show a
-SmartScreen warning while PenguinPDF does not have a Windows code-signing
-certificate.
-
-## PenguinPDF 2
-
-Version 2 adds native and scanned PDF text editing, bundled local OCR, a unified
-save workflow, broader document-format preservation, and a more polished editor.
+Version 2 provides distinct Edit Text, Annotate PDF, and Fill & Sign tools,
+alongside page organization, conversion, and document utilities.
 
 ### Edit
 
-- Edit selectable or scanned PDF text
-- Annotate with text, highlights, drawing, shapes, images, covers, and redactions
-- Fill forms and add signatures
+- Edit Text in selectable or scanned PDFs
+- Annotate PDF with text, highlights, drawing, shapes, and images
+- Fill & Sign forms and add signatures
 - Merge, split, reorder, remove, and rotate pages
 
 ### Convert
 
 - Images to PDF and PDF to images
-- Word to PDF and PDF to editable DOCX
+- PDF to editable Word (DOCX)
+- Word to PDF
 
 ### Other tools
 
@@ -43,9 +43,10 @@ save workflow, broader document-format preservation, and a more polished editor.
 - Protect PDFs with a password
 - Unlock PDFs when you know the password
 
-OCR for scanned PDFs is included and runs locally. Word to PDF requires a
-separately installed copy of LibreOffice; PenguinPDF explains how to install it
-when needed.
+PDF to Word runs locally with built-in PDFium processing and Tesseract OCR for
+scanned content. Word to PDF requires a separate, user-installed copy of
+[LibreOffice](https://www.libreoffice.org/download/download-libreoffice/).
+PenguinPDF does not bundle or automatically install LibreOffice.
 
 ## Privacy
 

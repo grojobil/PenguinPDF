@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PenguinPDF</title>
-  <meta name="description" content="PenguinPDF is a local-first PDF toolbox. Free, offline, no accounts, no subscriptions." />
+  <meta name="description" content="PenguinPDF 2.0.0: Edit PDFs, annotate, sign, convert, and organize files locally. Free, no accounts or subscriptions." />
   <link rel="icon" type="image/png" href="assets/app-icon.png" />
   <link rel="apple-touch-icon" href="assets/app-icon.png" />
 
@@ -26,11 +26,12 @@
       --accent2:#f8b29a;
 
       --radius: 26px;
-      --fit-scale: 1;
     }
 
     *{ box-sizing:border-box; }
-    html, body{ height:100%; }
+    html, body{ min-height:100%; }
+    [hidden]{ display:none !important; }
+    :focus-visible{ outline:2px solid var(--text); outline-offset:4px; }
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
@@ -44,32 +45,28 @@
         radial-gradient(1200px 900px at 22% 18%, var(--bgBlush), transparent 58%),
         radial-gradient(1400px 900px at 40% 95%, #ffe9d7, transparent 58%),
         linear-gradient(180deg, var(--bgWarm), #fff);
-      overflow:hidden;
+      overflow-x:clip;
     }
 
     .fitViewport{
       width:100%;
-      height:100vh;
+      min-height:100vh;
       display:flex;
       justify-content:center;
       align-items:flex-start;
-      overflow:hidden;
     }
 
     .container{
-      width: min(980px, calc(100vw - 28px));
-      padding: 28px 18px 18px;
+      width: min(1040px, 100%);
+      padding: 24px 24px 64px;
       display:flex;
       flex-direction:column;
-      transform: scale(var(--fit-scale));
-      transform-origin: top center;
-      will-change: transform;
     }
 
     /* top-right controls */
     .topbar{
       position: relative;
-      height: 18px; /* reserve a touch of space */
+      height: 40px;
       flex: 0 0 auto;
     }
     .topright{
@@ -91,7 +88,7 @@
       background: rgba(255,255,255,0.55);
       border: 1px solid rgba(255,255,255,0.60);
       box-shadow: 0 10px 26px rgba(0,0,0,0.06);
-      color: var(--muted2);
+      color: rgba(23,23,26,0.66);
       font-size: 13px;
       white-space: nowrap;
       backdrop-filter: blur(14px);
@@ -124,7 +121,7 @@
     /* HERO */
     .hero{
       text-align:center;
-      margin-top: 16px;
+      margin-top: 8px;
       flex: 0 0 auto;
       display:flex;
       flex-direction:column;
@@ -143,8 +140,8 @@
 
     /* Penguin slightly larger than wordmark height */
     .brandHero img{
-      width: 86px;
-      height: 86px;
+      width: 72px;
+      height: 72px;
       object-fit: contain;
       border-radius: 20px;
       box-shadow: 0 18px 44px rgba(0,0,0,0.12);
@@ -154,18 +151,18 @@
 
     .heroTitle{
       margin: 0;
-      font-size: 58px;
+      font-size: 52px;
       font-weight: 720;
-      letter-spacing: -1px;
+      letter-spacing: 0;
       line-height: 1.02;
       color: rgba(23,23,26,0.80);
     }
 
     .heroTagline{
-      margin: 12px 0 16px 0;
-      font-size: 34px;
+      margin: 8px 0 14px;
+      font-size: 30px;
       font-weight: 580;
-      letter-spacing: -0.6px;
+      letter-spacing: 0;
       color: rgba(23,23,26,0.58);
     }
 
@@ -174,8 +171,15 @@
       max-width: 780px;
       font-size: 18px;
       line-height: 1.6;
-      color: rgba(23,23,26,0.56);
+      color: rgba(23,23,26,0.68);
       font-weight: 430;
+    }
+
+    .versionLabel{
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
     }
 
     .downloadWrap{
@@ -183,7 +187,7 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap: 12px;
+      gap: 10px;
     }
 
     /* More “alive”, less faded, bigger button */
@@ -217,6 +221,31 @@
     }
 
     .dlIcon{ width: 30px; height: 30px; opacity:0.98; }
+    .downloadBtn{ max-width:100%; justify-content:center; }
+    .dlIcon{ flex:0 0 30px; }
+    #download-options{ scroll-margin-top:24px; }
+
+    .downloadOptions{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap: 6px 16px;
+      max-width: 760px;
+      font-size: 13px;
+      color: var(--muted);
+      text-align:center;
+    }
+    .downloadOptions a{
+      color: rgba(23,23,26,0.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .downloadOptions a:focus-visible,
+    .downloadBtn:focus-visible,
+    .langBtn:focus-visible{
+      outline: 2px solid var(--text);
+      outline-offset: 3px;
+    }
 
     .osRow{
       display:flex;
@@ -277,7 +306,7 @@
       position: absolute;
       left: 0;
       top: calc(100% + 10px);
-      width: 330px;
+      width: min(330px, calc(100vw - 40px));
       padding: 10px 12px;
       border-radius: 14px;
       background: rgba(255,255,255,0.92);
@@ -295,15 +324,16 @@
     .osItem.windows:focus-within .tooltip,
     .osItem.macos:hover .tooltip,
     .osItem.macos:focus-within .tooltip{ display:block; }
+    .osItem.windows .tooltip{ left:auto; right:0; }
 
     .requestLink{
       margin-top: 6px;
       font-size: 14px;
-      color: rgba(23,23,26,0.44);
+      color: rgba(23,23,26,0.62);
       font-weight: 500;
     }
     .requestLink a{
-      color: rgba(23,23,26,0.46);
+      color: rgba(23,23,26,0.62);
       text-decoration: underline;
       font-weight: 560;
     }
@@ -311,7 +341,7 @@
     .tinyLinks{
       margin-top: 8px;
       font-size: 13px;
-      color: rgba(23,23,26,0.36);
+      color: rgba(23,23,26,0.62);
       display:flex;
       gap:10px;
       flex-wrap:wrap;
@@ -319,65 +349,116 @@
       font-weight: 500;
     }
     .tinyLinks a{
-      color: rgba(23,23,26,0.36);
+      color: rgba(23,23,26,0.62);
       text-decoration: underline;
       font-weight: 560;
     }
     .tinyLinks a:hover{ color: rgba(23,23,26,0.52); }
+    .secondaryLinks{
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:12px 24px;
+      margin-top:24px;
+    }
+    .secondaryLinks .requestLink,
+    .secondaryLinks .tinyLinks{ margin:0; font-size:13px; }
 
-    /* Screenshots: slightly bigger, softer, less heavy caption weight */
+    /* Keep app captures legible, uncropped, and independent of viewport height. */
     .shots{
       width: 100%;
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
-      margin-top: 32px;
-      margin-bottom: 4px;
-      padding: 0 6px;
+      max-width: 960px;
+      margin: 28px auto 0;
     }
-
+    .shotTabs{
+      display:flex;
+      justify-content:center;
+      gap: 8px;
+      margin:0 0 18px;
+    }
+    .shotTab{
+      position:relative;
+      min-width:100px;
+      min-height:44px;
+      padding:10px 16px;
+      border:0;
+      background:transparent;
+      color:rgba(23,23,26,0.62);
+      font:inherit;
+      font-size:14px;
+      font-weight:550;
+      cursor:pointer;
+    }
+    .shotTab::after{
+      content:"";
+      position:absolute;
+      left:16px;
+      right:16px;
+      bottom:0;
+      height:2px;
+      background:transparent;
+      transition:background .15s ease;
+    }
+    .shotTab:hover{ color:var(--text); }
+    .shotTab[aria-selected="true"]{ color:var(--text); }
+    .shotTab[aria-selected="true"]::after{ background:var(--accent); }
+    .shotPanel{ margin:0 0 24px; min-width:0; }
+    .shotPanel:last-child{ margin-bottom:0; }
+    .shotPanel .cap{
+      margin-top:14px;
+      text-align:center;
+      font-size:13px;
+      line-height:1.5;
+      color:rgba(23,23,26,0.68);
+    }
     .shotCard{
-      background: rgba(255,255,255,0.50);
-      border: 1px solid rgba(255,255,255,0.60);
-      border-radius: 26px;
-      box-shadow:
-        0 26px 90px rgba(0,0,0,0.10),
-        0 0 0 12px rgba(255,255,255,0.16);
-      padding: 14px;
-      backdrop-filter: blur(14px);
-      cursor: zoom-in;
-      transition: transform .10s ease, box-shadow .15s ease;
+      position:relative;
+      display:block;
+      aspect-ratio:3024 / 1728;
+      border:1px solid rgba(23,23,26,0.12);
+      border-radius:8px;
+      background:rgba(255,255,255,0.65);
+      box-shadow:0 18px 48px -18px rgba(40,28,43,0.24);
+      cursor:zoom-in;
+      text-decoration:none;
+      transition:box-shadow .18s ease;
     }
     .shotCard:hover{
-      transform: translateY(-2px);
-      box-shadow:
-        0 32px 110px rgba(0,0,0,0.12),
-        0 0 0 12px rgba(255,255,255,0.18);
+      box-shadow:0 22px 52px -18px rgba(40,28,43,0.32);
     }
     .shotCard img{
       width:100%;
-      border-radius: 18px;
-      border: 1px solid rgba(0,0,0,0.05);
-      box-shadow: 0 18px 60px rgba(0,0,0,0.11);
+      height:100%;
+      object-fit:contain;
+      border-radius:7px;
       display:block;
-      background:#fff;
     }
-    .shotCard .cap{
-      margin-top: 10px;
-      font-size: 13px;
-      color: rgba(23,23,26,0.46);
-      font-weight: 500;
+    .shotZoom{
+      position:absolute;
+      right:12px;
+      bottom:12px;
+      width:32px;
+      height:32px;
+      display:grid;
+      place-items:center;
+      border:1px solid rgba(23,23,26,0.14);
+      border-radius:50%;
+      background:rgba(255,255,255,0.95);
+      color:var(--text);
+      font-size:22px;
+      line-height:1;
+      box-shadow:0 2px 8px rgba(0,0,0,0.06);
     }
 
-    /* Footer pinned to bottom visually */
     .footerWrap{
-      margin-top: clamp(22px, 4vh, 48px);
-      padding-top: 8px;
+      margin-top:40px;
+      padding-top:24px;
+      border-top:1px solid rgba(23,23,26,0.08);
     }
 
     footer{
       text-align:center;
-      color: rgba(23,23,26,0.38);
+      color: rgba(23,23,26,0.62);
       font-size: 13px;
       font-weight: 450;
     }
@@ -389,7 +470,7 @@
       margin-bottom: 8px;
     }
     footer a{
-      color: rgba(23,23,26,0.40);
+      color: rgba(23,23,26,0.68);
       text-decoration: underline;
       font-weight: 500;
     }
@@ -419,7 +500,7 @@
       color: rgba(23,23,26,0.48);
       font-size: 12px;
       font-weight: 560;
-      padding: 0;
+      padding: 8px 4px;
       cursor: pointer;
       line-height: 1;
     }
@@ -443,6 +524,7 @@
       padding: 18px;
       z-index: 9999;
       backdrop-filter: blur(8px);
+      overflow-y:auto;
     }
     .overlay.open{ display:flex; }
 
@@ -455,12 +537,14 @@
       padding: 22px 22px 18px 22px;
       position: relative;
       backdrop-filter: blur(16px);
+      max-height:calc(100dvh - 36px);
+      overflow-y:auto;
     }
     .modalHeader{
       text-align:center;
-      font-size: 34px;
+      font-size: 26px;
       font-weight: 750;
-      letter-spacing: -0.5px;
+      letter-spacing: 0;
       margin: 6px 0 18px;
       color: rgba(23,23,26,0.66);
     }
@@ -523,45 +607,97 @@
     }
     .modalBtn:hover{ transform: translateY(-1px); }
 
-    /* Image lightbox */
+    .imageDialog{
+      width:min(1440px, calc(100% - 32px));
+      max-width:none;
+      max-height:calc(100dvh - 32px);
+      padding:0;
+      border:0;
+      background:transparent;
+      color:#fff;
+    }
+    .imageDialog::backdrop{
+      background:rgba(23,23,26,0.72);
+      backdrop-filter:blur(8px);
+    }
+    body:has(.imageDialog[open], .overlay.open){ overflow:hidden; }
+    .lightboxContent{ margin:0; }
+    .lightboxHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding-bottom:12px;
+    }
+    .lightboxHeader .closeX{
+      position:static;
+      flex:0 0 44px;
+      box-shadow:none;
+      background:rgba(255,255,255,0.95);
+      color:var(--text);
+    }
+    .imageDialog :focus-visible{ outline-color:#fff; }
     .lightboxImg{
-      max-width: min(1100px, 96vw);
-      max-height: 86vh;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.65);
-      box-shadow: 0 30px 120px rgba(0,0,0,0.22);
-      background: #fff;
+      width:100%;
+      height:auto;
+      max-height:calc(100dvh - 112px);
+      object-fit:contain;
+      border-radius:8px;
       display:block;
     }
     .lightboxCaption{
-      margin-top: 10px;
-      text-align:center;
-      color: rgba(23,23,26,0.50);
-      font-size: 13px;
-      font-weight: 650;
+      margin:0;
+      font-size:14px;
+      line-height:1.5;
+      font-weight:500;
     }
 
     img { max-width: 100%; height: auto; }
 
-    @media (max-width: 920px){
-      body{ overflow:auto; } /* allow scroll on small screens */
-      .fitViewport{
-        height:auto;
-        min-height:100vh;
-        overflow:visible;
-      }
-      .container{
-        width:100%;
-        transform:none;
-        padding-bottom: 30px;
-      }
-      .shots{ grid-template-columns: 1fr; }
-      .heroTitle{ font-size: 46px; }
-      .heroTagline{ font-size: 28px; }
-      .langSwitch{
-        right: 10px;
-        bottom: 10px;
-      }
+    @media (max-width: 600px){
+      .container{ padding:16px 20px 84px; }
+      .hero{ margin-top:16px; }
+      .brandHero{ gap:12px; }
+      .brandHero img{ width:52px; height:52px; border-radius:12px; }
+      .heroTitle{ font-size:36px; }
+      .heroTagline{ font-size:24px; line-height:1.3; }
+      .heroDesc{ font-size:16px; }
+      .downloadWrap{ width:100%; margin-top:20px; }
+      .downloadBtn{ font-size:16px; padding:16px 24px; }
+      .downloadOptions{ gap:6px 12px; }
+      .downloadOptions a{ padding:5px 0; }
+      .osRowInner{ gap:12px; }
+      .osItem{ gap:6px; }
+      .osLogo{ width:30px; height:30px; }
+      .infoBadge{ margin-left:0; }
+      .shots{ margin-top:24px; }
+      .shotTabs{ gap:0; margin-bottom:14px; }
+      .shotTab{ min-width:0; flex:1; padding:10px 8px; font-size:13px; }
+      .shotTab::after{ left:8px; right:8px; }
+      .shotZoom{ right:8px; bottom:8px; width:26px; height:26px; font-size:18px; }
+      .shotPanel .cap{ margin-top:10px; font-size:12px; }
+      .footerWrap{ margin-top:28px; }
+      footer .links{ gap:12px 16px; line-height:1.6; }
+      .pill{ padding:8px 10px; gap:6px; font-size:12px; }
+      .langSwitch{ position:absolute; top:16px; left:20px; right:auto; bottom:auto; padding:6px 8px; gap:6px; }
+      .helpItem{ font-size:16px; gap:10px; }
+      .modal{ padding:18px 14px; }
+    }
+    @media (max-width: 360px){
+      .heroTitle{ font-size:30px; }
+      .brandHero img{ width:44px; height:44px; }
+      .heroTagline{ font-size:22px; }
+    }
+    @media (max-width: 600px) and (max-height: 650px){
+      .topbar{ height:36px; }
+      .hero{ margin-top:8px; }
+      .brandHero{ margin-bottom:8px; }
+      .heroTagline{ margin:4px 0 8px; }
+      .downloadWrap{ margin-top:16px; gap:8px; }
+      .shots{ margin-top:18px; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      *, *::before, *::after{ transition:none !important; }
     }
   </style>
 </head>
@@ -573,11 +709,11 @@
     <div class="topbar">
       <div class="topright">
         <div class="pill">
-          <a href="https://github.com/grojobil/PenguinPDF/releases/latest" data-i18n="top_download">Download</a>
+          <a href="#download-options" data-i18n="top_download">Download</a>
           <span>·</span>
           <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
         </div>
-        <button class="iconCircleBtn" id="helpBtn" aria-label="Help">?</button>
+        <button class="iconCircleBtn" id="helpBtn" aria-label="Help" data-i18n-aria-label="help_title">?</button>
       </div>
     </div>
 
@@ -589,27 +725,36 @@
 
       <div class="heroTagline" data-i18n="hero_tagline">PDFs, without the subscription.</div>
 
+      <p class="versionLabel" data-i18n="version_label">Version 2.0.0</p>
+
       <div class="heroDesc" data-i18n-html="hero_desc">
-        Edit text, annotate, fill, sign, organize, and convert PDFs — locally.<br/>
+        Edit text, annotate, fill, sign, organize, and convert PDFs locally.<br/>
         No uploads. No tracking. Free to use.
       </div>
 
       <div class="downloadWrap">
-        <a class="downloadBtn" id="downloadBtn" href="https://github.com/grojobil/PenguinPDF/releases/latest">
+        <a class="downloadBtn" id="downloadBtn" href="#download-options">
           <svg class="dlIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 3v10" stroke="white" stroke-width="2" stroke-linecap="round"/>
             <path d="M8 11l4 4 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M4 17v3h16v-3" stroke="white" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <span data-i18n="download_button">Download PenguinPDF</span>
+          <span data-i18n="download_button">Choose a download</span>
         </a>
+
+        <nav class="downloadOptions" id="download-options" aria-label="PenguinPDF 2.0.0 downloads" data-i18n-aria-label="downloads_label">
+          <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg" data-i18n="mac_apple">macOS Apple Silicon</a>
+          <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg" data-i18n="mac_intel">macOS Intel</a>
+          <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe" data-i18n="win_exe">Windows EXE</a>
+          <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64_en-US.msi" data-i18n="win_msi">Windows MSI (alternative)</a>
+        </nav>
 
         <div class="osRow" aria-label="Platforms">
           <div class="osRowInner">
             <div class="osItem macos">
               <img class="osLogo" src="assets/apple.png" alt="macOS" />
               <span>macOS</span>
-              <span class="infoBadge" tabindex="0" aria-label="macOS download info">i</span>
+              <span class="infoBadge" tabindex="0" aria-label="macOS download info" data-i18n-aria-label="macos_info">i</span>
               <div class="tooltip" role="tooltip" data-i18n-html="macos_tooltip">
                 Choose Apple Silicon for M1 or newer Macs.<br/><br/>
                 Choose Intel for older Intel-based Macs.
@@ -621,50 +766,66 @@
             <div class="osItem windows">
               <img class="osLogo" src="assets/windows.png" alt="Windows" />
               <span>Windows</span>
-              <span class="infoBadge" tabindex="0" aria-label="Windows install info">i</span>
+              <span class="infoBadge" tabindex="0" aria-label="Windows install info" data-i18n-aria-label="windows_info">i</span>
               <div class="tooltip" role="tooltip" data-i18n-html="windows_tooltip">
-                Windows may show a security prompt for new apps.<br/><br/>
-                Click <b>More info</b> → <b>Run anyway</b>.<br/><br/>
-                We keep PenguinPDF free by avoiding ongoing costs like code-signing certificates.
+                The EXE is the standard Windows installer; the MSI is an alternative.<br/><br/>
+                Check the v2.0.0 release notes for signing status before installing.
               </div>
             </div>
           </div>
         </div>
 
-        <div class="requestLink">
-          <a href="https://github.com/grojobil/PenguinPDF/issues/1/" target="_blank" rel="noreferrer" data-i18n="request_mobile">Request iOS/Android</a>
-        </div>
-
-        <div class="tinyLinks">
-          <a href="https://github.com/grojobil/PenguinPDF/releases/latest" data-i18n="see_all_downloads">See all downloads</a>
-        </div>
       </div>
 
-      <div class="shots">
-        <div class="shotCard" data-img="assets/home.png" data-cap="Home: all PDF tools in one place" data-i18n-cap="shot_home">
-          <img src="assets/home.png" alt="PenguinPDF home screen" />
-          <div class="cap" data-i18n="shot_home">Home: all PDF tools in one place</div>
-        </div>
+    </div>
 
-        <div class="shotCard" data-img="assets/edit.png" data-cap="Edit: annotate, draw, fill &amp; sign PDFs" data-i18n-cap="shot_edit">
-          <img src="assets/edit.png" alt="PenguinPDF PDF editor" />
-          <div class="cap" data-i18n="shot_edit">Edit: annotate, draw, fill &amp; sign PDFs</div>
-        </div>
+    <section class="shots" aria-label="PenguinPDF 2 screenshots" data-i18n-aria-label="screenshots_label">
+      <div class="shotTabs" role="tablist" aria-label="App views" data-i18n-aria-label="screenshot_views" hidden>
+        <button class="shotTab" id="shot-tab-home" type="button" role="tab" aria-controls="shot-home" aria-selected="true" data-i18n="tab_home">Home</button>
+        <button class="shotTab" id="shot-tab-edit" type="button" role="tab" aria-controls="shot-edit" aria-selected="false" tabindex="-1" data-i18n="tab_edit">Annotate PDF</button>
+        <button class="shotTab" id="shot-tab-utility" type="button" role="tab" aria-controls="shot-utility" aria-selected="false" tabindex="-1" data-i18n="tab_utilities">Rotate Pages</button>
+      </div>
+      <figure class="shotPanel" id="shot-home" role="tabpanel" aria-labelledby="shot-tab-home">
+        <a class="shotCard" href="assets/home-v2.png" data-img="assets/home-v2.png" data-cap="Home: all your PDF tools" data-i18n-cap="shot_home" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
+          <img src="assets/home-v2.png" width="3024" height="1728" alt="PenguinPDF 2 home screen" data-i18n-alt="alt_home" decoding="async" />
+          <span class="shotZoom" aria-hidden="true">+</span>
+        </a>
+        <figcaption class="cap" data-i18n="shot_home">Home: all your PDF tools</figcaption>
+      </figure>
+      <figure class="shotPanel" id="shot-edit" role="tabpanel" aria-labelledby="shot-tab-edit">
+        <a class="shotCard" href="assets/edit-v2.png" data-img="assets/edit-v2.png" data-cap="Annotate PDF: highlight what matters" data-i18n-cap="shot_edit" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
+          <img src="assets/edit-v2.png" width="3024" height="1728" alt="PenguinPDF 2 Annotate PDF workspace with highlighted sample text" data-i18n-alt="alt_edit" decoding="async" loading="lazy" />
+          <span class="shotZoom" aria-hidden="true">+</span>
+        </a>
+        <figcaption class="cap" data-i18n="shot_edit">Annotate PDF: highlight what matters</figcaption>
+      </figure>
+      <figure class="shotPanel" id="shot-utility" role="tabpanel" aria-labelledby="shot-tab-utility">
+        <a class="shotCard" href="assets/utility-v2.png" data-img="assets/utility-v2.png" data-cap="Rotate Pages: preview your changes" data-i18n-cap="shot_utilities" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
+          <img src="assets/utility-v2.png" width="3024" height="1728" alt="PenguinPDF 2 Rotate Pages workspace with a 90-degree page preview" data-i18n-alt="alt_utilities" decoding="async" loading="lazy" />
+          <span class="shotZoom" aria-hidden="true">+</span>
+        </a>
+        <figcaption class="cap" data-i18n="shot_utilities">Rotate Pages: preview your changes</figcaption>
+      </figure>
+    </section>
 
-        <div class="shotCard" data-img="assets/utility.png" data-cap="Utilities: merge, split, reorder, compress" data-i18n-cap="shot_utilities">
-          <img src="assets/utility.png" alt="PenguinPDF utilities" />
-          <div class="cap" data-i18n="shot_utilities">Utilities: merge, split, reorder, compress</div>
-        </div>
+    <div class="secondaryLinks">
+      <div class="tinyLinks">
+        <a href="https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0" data-i18n="see_all_downloads">Release notes and downloads</a>
+      </div>
+      <div class="requestLink">
+        <a href="https://github.com/grojobil/PenguinPDF/issues/1/" target="_blank" rel="noreferrer" data-i18n="request_mobile">Request iOS/Android</a>
       </div>
     </div>
 
     <div class="footerWrap">
       <footer>
         <div class="links">
-          <a href="https://github.com/grojobil/PenguinPDF/releases/latest" data-i18n="footer_downloads">Downloads</a>
+          <a href="#download-options" data-i18n="footer_downloads">Downloads</a>
           <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
+          <a href="https://github.com/grojobil/PenguinPDF/blob/main/LICENSE.md" data-i18n="footer_license">License</a>
+          <a href="https://github.com/grojobil/PenguinPDF/blob/main/THIRD_PARTY_LICENSES.md" data-i18n="footer_notices">Third-party licenses</a>
           <a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer" data-i18n="footer_support">Support the project</a>
-          <a href="mailto:penguin.pdf.tools@gmail.com" data-i18n="footer_contact">Contact</a>
+          <a href="mailto:penguin.pdf.tools@gmail.com">penguin.pdf.tools@gmail.com</a>
         </div>
         <span data-i18n="footer_note">PenguinPDF runs locally, no tracking, no accounts.</span>
       </footer>
@@ -673,16 +834,16 @@
   </div>
   </div>
 
-  <div class="langSwitch" aria-label="Language selector">
-    <button class="langBtn active" type="button" data-lang="en">EN</button>
+  <div class="langSwitch" aria-label="Language selector" data-i18n-aria-label="language_selector">
+    <button class="langBtn active" type="button" data-lang="en" aria-pressed="true">EN</button>
     <span>|</span>
-    <button class="langBtn" type="button" data-lang="es">ES</button>
+    <button class="langBtn" type="button" data-lang="es" aria-pressed="false">ES</button>
   </div>
 
   <!-- Help modal -->
   <div class="overlay" id="overlay" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-label="Help">
-      <button class="closeX" id="closeX" aria-label="Close">×</button>
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Help" data-i18n-aria-label="help_title">
+      <button class="closeX" id="closeX" aria-label="Close" data-i18n-aria-label="close">×</button>
       <div class="modalHeader" data-i18n="help_title">Help</div>
 
       <div class="helpList">
@@ -717,36 +878,58 @@
   </div>
 
   <!-- Image lightbox -->
-  <div class="overlay" id="imgOverlay" aria-hidden="true">
-    <div style="display:flex; flex-direction:column; align-items:center;">
-      <img id="imgLightbox" class="lightboxImg" alt="Screenshot" />
-      <div id="imgCaption" class="lightboxCaption"></div>
+  <dialog class="imageDialog" id="imgOverlay" aria-labelledby="imgCaption">
+    <div class="lightboxContent">
+      <div class="lightboxHeader">
+        <p id="imgCaption" class="lightboxCaption"></p>
+        <button class="closeX" id="closeImgBtn" type="button" aria-label="Close image" data-i18n-aria-label="close_image">×</button>
+      </div>
+      <img id="imgLightbox" class="lightboxImg" alt="" />
     </div>
-  </div>
+  </dialog>
 
   <script>
     const DOWNLOADS = {
-      mac: "https://github.com/grojobil/PenguinPDF/releases/latest",
-      win: "https://github.com/grojobil/PenguinPDF/releases/latest/download/PenguinPDF_x64-setup.exe",
-      fallback: "https://github.com/grojobil/PenguinPDF/releases/latest"
+      win: "https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe",
+      choices: "#download-options"
     };
 
     const I18N = {
       en: {
         top_download: "Download",
         hero_tagline: "PDFs, without the subscription.",
-        hero_desc: "Edit text, annotate, fill, sign, organize, and convert PDFs - locally.<br/>No uploads. No tracking. Free to use.",
-        download_button: "Download PenguinPDF",
+        version_label: "Version 2.0.0",
+        hero_desc: "Edit text, annotate, fill, sign, organize, and convert PDFs locally.<br/>No uploads. No tracking. Free to use.",
+        download_button: "Choose a download",
+        download_windows: "Download for Windows",
+        downloads_label: "PenguinPDF 2.0.0 downloads",
+        language_selector: "Language selector",
+        mac_apple: "macOS Apple Silicon",
+        mac_intel: "macOS Intel",
+        win_exe: "Windows EXE",
+        win_msi: "Windows MSI (alternative)",
+        macos_info: "macOS download info",
+        windows_info: "Windows install info",
         macos_tooltip: "Choose Apple Silicon for M1 or newer Macs.<br/><br/>Choose Intel for older Intel-based Macs.",
-        windows_tooltip: "Windows may show a security prompt for new apps.<br/><br/>Click <b>More info</b> -&gt; <b>Run anyway</b>.<br/><br/>We keep PenguinPDF free by avoiding ongoing costs like code-signing certificates.",
+        windows_tooltip: "The EXE is the standard Windows installer; the MSI is an alternative.<br/><br/>Check the v2.0.0 release notes for signing status before installing.",
         request_mobile: "Request iOS/Android",
-        see_all_downloads: "See all downloads",
-        shot_home: "Home: all PDF tools in one place",
-        shot_edit: "Edit: annotate, draw, fill & sign PDFs",
-        shot_utilities: "Utilities: merge, split, reorder, compress",
+        see_all_downloads: "Release notes and downloads",
+        screenshots_label: "PenguinPDF 2 screenshots",
+        screenshot_views: "App views",
+        tab_home: "Home",
+        tab_edit: "Annotate PDF",
+        tab_utilities: "Rotate Pages",
+        shot_home: "Home: all your PDF tools",
+        shot_edit: "Annotate PDF: highlight what matters",
+        shot_utilities: "Rotate Pages: preview your changes",
+        alt_home: "PenguinPDF 2 home screen",
+        alt_edit: "PenguinPDF 2 Annotate PDF workspace with highlighted sample text",
+        alt_utilities: "PenguinPDF 2 Rotate Pages workspace with a 90-degree page preview",
+        enlarge_image: "Enlarge screenshot",
         footer_downloads: "Downloads",
+        footer_license: "License",
+        footer_notices: "Third-party licenses",
         footer_support: "Support the project",
-        footer_contact: "Contact",
         footer_note: "PenguinPDF runs locally, no tracking, no accounts.",
         help_title: "Help",
         help_local_files: "Files never leave your computer",
@@ -755,23 +938,44 @@
         help_contact_prefix: "Email us at ",
         arrow_right: "->",
         close: "Close",
-        page_description: "PenguinPDF is a local-first PDF toolbox. Free, offline, no accounts, no subscriptions."
+        close_image: "Close image",
+        page_description: "PenguinPDF 2.0.0: Edit PDFs, annotate, sign, convert, and organize files locally. Free, no accounts or subscriptions."
       },
       es: {
         top_download: "Descargar",
-        hero_tagline: "PDFs, sin suscripcion.",
-        hero_desc: "Edita texto, anota, completa, firma, organiza y convierte PDFs - localmente.<br/>Sin subidas. Sin rastreo. Gratis.",
-        download_button: "Descargar PenguinPDF",
+        hero_tagline: "PDFs, sin suscripción.",
+        version_label: "Versión 2.0.0",
+        hero_desc: "Edita texto, anota, rellena, firma, organiza y convierte PDFs en tu equipo.<br/>Sin subidas. Sin rastreo. Gratis.",
+        download_button: "Elegir una descarga",
+        download_windows: "Descargar para Windows",
+        downloads_label: "Descargas de PenguinPDF 2.0.0",
+        language_selector: "Selector de idioma",
+        mac_apple: "macOS Apple Silicon",
+        mac_intel: "macOS Intel",
+        win_exe: "Windows EXE",
+        win_msi: "Windows MSI (alternativa)",
+        macos_info: "Información de descarga para macOS",
+        windows_info: "Información de instalación para Windows",
         macos_tooltip: "Elige Apple Silicon para Macs con M1 o posterior.<br/><br/>Elige Intel para Macs antiguos con procesador Intel.",
-        windows_tooltip: "Windows puede mostrar una alerta de seguridad para apps nuevas.<br/><br/>Haz clic en <b>More info</b> -&gt; <b>Run anyway</b>.<br/><br/>Mantenemos PenguinPDF gratis evitando costos continuos como certificados de firma.",
+        windows_tooltip: "El EXE es el instalador estándar de Windows; el MSI es una alternativa.<br/><br/>Consulta el estado de la firma en las notas de la versión 2.0.0 antes de instalar.",
         request_mobile: "Solicitar iOS/Android",
-        see_all_downloads: "Ver todas las descargas",
-        shot_home: "Inicio: todas las herramientas PDF en un solo lugar",
-        shot_edit: "Edicion: anota, dibuja, completa y firma PDFs",
-        shot_utilities: "Utilidades: unir, dividir, reordenar, comprimir",
+        see_all_downloads: "Notas de la versión y descargas",
+        screenshots_label: "Capturas de PenguinPDF 2",
+        screenshot_views: "Vistas de la aplicación",
+        tab_home: "Inicio",
+        tab_edit: "Anotar PDF",
+        tab_utilities: "Girar páginas",
+        shot_home: "Inicio: todas tus herramientas PDF",
+        shot_edit: "Anotar PDF: resalta lo importante",
+        shot_utilities: "Girar páginas: previsualiza tus cambios",
+        alt_home: "Pantalla de inicio de PenguinPDF 2",
+        alt_edit: "Anotar PDF en PenguinPDF 2 con texto de ejemplo resaltado",
+        alt_utilities: "Girar páginas en PenguinPDF 2 con una vista previa a 90 grados",
+        enlarge_image: "Ampliar captura",
         footer_downloads: "Descargas",
+        footer_license: "Licencia",
+        footer_notices: "Licencias de terceros",
         footer_support: "Apoyar el proyecto",
-        footer_contact: "Contacto",
         footer_note: "PenguinPDF corre localmente, sin rastreo ni cuentas.",
         help_title: "Ayuda",
         help_local_files: "Tus archivos nunca salen de tu computadora",
@@ -780,32 +984,24 @@
         help_contact_prefix: "Escríbenos a ",
         arrow_right: "->",
         close: "Cerrar",
-        page_description: "PenguinPDF es una caja de herramientas PDF local-first. Gratis, offline, sin cuentas ni suscripciones."
+        close_image: "Cerrar imagen",
+        page_description: "PenguinPDF 2.0.0: edita PDFs, anota, firma, convierte y organiza archivos en tu equipo. Gratis, sin cuentas ni suscripciones."
       }
     };
 
     const LANG_STORAGE_KEY = "penguinpdf_lang";
-    const DESKTOP_MEDIA = window.matchMedia("(min-width: 921px)");
-    const fitViewport = document.getElementById("fitViewport");
-    const mainContainer = document.getElementById("mainContainer");
     const metaDescription = document.querySelector('meta[name="description"]');
-
-    function isMacOS() {
-      const ua = navigator.userAgent || "";
-      const platform = (navigator.platform || "").toLowerCase();
-      return /Mac/i.test(ua) || platform.includes("mac");
-    }
 
     function isWindows() {
       const ua = navigator.userAgent || "";
       const platform = (navigator.platform || "").toLowerCase();
+      if (/Android|iPhone|iPad|iPod|Mobile/i.test(ua) || navigator.userAgentData?.mobile) return false;
       return /Win/i.test(ua) || platform.includes("win");
     }
 
     function getDownloadUrl() {
-      if (isMacOS()) return DOWNLOADS.mac;
       if (isWindows()) return DOWNLOADS.win;
-      return DOWNLOADS.fallback;
+      return DOWNLOADS.choices;
     }
 
     function updateShotCardCaptions(dict) {
@@ -815,15 +1011,6 @@
         if (!caption) return;
         card.setAttribute("data-cap", caption.replace(/&amp;/g, "&"));
       });
-    }
-
-    function applyDesktopFit() {
-      document.documentElement.style.setProperty("--fit-scale", "1");
-      if (!DESKTOP_MEDIA.matches || !fitViewport || !mainContainer) return;
-      const naturalHeight = mainContainer.scrollHeight;
-      const availableHeight = window.innerHeight - 4;
-      const nextScale = Math.min(1, availableHeight / naturalHeight);
-      document.documentElement.style.setProperty("--fit-scale", nextScale.toFixed(4));
     }
 
     function applyLanguage(lang) {
@@ -842,6 +1029,21 @@
         if (dict[key] !== undefined) el.innerHTML = dict[key];
       });
 
+      document.querySelectorAll("[data-i18n-aria-label]").forEach((el) => {
+        const key = el.getAttribute("data-i18n-aria-label");
+        if (dict[key] !== undefined) el.setAttribute("aria-label", dict[key]);
+      });
+
+      for (const attribute of ["alt", "title"]) {
+        document.querySelectorAll(`[data-i18n-${attribute}]`).forEach((el) => {
+          const key = el.getAttribute(`data-i18n-${attribute}`);
+          if (dict[key] !== undefined) el.setAttribute(attribute, dict[key]);
+        });
+      }
+
+      const downloadLabel = document.querySelector("#downloadBtn [data-i18n]");
+      if (downloadLabel && isWindows()) downloadLabel.textContent = dict.download_windows;
+
       updateShotCardCaptions(dict);
 
       if (metaDescription && dict.page_description) {
@@ -849,17 +1051,27 @@
       }
 
       document.querySelectorAll(".langBtn").forEach((btn) => {
-        btn.classList.toggle("active", btn.getAttribute("data-lang") === selectedLang);
+        const active = btn.getAttribute("data-lang") === selectedLang;
+        btn.classList.toggle("active", active);
+        btn.setAttribute("aria-pressed", String(active));
       });
 
-      localStorage.setItem(LANG_STORAGE_KEY, selectedLang);
-      window.requestAnimationFrame(applyDesktopFit);
+      try {
+        localStorage.setItem(LANG_STORAGE_KEY, selectedLang);
+      } catch (_) {
+        // Language switching still works when storage is blocked.
+      }
     }
 
     function getInitialLanguage() {
       const searchLang = new URLSearchParams(window.location.search).get("lang");
       if (searchLang === "en" || searchLang === "es") return searchLang;
-      const savedLang = localStorage.getItem(LANG_STORAGE_KEY);
+      let savedLang;
+      try {
+        savedLang = localStorage.getItem(LANG_STORAGE_KEY);
+      } catch (_) {
+        // Use browser language when storage is blocked.
+      }
       if (savedLang === "en" || savedLang === "es") return savedLang;
       return (navigator.language || "").toLowerCase().startsWith("es") ? "es" : "en";
     }
@@ -875,15 +1087,6 @@
       });
 
       applyLanguage(getInitialLanguage());
-      applyDesktopFit();
-    });
-
-    window.addEventListener("resize", () => {
-      window.requestAnimationFrame(applyDesktopFit);
-    });
-
-    window.addEventListener("load", () => {
-      window.requestAnimationFrame(applyDesktopFit);
     });
 
     // Help modal wiring
@@ -891,15 +1094,20 @@
     const helpBtn = document.getElementById("helpBtn");
     const closeBtn = document.getElementById("closeBtn");
     const closeX = document.getElementById("closeX");
+    let helpReturnFocus;
 
     function openHelp() {
+      helpReturnFocus = document.activeElement;
       overlay.classList.add("open");
       overlay.setAttribute("aria-hidden", "false");
+      closeX.focus();
     }
 
     function closeHelp() {
+      if (!overlay.classList.contains("open")) return;
       overlay.classList.remove("open");
       overlay.setAttribute("aria-hidden", "true");
+      helpReturnFocus?.focus();
     }
 
     helpBtn.addEventListener("click", openHelp);
@@ -910,25 +1118,75 @@
       if (e.target === overlay) closeHelp();
     });
 
-    // Image lightbox wiring
+    // Without JavaScript, every capture remains a normal full-size image link.
+    const shotTabList = document.querySelector(".shotTabs");
+    const shotTabs = [...document.querySelectorAll(".shotTab")];
+    const shotPanels = [...document.querySelectorAll(".shotPanel")];
+
+    function selectShot(index, moveFocus = false) {
+      shotTabs.forEach((tab, tabIndex) => {
+        const selected = tabIndex === index;
+        tab.setAttribute("aria-selected", String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        shotPanels[tabIndex].hidden = !selected;
+      });
+      if (moveFocus) shotTabs[index].focus();
+    }
+
+    if (shotTabs.length && shotTabList) {
+      shotTabList.hidden = false;
+      selectShot(0);
+      shotTabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => selectShot(index));
+        tab.addEventListener("keydown", (event) => {
+          let next;
+          if (event.key === "ArrowRight") next = (index + 1) % shotTabs.length;
+          if (event.key === "ArrowLeft") next = (index - 1 + shotTabs.length) % shotTabs.length;
+          if (event.key === "Home") next = 0;
+          if (event.key === "End") next = shotTabs.length - 1;
+          if (next === undefined) return;
+          event.preventDefault();
+          selectShot(next, true);
+        });
+      });
+    }
+
+    // A native dialog makes the enlarged capture modal to keyboard and pointer input.
     const imgOverlay = document.getElementById("imgOverlay");
     const imgLightbox = document.getElementById("imgLightbox");
     const imgCaption = document.getElementById("imgCaption");
+    const closeImgBtn = document.getElementById("closeImgBtn");
+    let imageReturnFocus;
 
-    function openImg(src, cap) {
+    function openImg(src, cap, alt, trigger) {
+      imageReturnFocus = trigger;
       imgLightbox.src = src;
+      imgLightbox.alt = alt;
       imgCaption.textContent = cap || "";
-      imgOverlay.classList.add("open");
-      imgOverlay.setAttribute("aria-hidden", "false");
+      imgOverlay.showModal();
+      closeImgBtn.focus();
     }
 
     function closeImg() {
-      imgOverlay.classList.remove("open");
-      imgOverlay.setAttribute("aria-hidden", "true");
-      imgLightbox.src = "";
+      if (!imgOverlay.open) return;
+      imgOverlay.close();
+      imgLightbox.removeAttribute("src");
+      imgLightbox.alt = "";
       imgCaption.textContent = "";
+      imageReturnFocus?.focus();
     }
 
+    closeImgBtn.addEventListener("click", closeImg);
+    imgOverlay.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      closeImg();
+    });
+    imgOverlay.addEventListener("keydown", (event) => {
+      if (event.key === "Tab") {
+        event.preventDefault();
+        closeImgBtn.focus();
+      }
+    });
     imgOverlay.addEventListener("click", (e) => {
       if (e.target === imgOverlay) closeImg();
     });
@@ -936,13 +1194,28 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         closeHelp();
-        closeImg();
+      }
+      const activeOverlay = document.querySelector(".overlay.open");
+      if (e.key === "Tab" && activeOverlay) {
+        const focusable = [...activeOverlay.querySelectorAll("a[href], button:not([disabled])")];
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     });
 
     document.querySelectorAll(".shotCard").forEach((card) => {
-      card.addEventListener("click", () => {
-        openImg(card.getAttribute("data-img"), card.getAttribute("data-cap"));
+      card.addEventListener("click", (event) => {
+        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+        if (typeof imgOverlay.showModal !== "function") return;
+        event.preventDefault();
+        openImg(card.getAttribute("data-img"), card.getAttribute("data-cap"), card.querySelector("img").alt, card);
       });
     });
   </script>
