@@ -55,6 +55,53 @@ test("site script parses", () => {
   assert.doesNotThrow(() => new Script(siteScript));
 });
 
+test("gallery uses four uncropped, progressively enhanced screenshot links", () => {
+  const gallery = site.match(/<section class="shots" id="screenshotCarousel"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(gallery, "missing screenshot carousel");
+
+  const expectedSlides = [
+    "assets/text-v2.png",
+    "assets/fill-v2.png",
+    "assets/edit-v2.png",
+    "assets/home-v2.png",
+  ];
+  const slideLinks = [...gallery.matchAll(/<a class="shotCard" href="([^"]+)"/g)].map((match) => match[1]);
+  assert.deepEqual(slideLinks, expectedSlides);
+  for (const asset of expectedSlides) {
+    const png = readFileSync(new URL(`../docs/${asset}`, import.meta.url));
+    assert.equal(png.subarray(1, 4).toString(), "PNG", asset);
+    assert.equal(png.readUInt32BE(16), 3024, `${asset} width`);
+    assert.equal(png.readUInt32BE(20), 1792, `${asset} height`);
+    assert.match(gallery, new RegExp(`<img src="${asset.replace(".", "\\.")}" width="3024" height="1792"`));
+  }
+
+  assert.equal(gallery.match(/class="shotPanel" role="group"/g)?.length, 4);
+  assert.deepEqual([...gallery.matchAll(/class="shotCounter" aria-hidden="true">(\d \/ 4)</g)].map((match) => match[1]), [
+    "1 / 4", "2 / 4", "3 / 4", "4 / 4",
+  ]);
+  assert.match(gallery, /id="carouselPrev"[\s\S]*?data-i18n-aria-label="previous_screenshot" hidden/);
+  assert.match(gallery, /id="carouselNext"[\s\S]*?data-i18n-aria-label="next_screenshot" hidden/);
+  assert.match(site, /\.shotCard\{[\s\S]*?aspect-ratio:3024 \/ 1792;/);
+  assert.match(site, /\.shotCard img\{[\s\S]*?object-fit:contain;/);
+  assert.match(site, /\.carouselArrow\{[\s\S]*?min-width:44px;[\s\S]*?min-height:44px;/);
+  assert.doesNotMatch(site, /class="shotTabs"|class="shotTab"|role="tablist"|role="tabpanel"/);
+});
+
+test("carousel and lightbox support bounded keyboard navigation without autoplay", () => {
+  const { context } = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
+  const keyIndex = (key, current) => new Script(`getShotIndexForKey(${JSON.stringify(key)}, ${current}, 4)`).runInContext(context);
+  assert.equal(keyIndex("ArrowRight", 3), 0);
+  assert.equal(keyIndex("ArrowLeft", 0), 3);
+  assert.equal(keyIndex("Home", 2), 0);
+  assert.equal(keyIndex("End", 1), 3);
+  assert.equal(keyIndex("Enter", 1), undefined);
+  assert.match(siteScript, /screenshotCarousel\.addEventListener\("keydown"/);
+  assert.match(siteScript, /imgOverlay\.addEventListener\("keydown"/);
+  assert.match(site, /id="lightboxPrev"[\s\S]*?id="lightboxNext"/);
+  assert.match(site, /\.imageDialog::backdrop\{\s*background:rgba\(250,247,251,0\.80\)/);
+  assert.doesNotMatch(siteScript, /setInterval|setTimeout/);
+});
+
 function runSite(userAgent, blockedStorage = false) {
   const element = () => ({
     classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
@@ -114,12 +161,18 @@ test("links and copy do not point to the old or moving release", () => {
   }
 });
 
-test("English and Spanish include v2, Edit, and all download labels", () => {
-  assert.match(site, /Version 2\.0\.0/);
-  assert.match(site, /Versión 2\.0\.0/);
+test("English and Spanish include the gallery and download labels without a version badge", () => {
+  assert.doesNotMatch(site, /class="versionLabel"|\.versionLabel\{|\bversion_label:/);
+  assert.match(site, /<meta name="description" content="PenguinPDF 2\.0\.0:/);
   assert.match(site, /Edit text, annotate/);
   assert.match(site, /Edita texto, anota/);
-  for (const key of ["download_button", "download_windows", "mac_apple", "mac_intel", "win_exe", "win_msi"]) {
+  for (const key of [
+    "download_button", "download_windows", "mac_apple", "mac_intel", "win_exe", "win_msi",
+    "screenshots_label", "previous_screenshot", "next_screenshot",
+    "slide_1_of_4", "slide_2_of_4", "slide_3_of_4", "slide_4_of_4",
+    "shot_text", "shot_fill", "shot_edit", "shot_home",
+    "alt_text", "alt_fill", "alt_edit", "alt_home",
+  ]) {
     assert.equal(site.match(new RegExp(`\\b${key}:`, "g"))?.length, 2, key);
   }
 });

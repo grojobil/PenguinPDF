@@ -175,13 +175,6 @@
       font-weight: 430;
     }
 
-    .versionLabel{
-      margin: 0 0 8px;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 650;
-    }
-
     .downloadWrap{
       margin-top: 24px;
       display:flex;
@@ -370,51 +363,36 @@
       max-width: 960px;
       margin: 28px auto 0;
     }
-    .shotTabs{
-      display:flex;
-      justify-content:center;
-      gap: 8px;
-      margin:0 0 18px;
-    }
-    .shotTab{
-      position:relative;
-      min-width:100px;
-      min-height:44px;
-      padding:10px 16px;
-      border:0;
-      background:transparent;
-      color:rgba(23,23,26,0.62);
-      font:inherit;
-      font-size:14px;
-      font-weight:550;
-      cursor:pointer;
-    }
-    .shotTab::after{
-      content:"";
-      position:absolute;
-      left:16px;
-      right:16px;
-      bottom:0;
-      height:2px;
-      background:transparent;
-      transition:background .15s ease;
-    }
-    .shotTab:hover{ color:var(--text); }
-    .shotTab[aria-selected="true"]{ color:var(--text); }
-    .shotTab[aria-selected="true"]::after{ background:var(--accent); }
+    .carouselStage{ position:relative; }
+    .carouselSlides{ min-width:0; }
     .shotPanel{ margin:0 0 24px; min-width:0; }
     .shotPanel:last-child{ margin-bottom:0; }
-    .shotPanel .cap{
-      margin-top:14px;
+    .shotMeta{
+      min-height:28px;
+      margin:0 56px 10px;
+      display:flex;
+      align-items:baseline;
+      justify-content:center;
+      gap:9px;
       text-align:center;
+    }
+    .shotMeta .cap{
       font-size:13px;
       line-height:1.5;
-      color:rgba(23,23,26,0.68);
+      color:rgba(23,23,26,0.70);
+      font-weight:600;
+    }
+    .shotCounter,
+    .lightboxCounter{
+      color:rgba(23,23,26,0.42);
+      font-size:12px;
+      font-variant-numeric:tabular-nums;
+      font-weight:500;
     }
     .shotCard{
       position:relative;
       display:block;
-      aspect-ratio:3024 / 1728;
+      aspect-ratio:3024 / 1792;
       border:1px solid rgba(23,23,26,0.12);
       border-radius:8px;
       background:rgba(255,255,255,0.65);
@@ -449,6 +427,44 @@
       line-height:1;
       box-shadow:0 2px 8px rgba(0,0,0,0.06);
     }
+    .carouselArrow{
+      position:absolute;
+      z-index:2;
+      top:calc(50% + 14px);
+      width:46px;
+      height:46px;
+      min-width:44px;
+      min-height:44px;
+      padding:0;
+      display:grid;
+      place-items:center;
+      border:1px solid rgba(255,255,255,0.82);
+      border-radius:50%;
+      background:rgba(255,255,255,0.78);
+      color:rgba(23,23,26,0.72);
+      box-shadow:0 8px 24px rgba(40,28,43,0.16), inset 0 1px 0 rgba(255,255,255,0.88);
+      backdrop-filter:blur(12px);
+      cursor:pointer;
+      transform:translateY(-50%);
+      transition:background .15s ease, box-shadow .15s ease, transform .15s ease;
+    }
+    .carouselArrow:hover{
+      background:rgba(255,255,255,0.94);
+      box-shadow:0 10px 28px rgba(40,28,43,0.20), inset 0 1px 0 #fff;
+      transform:translateY(-50%) scale(1.03);
+    }
+    .carouselArrow svg{
+      width:24px;
+      height:24px;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+      fill:none;
+      pointer-events:none;
+    }
+    .carouselPrev{ left:12px; }
+    .carouselNext{ right:12px; }
 
     .footerWrap{
       margin-top:40px;
@@ -611,14 +627,17 @@
       width:min(1440px, calc(100% - 32px));
       max-width:none;
       max-height:calc(100dvh - 32px);
-      padding:0;
-      border:0;
-      background:transparent;
-      color:#fff;
+      padding:12px;
+      border:1px solid rgba(255,255,255,0.88);
+      border-radius:12px;
+      background:rgba(255,255,255,0.90);
+      color:var(--text);
+      box-shadow:0 28px 90px rgba(50,38,55,0.18);
+      backdrop-filter:blur(18px);
     }
     .imageDialog::backdrop{
-      background:rgba(23,23,26,0.72);
-      backdrop-filter:blur(8px);
+      background:rgba(250,247,251,0.80);
+      backdrop-filter:blur(18px);
     }
     body:has(.imageDialog[open], .overlay.open){ overflow:hidden; }
     .lightboxContent{ margin:0; }
@@ -627,7 +646,8 @@
       align-items:center;
       justify-content:space-between;
       gap:16px;
-      padding-bottom:12px;
+      min-height:44px;
+      padding:0 0 10px 4px;
     }
     .lightboxHeader .closeX{
       position:static;
@@ -636,21 +656,33 @@
       background:rgba(255,255,255,0.95);
       color:var(--text);
     }
-    .imageDialog :focus-visible{ outline-color:#fff; }
+    .imageDialog :focus-visible{ outline-color:var(--text); }
+    .lightboxCaptionGroup{
+      display:flex;
+      align-items:baseline;
+      gap:9px;
+      min-width:0;
+    }
+    .lightboxStage{ position:relative; }
     .lightboxImg{
       width:100%;
       height:auto;
+      aspect-ratio:3024 / 1792;
       max-height:calc(100dvh - 112px);
       object-fit:contain;
       border-radius:8px;
+      border:1px solid rgba(23,23,26,0.10);
+      background:rgba(255,255,255,0.72);
       display:block;
     }
     .lightboxCaption{
       margin:0;
       font-size:14px;
       line-height:1.5;
-      font-weight:500;
+      color:rgba(23,23,26,0.72);
+      font-weight:600;
     }
+    .lightboxArrow{ top:50%; }
 
     img { max-width: 100%; height: auto; }
 
@@ -671,17 +703,22 @@
       .osLogo{ width:30px; height:30px; }
       .infoBadge{ margin-left:0; }
       .shots{ margin-top:24px; }
-      .shotTabs{ gap:0; margin-bottom:14px; }
-      .shotTab{ min-width:0; flex:1; padding:10px 8px; font-size:13px; }
-      .shotTab::after{ left:8px; right:8px; }
+      .shotMeta{ margin:0 48px 8px; min-height:26px; gap:7px; }
+      .shotMeta .cap{ font-size:12px; }
+      .carouselArrow{ width:44px; height:44px; top:calc(50% + 13px); }
+      .carouselPrev{ left:7px; }
+      .carouselNext{ right:7px; }
       .shotZoom{ right:8px; bottom:8px; width:26px; height:26px; font-size:18px; }
-      .shotPanel .cap{ margin-top:10px; font-size:12px; }
       .footerWrap{ margin-top:28px; }
       footer .links{ gap:12px 16px; line-height:1.6; }
       .pill{ padding:8px 10px; gap:6px; font-size:12px; }
       .langSwitch{ position:absolute; top:16px; left:20px; right:auto; bottom:auto; padding:6px 8px; gap:6px; }
       .helpItem{ font-size:16px; gap:10px; }
       .modal{ padding:18px 14px; }
+      .imageDialog{ width:calc(100% - 16px); max-height:calc(100dvh - 16px); padding:8px; }
+      .lightboxHeader{ padding-left:2px; }
+      .lightboxImg{ max-height:calc(100dvh - 92px); }
+      .lightboxArrow{ top:50%; }
     }
     @media (max-width: 360px){
       .heroTitle{ font-size:30px; }
@@ -724,8 +761,6 @@
       </div>
 
       <div class="heroTagline" data-i18n="hero_tagline">PDFs, without the subscription.</div>
-
-      <p class="versionLabel" data-i18n="version_label">Version 2.0.0</p>
 
       <div class="heroDesc" data-i18n-html="hero_desc">
         Edit text, annotate, fill, sign, organize, and convert PDFs locally.<br/>
@@ -779,33 +814,59 @@
 
     </div>
 
-    <section class="shots" aria-label="PenguinPDF 2 screenshots" data-i18n-aria-label="screenshots_label">
-      <div class="shotTabs" role="tablist" aria-label="App views" data-i18n-aria-label="screenshot_views" hidden>
-        <button class="shotTab" id="shot-tab-home" type="button" role="tab" aria-controls="shot-home" aria-selected="true" data-i18n="tab_home">Home</button>
-        <button class="shotTab" id="shot-tab-edit" type="button" role="tab" aria-controls="shot-edit" aria-selected="false" tabindex="-1" data-i18n="tab_edit">Annotate PDF</button>
-        <button class="shotTab" id="shot-tab-utility" type="button" role="tab" aria-controls="shot-utility" aria-selected="false" tabindex="-1" data-i18n="tab_utilities">Rotate Pages</button>
+    <section class="shots" id="screenshotCarousel" role="region" aria-label="PenguinPDF screenshots" data-i18n-aria-label="screenshots_label">
+      <div class="carouselStage">
+        <div class="carouselSlides" aria-live="polite">
+          <figure class="shotPanel" role="group" aria-label="Slide 1 of 4" data-i18n-aria-label="slide_1_of_4">
+            <figcaption class="shotMeta">
+              <span class="cap" data-i18n="shot_text">Edit Text</span>
+              <span class="shotCounter" aria-hidden="true">1 / 4</span>
+            </figcaption>
+            <a class="shotCard" href="assets/text-v2.png" data-img="assets/text-v2.png" data-cap="Edit Text" data-i18n-cap="shot_text" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
+              <img src="assets/text-v2.png" width="3024" height="1792" alt="PenguinPDF Edit Text workspace" data-i18n-alt="alt_text" decoding="async" />
+              <span class="shotZoom" aria-hidden="true">+</span>
+            </a>
+          </figure>
+          <figure class="shotPanel" role="group" aria-label="Slide 2 of 4" data-i18n-aria-label="slide_2_of_4">
+            <figcaption class="shotMeta">
+              <span class="cap" data-i18n="shot_fill">Fill &amp; Sign</span>
+              <span class="shotCounter" aria-hidden="true">2 / 4</span>
+            </figcaption>
+            <a class="shotCard" href="assets/fill-v2.png" data-img="assets/fill-v2.png" data-cap="Fill &amp; Sign" data-i18n-cap="shot_fill" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
+              <img src="assets/fill-v2.png" width="3024" height="1792" alt="PenguinPDF Fill and Sign workspace" data-i18n-alt="alt_fill" decoding="async" loading="lazy" />
+              <span class="shotZoom" aria-hidden="true">+</span>
+            </a>
+          </figure>
+          <figure class="shotPanel" role="group" aria-label="Slide 3 of 4" data-i18n-aria-label="slide_3_of_4">
+            <figcaption class="shotMeta">
+              <span class="cap" data-i18n="shot_edit">Annotate PDF</span>
+              <span class="shotCounter" aria-hidden="true">3 / 4</span>
+            </figcaption>
+            <a class="shotCard" href="assets/edit-v2.png" data-img="assets/edit-v2.png" data-cap="Annotate PDF" data-i18n-cap="shot_edit" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
+              <img src="assets/edit-v2.png" width="3024" height="1792" alt="PenguinPDF Annotate PDF workspace with highlighted sample text" data-i18n-alt="alt_edit" decoding="async" loading="lazy" />
+              <span class="shotZoom" aria-hidden="true">+</span>
+            </a>
+          </figure>
+          <figure class="shotPanel" role="group" aria-label="Slide 4 of 4" data-i18n-aria-label="slide_4_of_4">
+            <figcaption class="shotMeta">
+              <span class="cap" data-i18n="shot_home">All tools in one place</span>
+              <span class="shotCounter" aria-hidden="true">4 / 4</span>
+            </figcaption>
+            <a class="shotCard" href="assets/home-v2.png" data-img="assets/home-v2.png" data-cap="All tools in one place" data-i18n-cap="shot_home" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
+              <img src="assets/home-v2.png" width="3024" height="1792" alt="PenguinPDF home screen with all PDF tools" data-i18n-alt="alt_home" decoding="async" loading="lazy" />
+              <span class="shotZoom" aria-hidden="true">+</span>
+            </a>
+          </figure>
+        </div>
+        <button class="carouselArrow carouselPrev" id="carouselPrev" type="button" aria-label="Previous screenshot" data-i18n-aria-label="previous_screenshot" hidden>
+          <!-- Lucide chevron-left, ISC licensed. -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+        </button>
+        <button class="carouselArrow carouselNext" id="carouselNext" type="button" aria-label="Next screenshot" data-i18n-aria-label="next_screenshot" hidden>
+          <!-- Lucide chevron-right, ISC licensed. -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
       </div>
-      <figure class="shotPanel" id="shot-home" role="tabpanel" aria-labelledby="shot-tab-home">
-        <a class="shotCard" href="assets/home-v2.png" data-img="assets/home-v2.png" data-cap="Home: all your PDF tools" data-i18n-cap="shot_home" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
-          <img src="assets/home-v2.png" width="3024" height="1728" alt="PenguinPDF 2 home screen" data-i18n-alt="alt_home" decoding="async" />
-          <span class="shotZoom" aria-hidden="true">+</span>
-        </a>
-        <figcaption class="cap" data-i18n="shot_home">Home: all your PDF tools</figcaption>
-      </figure>
-      <figure class="shotPanel" id="shot-edit" role="tabpanel" aria-labelledby="shot-tab-edit">
-        <a class="shotCard" href="assets/edit-v2.png" data-img="assets/edit-v2.png" data-cap="Annotate PDF: highlight what matters" data-i18n-cap="shot_edit" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
-          <img src="assets/edit-v2.png" width="3024" height="1728" alt="PenguinPDF 2 Annotate PDF workspace with highlighted sample text" data-i18n-alt="alt_edit" decoding="async" loading="lazy" />
-          <span class="shotZoom" aria-hidden="true">+</span>
-        </a>
-        <figcaption class="cap" data-i18n="shot_edit">Annotate PDF: highlight what matters</figcaption>
-      </figure>
-      <figure class="shotPanel" id="shot-utility" role="tabpanel" aria-labelledby="shot-tab-utility">
-        <a class="shotCard" href="assets/utility-v2.png" data-img="assets/utility-v2.png" data-cap="Rotate Pages: preview your changes" data-i18n-cap="shot_utilities" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
-          <img src="assets/utility-v2.png" width="3024" height="1728" alt="PenguinPDF 2 Rotate Pages workspace with a 90-degree page preview" data-i18n-alt="alt_utilities" decoding="async" loading="lazy" />
-          <span class="shotZoom" aria-hidden="true">+</span>
-        </a>
-        <figcaption class="cap" data-i18n="shot_utilities">Rotate Pages: preview your changes</figcaption>
-      </figure>
     </section>
 
     <div class="secondaryLinks">
@@ -881,10 +942,23 @@
   <dialog class="imageDialog" id="imgOverlay" aria-labelledby="imgCaption">
     <div class="lightboxContent">
       <div class="lightboxHeader">
-        <p id="imgCaption" class="lightboxCaption"></p>
+        <div class="lightboxCaptionGroup" aria-live="polite">
+          <p id="imgCaption" class="lightboxCaption"></p>
+          <span id="imgCounter" class="lightboxCounter" aria-hidden="true"></span>
+        </div>
         <button class="closeX" id="closeImgBtn" type="button" aria-label="Close image" data-i18n-aria-label="close_image">×</button>
       </div>
-      <img id="imgLightbox" class="lightboxImg" alt="" />
+      <div class="lightboxStage">
+        <img id="imgLightbox" class="lightboxImg" alt="" />
+        <button class="carouselArrow carouselPrev lightboxArrow" id="lightboxPrev" type="button" aria-label="Previous screenshot" data-i18n-aria-label="previous_screenshot">
+          <!-- Lucide chevron-left, ISC licensed. -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+        </button>
+        <button class="carouselArrow carouselNext lightboxArrow" id="lightboxNext" type="button" aria-label="Next screenshot" data-i18n-aria-label="next_screenshot">
+          <!-- Lucide chevron-right, ISC licensed. -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+      </div>
     </div>
   </dialog>
 
@@ -898,7 +972,6 @@
       en: {
         top_download: "Download",
         hero_tagline: "PDFs, without the subscription.",
-        version_label: "Version 2.0.0",
         hero_desc: "Edit text, annotate, fill, sign, organize, and convert PDFs locally.<br/>No uploads. No tracking. Free to use.",
         download_button: "Choose a download",
         download_windows: "Download for Windows",
@@ -914,17 +987,21 @@
         windows_tooltip: "The EXE is the standard Windows installer; the MSI is an alternative.<br/><br/>Check the v2.0.0 release notes for signing status before installing.",
         request_mobile: "Request iOS/Android",
         see_all_downloads: "Release notes and downloads",
-        screenshots_label: "PenguinPDF 2 screenshots",
-        screenshot_views: "App views",
-        tab_home: "Home",
-        tab_edit: "Annotate PDF",
-        tab_utilities: "Rotate Pages",
-        shot_home: "Home: all your PDF tools",
-        shot_edit: "Annotate PDF: highlight what matters",
-        shot_utilities: "Rotate Pages: preview your changes",
-        alt_home: "PenguinPDF 2 home screen",
-        alt_edit: "PenguinPDF 2 Annotate PDF workspace with highlighted sample text",
-        alt_utilities: "PenguinPDF 2 Rotate Pages workspace with a 90-degree page preview",
+        screenshots_label: "PenguinPDF screenshots",
+        previous_screenshot: "Previous screenshot",
+        next_screenshot: "Next screenshot",
+        slide_1_of_4: "Slide 1 of 4",
+        slide_2_of_4: "Slide 2 of 4",
+        slide_3_of_4: "Slide 3 of 4",
+        slide_4_of_4: "Slide 4 of 4",
+        shot_text: "Edit Text",
+        shot_fill: "Fill & Sign",
+        shot_edit: "Annotate PDF",
+        shot_home: "All tools in one place",
+        alt_text: "PenguinPDF Edit Text workspace",
+        alt_fill: "PenguinPDF Fill and Sign workspace",
+        alt_edit: "PenguinPDF Annotate PDF workspace with highlighted sample text",
+        alt_home: "PenguinPDF home screen with all PDF tools",
         enlarge_image: "Enlarge screenshot",
         footer_downloads: "Downloads",
         footer_license: "License",
@@ -944,7 +1021,6 @@
       es: {
         top_download: "Descargar",
         hero_tagline: "PDFs, sin suscripción.",
-        version_label: "Versión 2.0.0",
         hero_desc: "Edita texto, anota, rellena, firma, organiza y convierte PDFs en tu equipo.<br/>Sin subidas. Sin rastreo. Gratis.",
         download_button: "Elegir una descarga",
         download_windows: "Descargar para Windows",
@@ -960,17 +1036,21 @@
         windows_tooltip: "El EXE es el instalador estándar de Windows; el MSI es una alternativa.<br/><br/>Consulta el estado de la firma en las notas de la versión 2.0.0 antes de instalar.",
         request_mobile: "Solicitar iOS/Android",
         see_all_downloads: "Notas de la versión y descargas",
-        screenshots_label: "Capturas de PenguinPDF 2",
-        screenshot_views: "Vistas de la aplicación",
-        tab_home: "Inicio",
-        tab_edit: "Anotar PDF",
-        tab_utilities: "Girar páginas",
-        shot_home: "Inicio: todas tus herramientas PDF",
-        shot_edit: "Anotar PDF: resalta lo importante",
-        shot_utilities: "Girar páginas: previsualiza tus cambios",
-        alt_home: "Pantalla de inicio de PenguinPDF 2",
-        alt_edit: "Anotar PDF en PenguinPDF 2 con texto de ejemplo resaltado",
-        alt_utilities: "Girar páginas en PenguinPDF 2 con una vista previa a 90 grados",
+        screenshots_label: "Capturas de PenguinPDF",
+        previous_screenshot: "Captura anterior",
+        next_screenshot: "Captura siguiente",
+        slide_1_of_4: "Captura 1 de 4",
+        slide_2_of_4: "Captura 2 de 4",
+        slide_3_of_4: "Captura 3 de 4",
+        slide_4_of_4: "Captura 4 de 4",
+        shot_text: "Editar texto",
+        shot_fill: "Rellenar y firmar",
+        shot_edit: "Anotar PDF",
+        shot_home: "Todas las herramientas en un solo lugar",
+        alt_text: "Espacio de trabajo Editar texto de PenguinPDF",
+        alt_fill: "Espacio de trabajo Rellenar y firmar de PenguinPDF",
+        alt_edit: "Espacio de trabajo Anotar PDF de PenguinPDF con texto de ejemplo resaltado",
+        alt_home: "Pantalla de inicio de PenguinPDF con todas las herramientas PDF",
         enlarge_image: "Ampliar captura",
         footer_downloads: "Descargas",
         footer_license: "Licencia",
@@ -1046,6 +1126,10 @@
 
       updateShotCardCaptions(dict);
 
+      if (imgOverlay.open && lightboxShotIndex >= 0) {
+        renderLightboxShot(lightboxShotIndex);
+      }
+
       if (metaDescription && dict.page_description) {
         metaDescription.setAttribute("content", dict.page_description);
       }
@@ -1119,50 +1203,78 @@
     });
 
     // Without JavaScript, every capture remains a normal full-size image link.
-    const shotTabList = document.querySelector(".shotTabs");
-    const shotTabs = [...document.querySelectorAll(".shotTab")];
+    const screenshotCarousel = document.getElementById("screenshotCarousel");
     const shotPanels = [...document.querySelectorAll(".shotPanel")];
+    const shotCards = [...document.querySelectorAll(".shotCard")];
+    const carouselPrev = document.getElementById("carouselPrev");
+    const carouselNext = document.getElementById("carouselNext");
+    let activeShotIndex = 0;
 
-    function selectShot(index, moveFocus = false) {
-      shotTabs.forEach((tab, tabIndex) => {
-        const selected = tabIndex === index;
-        tab.setAttribute("aria-selected", String(selected));
-        tab.tabIndex = selected ? 0 : -1;
-        shotPanels[tabIndex].hidden = !selected;
-      });
-      if (moveFocus) shotTabs[index].focus();
+    function wrapShotIndex(index, total = shotPanels.length) {
+      return total > 0 ? (index + total) % total : 0;
     }
 
-    if (shotTabs.length && shotTabList) {
-      shotTabList.hidden = false;
+    function getShotIndexForKey(key, currentIndex, total = shotPanels.length) {
+      if (total <= 0) return undefined;
+      if (key === "ArrowRight") return wrapShotIndex(currentIndex + 1, total);
+      if (key === "ArrowLeft") return wrapShotIndex(currentIndex - 1, total);
+      if (key === "Home") return 0;
+      if (key === "End") return total - 1;
+      return undefined;
+    }
+
+    function selectShot(index) {
+      activeShotIndex = wrapShotIndex(index);
+      shotPanels.forEach((panel, panelIndex) => {
+        panel.hidden = panelIndex !== activeShotIndex;
+      });
+    }
+
+    if (screenshotCarousel && shotPanels.length === shotCards.length && shotPanels.length > 0) {
+      screenshotCarousel.classList.add("carouselReady");
+      carouselPrev.hidden = false;
+      carouselNext.hidden = false;
       selectShot(0);
-      shotTabs.forEach((tab, index) => {
-        tab.addEventListener("click", () => selectShot(index));
-        tab.addEventListener("keydown", (event) => {
-          let next;
-          if (event.key === "ArrowRight") next = (index + 1) % shotTabs.length;
-          if (event.key === "ArrowLeft") next = (index - 1 + shotTabs.length) % shotTabs.length;
-          if (event.key === "Home") next = 0;
-          if (event.key === "End") next = shotTabs.length - 1;
-          if (next === undefined) return;
-          event.preventDefault();
-          selectShot(next, true);
-        });
+
+      carouselPrev.addEventListener("click", () => selectShot(activeShotIndex - 1));
+      carouselNext.addEventListener("click", () => selectShot(activeShotIndex + 1));
+      screenshotCarousel.addEventListener("keydown", (event) => {
+        if (event.altKey || event.ctrlKey || event.metaKey) return;
+        const nextIndex = getShotIndexForKey(event.key, activeShotIndex);
+        if (nextIndex === undefined) return;
+        const moveCardFocus = shotCards.includes(event.target);
+        event.preventDefault();
+        selectShot(nextIndex);
+        if (moveCardFocus) shotCards[nextIndex].focus();
       });
     }
 
-    // A native dialog makes the enlarged capture modal to keyboard and pointer input.
+    // A native dialog keeps the enlarged capture modal to keyboard and pointer input.
     const imgOverlay = document.getElementById("imgOverlay");
     const imgLightbox = document.getElementById("imgLightbox");
     const imgCaption = document.getElementById("imgCaption");
+    const imgCounter = document.getElementById("imgCounter");
     const closeImgBtn = document.getElementById("closeImgBtn");
+    const lightboxPrev = document.getElementById("lightboxPrev");
+    const lightboxNext = document.getElementById("lightboxNext");
     let imageReturnFocus;
+    let lightboxShotIndex = -1;
 
-    function openImg(src, cap, alt, trigger) {
+    function renderLightboxShot(index) {
+      lightboxShotIndex = wrapShotIndex(index);
+      selectShot(lightboxShotIndex);
+      const card = shotCards[lightboxShotIndex];
+      const image = card.querySelector("img");
+      imageReturnFocus = card;
+      imgLightbox.src = card.getAttribute("data-img");
+      imgLightbox.alt = image.alt;
+      imgCaption.textContent = card.getAttribute("data-cap") || "";
+      imgCounter.textContent = `${lightboxShotIndex + 1} / ${shotCards.length}`;
+    }
+
+    function openImg(index, trigger) {
       imageReturnFocus = trigger;
-      imgLightbox.src = src;
-      imgLightbox.alt = alt;
-      imgCaption.textContent = cap || "";
+      renderLightboxShot(index);
       imgOverlay.showModal();
       closeImgBtn.focus();
     }
@@ -1173,18 +1285,35 @@
       imgLightbox.removeAttribute("src");
       imgLightbox.alt = "";
       imgCaption.textContent = "";
-      imageReturnFocus?.focus();
+      imgCounter.textContent = "";
+      lightboxShotIndex = -1;
+      const returnFocus = imageReturnFocus;
+      imageReturnFocus = undefined;
+      returnFocus?.focus();
     }
 
     closeImgBtn.addEventListener("click", closeImg);
+    lightboxPrev.addEventListener("click", () => renderLightboxShot(lightboxShotIndex - 1));
+    lightboxNext.addEventListener("click", () => renderLightboxShot(lightboxShotIndex + 1));
     imgOverlay.addEventListener("cancel", (event) => {
       event.preventDefault();
       closeImg();
     });
     imgOverlay.addEventListener("keydown", (event) => {
-      if (event.key === "Tab") {
+      const nextIndex = getShotIndexForKey(event.key, lightboxShotIndex);
+      if (nextIndex !== undefined) {
         event.preventDefault();
-        closeImgBtn.focus();
+        renderLightboxShot(nextIndex);
+        return;
+      }
+      if (event.key === "Tab") {
+        const focusable = [closeImgBtn, lightboxPrev, lightboxNext];
+        const currentIndex = focusable.indexOf(document.activeElement);
+        const nextFocus = event.shiftKey
+          ? wrapShotIndex(currentIndex - 1, focusable.length)
+          : wrapShotIndex(currentIndex + 1, focusable.length);
+        event.preventDefault();
+        focusable[nextFocus].focus();
       }
     });
     imgOverlay.addEventListener("click", (e) => {
@@ -1210,12 +1339,12 @@
       }
     });
 
-    document.querySelectorAll(".shotCard").forEach((card) => {
+    shotCards.forEach((card, index) => {
       card.addEventListener("click", (event) => {
         if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
         if (typeof imgOverlay.showModal !== "function") return;
         event.preventDefault();
-        openImg(card.getAttribute("data-img"), card.getAttribute("data-cap"), card.querySelector("img").alt, card);
+        openImg(index, card);
       });
     });
   </script>
