@@ -61,18 +61,18 @@ test("download copy is concise and the Windows notice stays accurate", () => {
   assert.match(site, /More info/);
   assert.match(site, /Run anyway/);
   assert.match(site, /not (?:code[- ]?)?signed|unsigned/i);
-  assert.match(site, /Free\. Local\. Yours\./);
+  assert.match(site, /Your free, local PDF toolbox\./);
 });
 
-test("hero uses the app tagline and one capability line in both languages", () => {
-  assert.match(site, /class="heroDesc" data-i18n="hero_desc">Edit, convert, and sign PDFs\.<\/div>/);
-  assert.match(site, /class="heroTagline" data-i18n="hero_tagline">Free\. Local\. Yours\.<\/div>/);
+test("hero presents the free local toolbox and one capability line in both languages", () => {
+  assert.match(site, /class="heroDesc" data-i18n="hero_desc">Edit, annotate, fill &amp; sign, organize, and convert PDFs\.<\/div>/);
+  assert.match(site, /class="heroTagline" data-i18n="hero_tagline">Your free, local PDF toolbox\.<\/div>/);
   assert.doesNotMatch(site, /heroBenefits|hero_benefits|PDFs, without the subscription\./);
   const { context } = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
-  assert.equal(new Script('I18N.en.hero_desc').runInContext(context), "Edit, convert, and sign PDFs.");
-  assert.equal(new Script('I18N.es.hero_desc').runInContext(context), "Edita, convierte y firma PDFs.");
-  assert.equal(new Script('I18N.en.hero_tagline').runInContext(context), "Free. Local. Yours.");
-  assert.equal(new Script('I18N.es.hero_tagline').runInContext(context), "Gratis. Local. Tuyo.");
+  assert.equal(new Script('I18N.en.hero_desc').runInContext(context), "Edit, annotate, fill & sign, organize, and convert PDFs.");
+  assert.equal(new Script('I18N.es.hero_desc').runInContext(context), "Edita, anota, rellena y firma, organiza y convierte PDFs.");
+  assert.equal(new Script('I18N.en.hero_tagline').runInContext(context), "Your free, local PDF toolbox.");
+  assert.equal(new Script('I18N.es.hero_tagline').runInContext(context), "Tus herramientas PDF, gratis y en tu equipo.");
   assert.equal(new Script('I18N.en.slide_1_of_4').runInContext(context), "Slide 1 of 4: All tools");
   assert.equal(new Script('I18N.es.slide_1_of_4').runInContext(context), "Captura 1 de 4: Todas las herramientas");
 });
