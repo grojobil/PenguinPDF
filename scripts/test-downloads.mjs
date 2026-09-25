@@ -61,17 +61,18 @@ test("download copy is concise and the Windows notice stays accurate", () => {
   assert.match(site, /More info/);
   assert.match(site, /Run anyway/);
   assert.match(site, /not (?:code[- ]?)?signed|unsigned/i);
-  assert.match(site, /Free · Fully local/);
+  assert.match(site, /Free\. Local\. Yours\./);
 });
 
-test("hero separates capabilities from free and local benefits in both languages", () => {
+test("hero uses the app tagline and one capability line in both languages", () => {
   assert.match(site, /class="heroDesc" data-i18n="hero_desc">Edit, convert, and sign PDFs\.<\/div>/);
-  assert.match(site, /class="heroBenefits" data-i18n="hero_benefits">Free · Fully local<\/div>/);
+  assert.match(site, /class="heroTagline" data-i18n="hero_tagline">Free\. Local\. Yours\.<\/div>/);
+  assert.doesNotMatch(site, /heroBenefits|hero_benefits|PDFs, without the subscription\./);
   const { context } = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
   assert.equal(new Script('I18N.en.hero_desc').runInContext(context), "Edit, convert, and sign PDFs.");
   assert.equal(new Script('I18N.es.hero_desc').runInContext(context), "Edita, convierte y firma PDFs.");
-  assert.equal(new Script('I18N.en.hero_benefits').runInContext(context), "Free · Fully local");
-  assert.equal(new Script('I18N.es.hero_benefits').runInContext(context), "Gratis · Todo en tu equipo");
+  assert.equal(new Script('I18N.en.hero_tagline').runInContext(context), "Free. Local. Yours.");
+  assert.equal(new Script('I18N.es.hero_tagline').runInContext(context), "Gratis. Local. Tuyo.");
   assert.equal(new Script('I18N.en.slide_1_of_4').runInContext(context), "Slide 1 of 4: All tools");
   assert.equal(new Script('I18N.es.slide_1_of_4').runInContext(context), "Captura 1 de 4: Todas las herramientas");
 });
