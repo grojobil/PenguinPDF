@@ -186,6 +186,13 @@
       font-weight: 430;
     }
 
+    .heroBenefits{
+      margin: 2px 0 0;
+      font-size: 15px;
+      line-height: 1.5;
+      color: rgba(23,23,26,0.58);
+    }
+
     .downloadWrap{
       margin-top: 18px;
       display:flex;
@@ -1043,7 +1050,8 @@
 
       <div class="heroTagline" data-i18n="hero_tagline">PDFs, without the subscription.</div>
 
-      <div class="heroDesc" data-i18n="hero_desc">Edit, convert, and sign PDFs. Free. Fully local.</div>
+      <div class="heroDesc" data-i18n="hero_desc">Edit, convert, and sign PDFs.</div>
+      <div class="heroBenefits" data-i18n="hero_benefits">Free · Fully local</div>
 
       <div class="downloadWrap" id="download-options">
         <a class="downloadBtn" id="downloadBtn" href="https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0">
@@ -1095,26 +1103,26 @@
       <div class="carouselStage">
         <div class="carouselSlides">
           <figure class="shotPanel" role="group" aria-label="Slide 1 of 4" data-i18n-aria-label="slide_1_of_4">
-            <a class="shotCard" href="assets/text-v2.png" data-img="assets/text-v2.png" data-cap="Edit Text" data-i18n-cap="shot_text" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
-              <img src="assets/text-v2.png" width="3024" height="1792" alt="PenguinPDF Edit Text workspace" data-i18n-alt="alt_text" decoding="async" />
+            <a class="shotCard" href="assets/home-v2.png" data-img="assets/home-v2.png" data-cap="All tools in one place" data-i18n-cap="shot_home" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
+              <img src="assets/home-v2.png" width="3024" height="1792" alt="PenguinPDF home screen with all PDF tools" data-i18n-alt="alt_home" decoding="async" />
               <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
             </a>
           </figure>
           <figure class="shotPanel" role="group" aria-label="Slide 2 of 4" data-i18n-aria-label="slide_2_of_4">
+            <a class="shotCard" href="assets/text-v2.png" data-img="assets/text-v2.png" data-cap="Edit Text" data-i18n-cap="shot_text" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
+              <img src="assets/text-v2.png" width="3024" height="1792" alt="PenguinPDF Edit Text workspace" data-i18n-alt="alt_text" decoding="async" loading="lazy" />
+              <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
+            </a>
+          </figure>
+          <figure class="shotPanel" role="group" aria-label="Slide 3 of 4" data-i18n-aria-label="slide_3_of_4">
             <a class="shotCard" href="assets/fill-v2.png" data-img="assets/fill-v2.png" data-cap="Fill &amp; Sign" data-i18n-cap="shot_fill" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
               <img src="assets/fill-v2.png" width="3024" height="1792" alt="PenguinPDF Fill and Sign workspace" data-i18n-alt="alt_fill" decoding="async" loading="lazy" />
               <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
             </a>
           </figure>
-          <figure class="shotPanel" role="group" aria-label="Slide 3 of 4" data-i18n-aria-label="slide_3_of_4">
+          <figure class="shotPanel" role="group" aria-label="Slide 4 of 4" data-i18n-aria-label="slide_4_of_4">
             <a class="shotCard" href="assets/edit-v2.png" data-img="assets/edit-v2.png" data-cap="Annotate PDF" data-i18n-cap="shot_edit" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
               <img src="assets/edit-v2.png" width="3024" height="1792" alt="PenguinPDF Annotate PDF workspace with highlighted sample text" data-i18n-alt="alt_edit" decoding="async" loading="lazy" />
-              <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
-            </a>
-          </figure>
-          <figure class="shotPanel" role="group" aria-label="Slide 4 of 4" data-i18n-aria-label="slide_4_of_4">
-            <a class="shotCard" href="assets/home-v2.png" data-img="assets/home-v2.png" data-cap="All tools in one place" data-i18n-cap="shot_home" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
-              <img src="assets/home-v2.png" width="3024" height="1792" alt="PenguinPDF home screen with all PDF tools" data-i18n-alt="alt_home" decoding="async" loading="lazy" />
               <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
             </a>
           </figure>
@@ -1129,10 +1137,10 @@
         </button>
       </div>
       <div class="carouselDots" id="carouselDots" role="group" aria-label="Choose screenshot" data-i18n-aria-label="choose_screenshot" hidden>
-        <button class="carouselDot" type="button" data-shot-index="0" aria-label="Show Edit Text screenshot" data-i18n-aria-label="show_shot_text"></button>
-        <button class="carouselDot" type="button" data-shot-index="1" aria-label="Show Fill and Sign screenshot" data-i18n-aria-label="show_shot_fill"></button>
-        <button class="carouselDot" type="button" data-shot-index="2" aria-label="Show Annotate PDF screenshot" data-i18n-aria-label="show_shot_edit"></button>
-        <button class="carouselDot" type="button" data-shot-index="3" aria-label="Show all tools screenshot" data-i18n-aria-label="show_shot_home"></button>
+        <button class="carouselDot" type="button" data-shot-index="0" aria-label="Show all tools screenshot" data-i18n-aria-label="show_shot_home"></button>
+        <button class="carouselDot" type="button" data-shot-index="1" aria-label="Show Edit Text screenshot" data-i18n-aria-label="show_shot_text"></button>
+        <button class="carouselDot" type="button" data-shot-index="2" aria-label="Show Fill and Sign screenshot" data-i18n-aria-label="show_shot_fill"></button>
+        <button class="carouselDot" type="button" data-shot-index="3" aria-label="Show Annotate PDF screenshot" data-i18n-aria-label="show_shot_edit"></button>
       </div>
       <p class="visuallyHidden" id="carouselStatus" aria-live="polite"></p>
     </section>
@@ -1311,7 +1319,8 @@
       en: {
         top_download: "Download",
         hero_tagline: "PDFs, without the subscription.",
-        hero_desc: "Edit, convert, and sign PDFs. Free. Fully local.",
+        hero_desc: "Edit, convert, and sign PDFs.",
+        hero_benefits: "Free · Fully local",
         download_button: "Download",
         download_mac: "Download for macOS",
         download_windows: "Download for Windows",
@@ -1342,10 +1351,10 @@
         show_shot_fill: "Show Fill and Sign screenshot",
         show_shot_edit: "Show Annotate PDF screenshot",
         show_shot_home: "Show all tools screenshot",
-        slide_1_of_4: "Slide 1 of 4: Edit Text",
-        slide_2_of_4: "Slide 2 of 4: Fill and Sign",
-        slide_3_of_4: "Slide 3 of 4: Annotate PDF",
-        slide_4_of_4: "Slide 4 of 4: All tools",
+        slide_1_of_4: "Slide 1 of 4: All tools",
+        slide_2_of_4: "Slide 2 of 4: Edit Text",
+        slide_3_of_4: "Slide 3 of 4: Fill and Sign",
+        slide_4_of_4: "Slide 4 of 4: Annotate PDF",
         shot_text: "Edit Text",
         shot_fill: "Fill & Sign",
         shot_edit: "Annotate PDF",
@@ -1373,7 +1382,8 @@
       es: {
         top_download: "Descargar",
         hero_tagline: "PDFs, sin suscripción.",
-        hero_desc: "Edita, convierte y firma PDFs. Gratis. Todo en tu equipo.",
+        hero_desc: "Edita, convierte y firma PDFs.",
+        hero_benefits: "Gratis · Todo en tu equipo",
         download_button: "Descargar",
         download_mac: "Descargar para macOS",
         download_windows: "Descargar para Windows",
@@ -1404,10 +1414,10 @@
         show_shot_fill: "Mostrar captura de Rellenar y firmar",
         show_shot_edit: "Mostrar captura de Anotar PDF",
         show_shot_home: "Mostrar captura de todas las herramientas",
-        slide_1_of_4: "Captura 1 de 4: Editar texto",
-        slide_2_of_4: "Captura 2 de 4: Rellenar y firmar",
-        slide_3_of_4: "Captura 3 de 4: Anotar PDF",
-        slide_4_of_4: "Captura 4 de 4: Todas las herramientas",
+        slide_1_of_4: "Captura 1 de 4: Todas las herramientas",
+        slide_2_of_4: "Captura 2 de 4: Editar texto",
+        slide_3_of_4: "Captura 3 de 4: Rellenar y firmar",
+        slide_4_of_4: "Captura 4 de 4: Anotar PDF",
         shot_text: "Editar texto",
         shot_fill: "Rellenar y firmar",
         shot_edit: "Anotar PDF",

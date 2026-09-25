@@ -61,7 +61,19 @@ test("download copy is concise and the Windows notice stays accurate", () => {
   assert.match(site, /More info/);
   assert.match(site, /Run anyway/);
   assert.match(site, /not (?:code[- ]?)?signed|unsigned/i);
-  assert.match(site, /Free\. Fully local\./);
+  assert.match(site, /Free · Fully local/);
+});
+
+test("hero separates capabilities from free and local benefits in both languages", () => {
+  assert.match(site, /class="heroDesc" data-i18n="hero_desc">Edit, convert, and sign PDFs\.<\/div>/);
+  assert.match(site, /class="heroBenefits" data-i18n="hero_benefits">Free · Fully local<\/div>/);
+  const { context } = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
+  assert.equal(new Script('I18N.en.hero_desc').runInContext(context), "Edit, convert, and sign PDFs.");
+  assert.equal(new Script('I18N.es.hero_desc').runInContext(context), "Edita, convierte y firma PDFs.");
+  assert.equal(new Script('I18N.en.hero_benefits').runInContext(context), "Free · Fully local");
+  assert.equal(new Script('I18N.es.hero_benefits').runInContext(context), "Gratis · Todo en tu equipo");
+  assert.equal(new Script('I18N.en.slide_1_of_4').runInContext(context), "Slide 1 of 4: All tools");
+  assert.equal(new Script('I18N.es.slide_1_of_4').runInContext(context), "Captura 1 de 4: Todas las herramientas");
 });
 
 test("Mac downloads use a compact light popover with explicit architecture choices", () => {
@@ -118,10 +130,10 @@ test("gallery retains four genuine screenshot links and uses dots instead of cap
   assert.ok(gallery, "missing screenshot carousel");
 
   const expectedSlides = [
+    "assets/home-v2.png",
     "assets/text-v2.png",
     "assets/fill-v2.png",
     "assets/edit-v2.png",
-    "assets/home-v2.png",
   ];
   const slideLinks = [...gallery.matchAll(/<a class="shotCard" href="([^"]+)"/g)].map((match) => match[1]);
   assert.deepEqual(slideLinks, expectedSlides);
@@ -169,6 +181,22 @@ test("carousel and lightbox support bounded keyboard navigation without autoplay
   assert.doesNotMatch(siteScript, /setInterval/);
 });
 
+test("each page load centers Home even after navigating away from it", () => {
+  const firstVisit = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
+  const activeImage = visit => new Script('shotCards[activeShotIndex].getAttribute("data-img")').runInContext(visit.context);
+  assert.equal(activeImage(firstVisit), "assets/home-v2.png");
+  firstVisit.getElement("carouselNext").dispatch("click");
+  assert.equal(activeImage(firstVisit), "assets/text-v2.png");
+  const nextVisit = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
+  assert.equal(activeImage(nextVisit), "assets/home-v2.png");
+  assert.equal(new Script('shotPanels[0].dataset.shotSlot').runInContext(nextVisit.context), "active");
+  assert.equal(new Script('shotDots[0].getAttribute("aria-current")').runInContext(nextVisit.context), "true");
+  assert.match(site, /data-shot-index="0"[^>]*data-i18n-aria-label="show_shot_home"/);
+  const homeImage = site.match(/<img src="assets\/home-v2\.png"[^>]*>/)?.[0];
+  assert.ok(homeImage);
+  assert.doesNotMatch(homeImage, /loading="lazy"/);
+});
+
 function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0) {
   let activeElement;
   const element = (id = "") => {
@@ -212,6 +240,16 @@ function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0) {
   const downloadLabel = { textContent: "", getAttribute: () => "download_button" };
   downloadButton.querySelector = () => downloadLabel;
   const elements = new Map([["downloadBtn", downloadButton]]);
+  const cards = [...site.matchAll(/<a class="shotCard"[^>]*data-img="([^"]+)"/g)].map((match) => {
+    const card = element();
+    card.setAttribute("data-img", match[1]);
+    return card;
+  });
+  const galleryElements = new Map([
+    [".shotCard", cards],
+    [".shotPanel", cards.map(() => element())],
+    [".carouselDot", cards.map(() => element())],
+  ]);
   let onReady;
   const document = {
     documentElement: { clientWidth: 1024, style: { setProperty() {} }, setAttribute() {} },
@@ -221,7 +259,7 @@ function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0) {
       return elements.get(id);
     },
     querySelector: (selector) => selector === "#downloadBtn [data-i18n]" ? downloadLabel : element(),
-    querySelectorAll: (selector) => selector === "[data-i18n]" ? [downloadLabel] : [],
+    querySelectorAll: (selector) => selector === "[data-i18n]" ? [downloadLabel] : galleryElements.get(selector) ?? [],
     addEventListener: (event, callback) => { if (event === "DOMContentLoaded") onReady = callback; },
   };
   const localStorage = {
