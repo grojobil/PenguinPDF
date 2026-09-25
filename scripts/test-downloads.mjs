@@ -32,22 +32,26 @@ test("browser tabs use the multi-size Windows penguin without changing the touch
   for (const size of [16, 32, 48, 256]) assert.ok(sizes.includes(size), `missing ${size}px icon`);
 });
 
-test("all v2 installer URLs are visible links on the site and in README", () => {
-  const choices = site.match(/<nav class="downloadOptions"[\s\S]*?<\/nav>/)?.[0];
-  assert.ok(choices, "missing no-JS download choices");
+test("all release installers remain available without cluttering the hero", () => {
+  const hero = site.match(/<div class="hero">[\s\S]*?<section class="shots"/)?.[0];
+  assert.ok(hero);
+  assert.doesNotMatch(hero.replace(/<noscript>[\s\S]*?<\/noscript>/g, ""), /class="downloadOptions"/);
   for (const asset of assets) {
     const url = base + asset;
-    assert.ok(choices.includes(`href="${url}"`), `site: ${asset}`);
+    assert.ok(site.includes(`href="${url}"`), `site: ${asset}`);
     assert.ok(readme.includes(`](${url})`), `README: ${asset}`);
   }
+  assert.match(site, /<dialog[^>]+download/i);
 });
 
-test("the primary action defaults to choices, except for Windows EXE", () => {
-  assert.match(site, /id="downloadBtn" href="#download-options"/);
-  assert.match(site, /win: "https:\/\/github\.com\/grojobil\/PenguinPDF\/releases\/download\/v2\.0\.0\/PenguinPDF_x64-setup\.exe"/);
-  assert.match(site, /if \(isWindows\(\)\) return DOWNLOADS\.win;\s*return DOWNLOADS\.choices;/);
-  assert.doesNotMatch(site, /function isMacOS\(|DOWNLOADS\.mac/);
-  assert.match(site, /Android\|iPhone\|iPad\|iPod\|Mobile/);
+test("download copy is concise and the Windows notice stays accurate", () => {
+  assert.doesNotMatch(site, /Choose a download|Elegir una descarga|macos_info|macos_tooltip/);
+  assert.match(site, /Download for macOS/);
+  assert.match(site, /Download for Windows/);
+  assert.match(site, /More info/);
+  assert.match(site, /Run anyway/);
+  assert.match(site, /not (?:code[- ]?)?signed|unsigned/i);
+  assert.match(site, /Free\. Fully local\./);
 });
 
 test("site script parses", () => {
@@ -55,7 +59,7 @@ test("site script parses", () => {
   assert.doesNotThrow(() => new Script(siteScript));
 });
 
-test("gallery uses four uncropped, progressively enhanced screenshot links", () => {
+test("gallery retains four genuine screenshot links and uses dots instead of captions", () => {
   const gallery = site.match(/<section class="shots" id="screenshotCarousel"[\s\S]*?<\/section>/)?.[0];
   assert.ok(gallery, "missing screenshot carousel");
 
@@ -75,16 +79,15 @@ test("gallery uses four uncropped, progressively enhanced screenshot links", () 
     assert.match(gallery, new RegExp(`<img src="${asset.replace(".", "\\.")}" width="3024" height="1792"`));
   }
 
-  assert.equal(gallery.match(/class="shotPanel" role="group"/g)?.length, 4);
-  assert.deepEqual([...gallery.matchAll(/class="shotCounter" aria-hidden="true">(\d \/ 4)</g)].map((match) => match[1]), [
-    "1 / 4", "2 / 4", "3 / 4", "4 / 4",
-  ]);
-  assert.match(gallery, /id="carouselPrev"[\s\S]*?data-i18n-aria-label="previous_screenshot" hidden/);
-  assert.match(gallery, /id="carouselNext"[\s\S]*?data-i18n-aria-label="next_screenshot" hidden/);
-  assert.match(site, /\.shotCard\{[\s\S]*?aspect-ratio:3024 \/ 1792;/);
-  assert.match(site, /\.shotCard img\{[\s\S]*?object-fit:contain;/);
-  assert.match(site, /\.carouselArrow\{[\s\S]*?min-width:44px;[\s\S]*?min-height:44px;/);
-  assert.doesNotMatch(site, /class="shotTabs"|class="shotTab"|role="tablist"|role="tabpanel"/);
+  assert.equal(gallery.match(/class="shotPanel"/g)?.length, 4);
+  assert.match(gallery, /id="carouselPrev"/);
+  assert.match(gallery, /id="carouselNext"/);
+  assert.match(gallery, /carouselDots/);
+  assert.doesNotMatch(gallery, /class="shotMeta"|class="shotCounter"/);
+  assert.doesNotMatch(site, /class="shotTabs"|class="shotTab"/);
+  assert.match(site, /prefers-reduced-motion: reduce/);
+  assert.equal(gallery.match(/class="screenshotChrome"/g)?.length, 4);
+  assert.match(site, /\.carouselReady \.shotPanel\.is-offstage\{[^}]*visibility:hidden/);
 });
 
 test("carousel and lightbox support bounded keyboard navigation without autoplay", () => {
@@ -99,23 +102,35 @@ test("carousel and lightbox support bounded keyboard navigation without autoplay
   assert.match(siteScript, /imgOverlay\.addEventListener\("keydown"/);
   assert.match(site, /id="lightboxPrev"[\s\S]*?id="lightboxNext"/);
   assert.match(site, /\.imageDialog::backdrop\{\s*background:rgba\(250,247,251,0\.80\)/);
-  assert.doesNotMatch(siteScript, /setInterval|setTimeout/);
+  assert.doesNotMatch(siteScript, /setInterval/);
 });
 
-function runSite(userAgent, blockedStorage = false) {
-  const element = () => ({
+function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0) {
+  const element = (id = "") => ({
+    id, hidden: false, open: false, dataset: {}, style: { setProperty() {} },
     classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
     addEventListener() {},
     getAttribute() { return null; },
     setAttribute() {},
+    removeAttribute() {},
+    querySelector() { return element(); },
+    querySelectorAll() { return []; },
+    contains() { return false; },
+    showModal() { this.open = true; },
+    close() { this.open = false; },
     focus() {},
   });
-  const downloadButton = element();
+  const downloadButton = element("downloadBtn");
   const downloadLabel = { textContent: "", getAttribute: () => "download_button" };
+  downloadButton.querySelector = () => downloadLabel;
+  const elements = new Map([["downloadBtn", downloadButton]]);
   let onReady;
   const document = {
     documentElement: { style: { setProperty() {} }, setAttribute() {} },
-    getElementById: (id) => id === "downloadBtn" ? downloadButton : element(),
+    getElementById: (id) => {
+      if (!elements.has(id)) elements.set(id, element(id));
+      return elements.get(id);
+    },
     querySelector: (selector) => selector === "#downloadBtn [data-i18n]" ? downloadLabel : element(),
     querySelectorAll: (selector) => selector === "[data-i18n]" ? [downloadLabel] : [],
     addEventListener: (event, callback) => { if (event === "DOMContentLoaded") onReady = callback; },
@@ -132,24 +147,63 @@ function runSite(userAgent, blockedStorage = false) {
   };
   const context = createContext({
     document, window, localStorage, URLSearchParams,
-    navigator: { userAgent, platform: "", language: "en-US" },
+    navigator: { userAgent, platform: "", language: "en-US", maxTouchPoints },
   });
   new Script(siteScript).runInContext(context);
-  onReady();
+  onReady?.();
   return { context, downloadButton, downloadLabel };
 }
 
-test("desktop Windows downloads EXE; Mac and mobile show choices", () => {
+test("Windows downloads EXE directly without guessing a Mac architecture", () => {
   assert.equal(runSite("Mozilla/5.0 (Windows NT 10.0; Win64; x64)").downloadButton.href, base + "PenguinPDF_x64-setup.exe");
-  assert.equal(runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)").downloadButton.href, "#download-options");
-  assert.equal(runSite("Mozilla/5.0 (Windows Phone; Mobile)").downloadButton.href, "#download-options");
-  assert.equal(runSite("Mozilla/5.0 (iPhone; CPU iPhone OS)").downloadButton.href, "#download-options");
+  assert.ok(!runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)").downloadButton.href.endsWith(".dmg"));
+});
+
+test("platform routing distinguishes desktop Windows and Mac from mobile and unknown platforms", () => {
+  const cases = [
+    ["Mozilla/5.0 (Windows NT 10.0; Win64; x64)", 0, "windows"],
+    ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", 0, "mac"],
+    ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", 5, "other"],
+    ["Mozilla/5.0 (Windows Phone; Mobile)", 5, "other"],
+    ["Mozilla/5.0 (iPhone; CPU iPhone OS)", 5, "other"],
+    ["Mozilla/5.0 (iPad; CPU OS)", 5, "other"],
+    ["Mozilla/5.0 (Linux; Android 15)", 5, "other"],
+    ["Mozilla/5.0 (X11; Linux x86_64)", 0, "other"],
+    ["", 0, "other"],
+  ];
+  for (const [ua, touches, expected] of cases) {
+    const { context } = runSite(ua, false, touches);
+    assert.equal(new Script(`getDownloadPlatform(${JSON.stringify(ua)}, ${touches})`).runInContext(context), expected, ua);
+  }
+});
+
+test("only one previous and one next screenshot are exposed for galleries of any size", () => {
+  const { context } = runSite("Mozilla/5.0 (Macintosh)");
+  for (const total of [3, 4, 5, 8]) {
+    for (let active = 0; active < total; active++) {
+      const slots = Array.from({ length: total }, (_, index) =>
+        new Script(`getShotSlot(${index}, ${active}, ${total})`).runInContext(context));
+      for (const slot of ["active", "prev", "next"]) {
+        assert.equal(slots.filter(value => value === slot).length, 1, `${total} slides, active ${active}: ${slot}`);
+      }
+      assert.equal(slots.filter(value => value === "offstage").length, total - 3);
+    }
+  }
+});
+
+test("modified links keep normal browser navigation", () => {
+  const { context } = runSite("Mozilla/5.0 (Macintosh)");
+  for (const modifier of ["altKey", "ctrlKey", "metaKey", "shiftKey"]) {
+    assert.equal(new Script(`isModifiedLinkClick({${modifier}:true,button:0})`).runInContext(context), true);
+  }
+  assert.equal(new Script("isModifiedLinkClick({button:1})").runInContext(context), true);
+  assert.equal(new Script("Boolean(isModifiedLinkClick({button:0}))").runInContext(context), false);
 });
 
 test("language switching survives blocked localStorage", () => {
   const { context, downloadLabel } = runSite("Mozilla/5.0 (Macintosh)", true);
   new Script('applyLanguage("es")').runInContext(context);
-  assert.equal(downloadLabel.textContent, "Elegir una descarga");
+  assert.equal(downloadLabel.textContent, "Descargar para macOS");
 });
 
 test("links and copy do not point to the old or moving release", () => {
@@ -164,10 +218,8 @@ test("links and copy do not point to the old or moving release", () => {
 test("English and Spanish include the gallery and download labels without a version badge", () => {
   assert.doesNotMatch(site, /class="versionLabel"|\.versionLabel\{|\bversion_label:/);
   assert.match(site, /<meta name="description" content="PenguinPDF 2\.0\.0:/);
-  assert.match(site, /Edit text, annotate/);
-  assert.match(site, /Edita texto, anota/);
   for (const key of [
-    "download_button", "download_windows", "mac_apple", "mac_intel", "win_exe", "win_msi",
+    "download_button", "download_windows", "download_mac", "mac_apple", "mac_intel", "win_exe", "win_msi",
     "screenshots_label", "previous_screenshot", "next_screenshot",
     "slide_1_of_4", "slide_2_of_4", "slide_3_of_4", "slide_4_of_4",
     "shot_text", "shot_fill", "shot_edit", "shot_home",

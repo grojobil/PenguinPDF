@@ -31,6 +31,17 @@
     *{ box-sizing:border-box; }
     html, body{ min-height:100%; }
     [hidden]{ display:none !important; }
+    .visuallyHidden{
+      position:absolute !important;
+      width:1px !important;
+      height:1px !important;
+      padding:0 !important;
+      margin:-1px !important;
+      overflow:hidden !important;
+      clip:rect(0, 0, 0, 0) !important;
+      white-space:nowrap !important;
+      border:0 !important;
+    }
     :focus-visible{ outline:2px solid var(--text); outline-offset:4px; }
     body{
       margin:0;
@@ -57,8 +68,8 @@
     }
 
     .container{
-      width: min(1040px, 100%);
-      padding: 24px 24px 64px;
+      width: min(1280px, 100%);
+      padding: 20px 20px 56px;
       display:flex;
       flex-direction:column;
     }
@@ -121,7 +132,7 @@
     /* HERO */
     .hero{
       text-align:center;
-      margin-top: 8px;
+      margin-top: 2px;
       flex: 0 0 auto;
       display:flex;
       flex-direction:column;
@@ -134,8 +145,8 @@
       align-items:center;
       justify-content:center;
       gap: 16px;
-      margin-top: 4px;
-      margin-bottom: 14px;
+      margin-top: 0;
+      margin-bottom: 10px;
     }
 
     /* Penguin slightly larger than wordmark height */
@@ -159,7 +170,7 @@
     }
 
     .heroTagline{
-      margin: 8px 0 14px;
+      margin: 5px 0 8px;
       font-size: 30px;
       font-weight: 580;
       letter-spacing: 0;
@@ -176,11 +187,11 @@
     }
 
     .downloadWrap{
-      margin-top: 24px;
+      margin-top: 18px;
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap: 10px;
+      gap: 9px;
     }
 
     /* More “alive”, less faded, bigger button */
@@ -188,7 +199,7 @@
       display:inline-flex;
       align-items:center;
       gap: 12px;
-      padding: 20px 44px;
+      padding: 18px 42px;
       border-radius: 999px;
       text-decoration:none;
       font-weight: 620;
@@ -245,26 +256,43 @@
       align-items:center;
       justify-content:center;
       width:100%;
-      color: rgba(23,23,26,0.46); /* lighter */
+      color: rgba(23,23,26,0.54);
       font-weight: 500;
-      font-size: 16px;
-      margin-top: 2px;
+      font-size: 14px;
+      margin-top: 1px;
     }
     .osRowInner{
       display:flex;
       align-items:center;
       justify-content:center;
-      gap: 18px;
+      gap: 12px;
     }
     .osItem{
       display:flex;
       align-items:center;
-      gap: 10px;
+      justify-content:center;
+      width:112px;
       position: relative;
     }
+    .osAction{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:44px;
+      padding:5px 7px;
+      border-radius:8px;
+      color:inherit;
+      text-decoration:none;
+      transition:background .15s ease, color .15s ease;
+    }
+    .osAction:hover{
+      color:rgba(23,23,26,0.76);
+      background:rgba(255,255,255,0.34);
+    }
     .osLogo{
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       object-fit: contain;
       opacity: 0.92;
       display:block;
@@ -278,9 +306,12 @@
     }
 
     .infoBadge{
-      margin-left: 6px;
-      width: 18px;
-      height: 18px;
+      position:absolute;
+      top:-3px;
+      left:calc(100% - 4px);
+      width:20px;
+      height:20px;
+      padding:0;
       border-radius: 999px;
       display: inline-flex;
       align-items:center;
@@ -290,34 +321,34 @@
       color: rgba(23,23,26,0.52);
       border: 1px solid rgba(0,0,0,0.10);
       background: rgba(255,255,255,0.55);
-      cursor: default;
+      cursor: pointer;
       user-select: none;
       backdrop-filter: blur(10px);
     }
 
     .tooltip{
       position: absolute;
-      left: 0;
-      top: calc(100% + 10px);
-      width: min(330px, calc(100vw - 40px));
-      padding: 10px 12px;
-      border-radius: 14px;
+      left:calc(100% + 30px);
+      bottom:0;
+      width:min(280px, calc(100vw - 32px));
+      padding:12px 14px;
+      border-radius:8px;
       background: rgba(255,255,255,0.92);
       border: 1px solid rgba(255,255,255,0.65);
       box-shadow: 0 18px 60px rgba(0,0,0,0.12);
       color: rgba(23,23,26,0.78);
-      font-size: 12.5px;
-      line-height: 1.35;
+      font-size:12.5px;
+      line-height:1.45;
       display: none;
       z-index: 1000;
       backdrop-filter: blur(14px);
       font-weight: 500;
+      text-align:left;
     }
-    .osItem.windows:hover .tooltip,
-    .osItem.windows:focus-within .tooltip,
-    .osItem.macos:hover .tooltip,
-    .osItem.macos:focus-within .tooltip{ display:block; }
-    .osItem.windows .tooltip{ left:auto; right:0; }
+    .infoBadge:hover + .tooltip,
+    .infoBadge:focus-visible + .tooltip,
+    .infoBadge[aria-expanded="true"] + .tooltip{ display:block; }
+    .infoBadge[data-dismissed="true"] + .tooltip{ display:none; }
 
     .requestLink{
       margin-top: 6px;
@@ -357,38 +388,16 @@
     .secondaryLinks .requestLink,
     .secondaryLinks .tinyLinks{ margin:0; font-size:13px; }
 
-    /* Keep app captures legible, uncropped, and independent of viewport height. */
+    /* No-JS keeps every capture in normal flow as a full-size image link. */
     .shots{
-      width: 100%;
-      max-width: 960px;
-      margin: 28px auto 0;
+      width:min(1240px, calc(100vw - 40px));
+      max-width:none;
+      margin:20px auto 0;
     }
     .carouselStage{ position:relative; }
     .carouselSlides{ min-width:0; }
     .shotPanel{ margin:0 0 24px; min-width:0; }
     .shotPanel:last-child{ margin-bottom:0; }
-    .shotMeta{
-      min-height:28px;
-      margin:0 56px 10px;
-      display:flex;
-      align-items:baseline;
-      justify-content:center;
-      gap:9px;
-      text-align:center;
-    }
-    .shotMeta .cap{
-      font-size:13px;
-      line-height:1.5;
-      color:rgba(23,23,26,0.70);
-      font-weight:600;
-    }
-    .shotCounter,
-    .lightboxCounter{
-      color:rgba(23,23,26,0.42);
-      font-size:12px;
-      font-variant-numeric:tabular-nums;
-      font-weight:500;
-    }
     .shotCard{
       position:relative;
       display:block;
@@ -399,6 +408,8 @@
       box-shadow:0 18px 48px -18px rgba(40,28,43,0.24);
       cursor:zoom-in;
       text-decoration:none;
+      overflow:hidden;
+      container-type:inline-size;
       transition:box-shadow .18s ease;
     }
     .shotCard:hover{
@@ -411,26 +422,109 @@
       border-radius:7px;
       display:block;
     }
-    .shotZoom{
+    .screenshotChrome{
       position:absolute;
-      right:12px;
-      bottom:12px;
-      width:32px;
-      height:32px;
-      display:grid;
-      place-items:center;
-      border:1px solid rgba(23,23,26,0.14);
-      border-radius:50%;
-      background:rgba(255,255,255,0.95);
-      color:var(--text);
-      font-size:22px;
+      z-index:1;
+      top:0;
+      right:0;
+      left:0;
+      height:3.5714286%;
+      min-height:1px;
+      display:flex;
+      align-items:center;
+      gap:.42cqi;
+      padding:0 .66cqi;
+      overflow:hidden;
+      border-radius:7px 7px 0 0;
+      background:#eee9e3;
+      color:#4a4744;
+      font-size:clamp(4px, .82cqi, 13px);
       line-height:1;
-      box-shadow:0 2px 8px rgba(0,0,0,0.06);
+      font-weight:700;
+      pointer-events:none;
+    }
+    .chromeLights{
+      display:flex;
+      align-items:center;
+      gap:.32cqi;
+      height:100%;
+    }
+    .chromeDot{
+      width:clamp(3px, .91cqi, 14px);
+      aspect-ratio:1;
+      border-radius:50%;
+      flex:0 0 auto;
+    }
+    .chromeDot.red{ background:#ff5f57; }
+    .chromeDot.yellow{ background:#ffbd2e; }
+    .chromeDot.green{ background:#28c840; }
+    .chromeLabel{
+      margin-left:.18cqi;
+      white-space:nowrap;
+    }
+    .carouselReady .carouselSlides{
+      position:relative;
+      height:clamp(210px, 45.6vw, 565px);
+    }
+    .carouselReady .shotPanel{
+      --slot-x:0%;
+      --slot-scale:.74;
+      --slot-rotation:0deg;
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:72%;
+      margin:0;
+      opacity:0;
+      z-index:0;
+      pointer-events:none;
+      transform:translate(-50%, -50%) translateX(var(--slot-x)) scale(var(--slot-scale)) rotate(var(--slot-rotation));
+      transition:
+        transform .46s cubic-bezier(.22, .72, .22, 1),
+        opacity .34s ease;
+      will-change:transform, opacity;
+    }
+    .carouselReady .shotPanel.is-active{
+      --slot-x:0%;
+      --slot-scale:1;
+      --slot-rotation:0deg;
+      opacity:1;
+      z-index:3;
+      pointer-events:auto;
+    }
+    .carouselReady .shotPanel.is-prev{
+      --slot-x:-27%;
+      --slot-scale:.84;
+      --slot-rotation:-2.5deg;
+      opacity:.40;
+      z-index:1;
+      pointer-events:auto;
+    }
+    .carouselReady .shotPanel.is-next{
+      --slot-x:27%;
+      --slot-scale:.84;
+      --slot-rotation:2.5deg;
+      opacity:.40;
+      z-index:2;
+      pointer-events:auto;
+    }
+    .carouselReady .shotPanel.is-offstage{
+      --slot-scale:.70;
+      opacity:0;
+      z-index:0;
+      visibility:hidden;
+    }
+    .carouselReady .shotPanel.is-offstage-before{ --slot-x:-34%; }
+    .carouselReady .shotPanel.is-offstage-after{ --slot-x:34%; }
+    .carouselReady .shotPanel.is-prev .shotCard,
+    .carouselReady .shotPanel.is-next .shotCard{
+      cursor:pointer;
+      box-shadow:0 16px 42px -18px rgba(40,28,43,0.18);
     }
     .carouselArrow{
       position:absolute;
-      z-index:2;
-      top:calc(50% + 14px);
+      z-index:5;
+      top:50%;
       width:46px;
       height:46px;
       min-width:44px;
@@ -465,6 +559,40 @@
     }
     .carouselPrev{ left:12px; }
     .carouselNext{ right:12px; }
+    .carouselDots{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:2px;
+      min-height:28px;
+      margin-top:2px;
+    }
+    .carouselDot{
+      width:28px;
+      height:28px;
+      padding:0;
+      display:grid;
+      place-items:center;
+      border:0;
+      border-radius:50%;
+      background:transparent;
+      cursor:pointer;
+    }
+    .carouselDot::before{
+      content:"";
+      width:8px;
+      height:8px;
+      border:1px solid rgba(23,23,26,0.22);
+      border-radius:50%;
+      background:rgba(255,255,255,0.72);
+      transition:transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .carouselDot:hover::before{ transform:scale(1.18); }
+    .carouselDot[aria-current="true"]::before{
+      border-color:var(--accent);
+      background:var(--accent);
+      transform:scale(1.08);
+    }
 
     .footerWrap{
       margin-top:40px;
@@ -623,8 +751,92 @@
     }
     .modalBtn:hover{ transform: translateY(-1px); }
 
+    .downloadDialog{
+      width:min(460px, calc(100% - 32px));
+      max-width:none;
+      max-height:calc(100dvh - 32px);
+      padding:0;
+      border:1px solid rgba(255,255,255,0.88);
+      border-radius:12px;
+      background:rgba(255,255,255,0.88);
+      color:var(--text);
+      box-shadow:0 28px 90px rgba(50,38,55,0.18);
+      backdrop-filter:blur(18px);
+      overflow:auto;
+    }
+    .downloadDialog::backdrop,
+    .imageDialog::backdrop{
+      background:rgba(250,247,251,0.80);
+      backdrop-filter:blur(18px);
+    }
+    .downloadDialogInner{ padding:24px; }
+    .downloadDialogHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:14px;
+    }
+    .downloadDialogTitle{
+      margin:0;
+      font-size:22px;
+      line-height:1.2;
+      color:rgba(23,23,26,0.76);
+    }
+    .downloadDialogHeader .closeX{
+      position:static;
+      flex:0 0 40px;
+      width:40px;
+      height:40px;
+      box-shadow:none;
+      background:rgba(255,255,255,0.86);
+    }
+    .downloadGroup + .downloadGroup{
+      margin-top:18px;
+      padding-top:16px;
+      border-top:1px solid rgba(23,23,26,0.09);
+    }
+    .downloadGroupTitle{
+      margin:0 0 5px;
+      font-size:12px;
+      line-height:1.4;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:0;
+    }
+    .downloadChoice{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      min-height:48px;
+      padding:10px 4px;
+      border-bottom:1px solid rgba(23,23,26,0.08);
+      color:rgba(23,23,26,0.78);
+      text-decoration:none;
+      font-weight:650;
+    }
+    .downloadChoice:last-child{ border-bottom:0; }
+    .downloadChoice:hover{ color:var(--accent); }
+    .downloadChoice svg{
+      width:18px;
+      height:18px;
+      flex:0 0 18px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+    .dialogHint{
+      margin:14px 0 0;
+      color:rgba(23,23,26,0.60);
+      font-size:13px;
+      line-height:1.5;
+    }
+
     .imageDialog{
-      width:min(1440px, calc(100% - 32px));
+      width:min(1440px, calc(100vw - 32px), calc(168.75dvh - 190px));
       max-width:none;
       max-height:calc(100dvh - 32px);
       padding:12px;
@@ -635,16 +847,12 @@
       box-shadow:0 28px 90px rgba(50,38,55,0.18);
       backdrop-filter:blur(18px);
     }
-    .imageDialog::backdrop{
-      background:rgba(250,247,251,0.80);
-      backdrop-filter:blur(18px);
-    }
-    body:has(.imageDialog[open], .overlay.open){ overflow:hidden; }
+    body:has(dialog[open], .overlay.open){ overflow:hidden; }
     .lightboxContent{ margin:0; }
     .lightboxHeader{
       display:flex;
       align-items:center;
-      justify-content:space-between;
+      justify-content:flex-end;
       gap:16px;
       min-height:44px;
       padding:0 0 10px 4px;
@@ -657,67 +865,66 @@
       color:var(--text);
     }
     .imageDialog :focus-visible{ outline-color:var(--text); }
-    .lightboxCaptionGroup{
-      display:flex;
-      align-items:baseline;
-      gap:9px;
-      min-width:0;
-    }
     .lightboxStage{ position:relative; }
+    .lightboxFrame{
+      position:relative;
+      aspect-ratio:3024 / 1792;
+      overflow:hidden;
+      border-radius:8px;
+      container-type:inline-size;
+    }
     .lightboxImg{
       width:100%;
-      height:auto;
+      height:100%;
       aspect-ratio:3024 / 1792;
-      max-height:calc(100dvh - 112px);
       object-fit:contain;
       border-radius:8px;
       border:1px solid rgba(23,23,26,0.10);
       background:rgba(255,255,255,0.72);
       display:block;
     }
-    .lightboxCaption{
-      margin:0;
-      font-size:14px;
-      line-height:1.5;
-      color:rgba(23,23,26,0.72);
-      font-weight:600;
-    }
     .lightboxArrow{ top:50%; }
 
     img { max-width: 100%; height: auto; }
 
+    @media (max-width: 900px){
+      .tooltip{ left:auto; right:-16px; bottom:auto; top:calc(100% + 8px); }
+    }
+
     @media (max-width: 600px){
       .container{ padding:16px 20px 84px; }
-      .hero{ margin-top:16px; }
+      .hero{ margin-top:8px; }
       .brandHero{ gap:12px; }
       .brandHero img{ width:52px; height:52px; border-radius:12px; }
       .heroTitle{ font-size:36px; }
       .heroTagline{ font-size:24px; line-height:1.3; }
       .heroDesc{ font-size:16px; }
-      .downloadWrap{ width:100%; margin-top:20px; }
+      .downloadWrap{ width:100%; margin-top:16px; }
       .downloadBtn{ font-size:16px; padding:16px 24px; }
       .downloadOptions{ gap:6px 12px; }
       .downloadOptions a{ padding:5px 0; }
       .osRowInner{ gap:12px; }
-      .osItem{ gap:6px; }
+      .osItem{ width:104px; }
       .osLogo{ width:30px; height:30px; }
-      .infoBadge{ margin-left:0; }
-      .shots{ margin-top:24px; }
-      .shotMeta{ margin:0 48px 8px; min-height:26px; gap:7px; }
-      .shotMeta .cap{ font-size:12px; }
-      .carouselArrow{ width:44px; height:44px; top:calc(50% + 13px); }
+      .shots{ margin-top:16px; }
+      .carouselReady .shotPanel{ width:82%; }
+      .carouselReady .shotPanel.is-prev{ --slot-x:-20%; }
+      .carouselReady .shotPanel.is-next{ --slot-x:20%; }
+      .carouselReady .shotPanel.is-offstage-before{ --slot-x:-28%; }
+      .carouselReady .shotPanel.is-offstage-after{ --slot-x:28%; }
+      .carouselArrow{ width:44px; height:44px; top:50%; }
       .carouselPrev{ left:7px; }
       .carouselNext{ right:7px; }
-      .shotZoom{ right:8px; bottom:8px; width:26px; height:26px; font-size:18px; }
+      .carouselDot{ width:44px; height:44px; }
       .footerWrap{ margin-top:28px; }
       footer .links{ gap:12px 16px; line-height:1.6; }
       .pill{ padding:8px 10px; gap:6px; font-size:12px; }
       .langSwitch{ position:absolute; top:16px; left:20px; right:auto; bottom:auto; padding:6px 8px; gap:6px; }
       .helpItem{ font-size:16px; gap:10px; }
       .modal{ padding:18px 14px; }
-      .imageDialog{ width:calc(100% - 16px); max-height:calc(100dvh - 16px); padding:8px; }
+      .downloadDialogInner{ padding:20px; }
+      .imageDialog{ width:min(calc(100vw - 16px), calc(168.75dvh - 156px)); max-height:calc(100dvh - 16px); padding:8px; }
       .lightboxHeader{ padding-left:2px; }
-      .lightboxImg{ max-height:calc(100dvh - 92px); }
       .lightboxArrow{ top:50%; }
     }
     @media (max-width: 360px){
@@ -762,99 +969,79 @@
 
       <div class="heroTagline" data-i18n="hero_tagline">PDFs, without the subscription.</div>
 
-      <div class="heroDesc" data-i18n-html="hero_desc">
-        Edit text, annotate, fill, sign, organize, and convert PDFs locally.<br/>
-        No uploads. No tracking. Free to use.
-      </div>
+      <div class="heroDesc" data-i18n="hero_desc">Edit, convert, and sign PDFs. Free. Fully local.</div>
 
-      <div class="downloadWrap">
-        <a class="downloadBtn" id="downloadBtn" href="#download-options">
+      <div class="downloadWrap" id="download-options">
+        <a class="downloadBtn" id="downloadBtn" href="https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0">
           <svg class="dlIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 3v10" stroke="white" stroke-width="2" stroke-linecap="round"/>
             <path d="M8 11l4 4 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M4 17v3h16v-3" stroke="white" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <span data-i18n="download_button">Choose a download</span>
+          <span data-i18n="download_button">Download</span>
         </a>
 
-        <nav class="downloadOptions" id="download-options" aria-label="PenguinPDF 2.0.0 downloads" data-i18n-aria-label="downloads_label">
-          <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg" data-i18n="mac_apple">macOS Apple Silicon</a>
-          <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg" data-i18n="mac_intel">macOS Intel</a>
-          <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe" data-i18n="win_exe">Windows EXE</a>
-          <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64_en-US.msi" data-i18n="win_msi">Windows MSI (alternative)</a>
-        </nav>
-
-        <div class="osRow" aria-label="Platforms">
+        <div class="osRow" aria-label="Platforms" data-i18n-aria-label="platforms_label">
           <div class="osRowInner">
             <div class="osItem macos">
-              <img class="osLogo" src="assets/apple.png" alt="macOS" />
-              <span>macOS</span>
-              <span class="infoBadge" tabindex="0" aria-label="macOS download info" data-i18n-aria-label="macos_info">i</span>
-              <div class="tooltip" role="tooltip" data-i18n-html="macos_tooltip">
-                Choose Apple Silicon for M1 or newer Macs.<br/><br/>
-                Choose Intel for older Intel-based Macs.
-              </div>
+              <a class="osAction" id="macPlatformLink" href="https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0" aria-label="Download for macOS" data-i18n-aria-label="download_mac">
+                <img class="osLogo" src="assets/apple.png" alt="" aria-hidden="true" />
+                <span>macOS</span>
+              </a>
             </div>
 
-            <div class="osSep"></div>
+            <div class="osSep" aria-hidden="true"></div>
 
             <div class="osItem windows">
-              <img class="osLogo" src="assets/windows.png" alt="Windows" />
-              <span>Windows</span>
-              <span class="infoBadge" tabindex="0" aria-label="Windows install info" data-i18n-aria-label="windows_info">i</span>
-              <div class="tooltip" role="tooltip" data-i18n-html="windows_tooltip">
-                The EXE is the standard Windows installer; the MSI is an alternative.<br/><br/>
-                Check the v2.0.0 release notes for signing status before installing.
+              <a class="osAction" id="windowsPlatformLink" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe" aria-label="Download for Windows" data-i18n-aria-label="download_windows">
+                <img class="osLogo" src="assets/windows.png" alt="" aria-hidden="true" />
+                <span>Windows</span>
+              </a>
+              <button class="infoBadge" id="windowsInfoButton" type="button" aria-label="Windows install info" data-i18n-aria-label="windows_info" aria-expanded="false" aria-describedby="windowsTooltip">i</button>
+              <div class="tooltip" id="windowsTooltip" role="tooltip" data-i18n="windows_tooltip">
+                To keep PenguinPDF free, the Windows installer is unsigned. Windows may show a security prompt. For the official download, choose More info &gt; Run anyway.
               </div>
             </div>
           </div>
         </div>
 
+        <noscript>
+          <nav class="downloadOptions" aria-label="PenguinPDF 2.0.0 downloads">
+            <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg">macOS Apple Silicon</a>
+            <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg">macOS Intel</a>
+            <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe">Windows EXE</a>
+            <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64_en-US.msi">Windows MSI</a>
+          </nav>
+        </noscript>
       </div>
 
     </div>
 
     <section class="shots" id="screenshotCarousel" role="region" aria-label="PenguinPDF screenshots" data-i18n-aria-label="screenshots_label">
       <div class="carouselStage">
-        <div class="carouselSlides" aria-live="polite">
+        <div class="carouselSlides">
           <figure class="shotPanel" role="group" aria-label="Slide 1 of 4" data-i18n-aria-label="slide_1_of_4">
-            <figcaption class="shotMeta">
-              <span class="cap" data-i18n="shot_text">Edit Text</span>
-              <span class="shotCounter" aria-hidden="true">1 / 4</span>
-            </figcaption>
             <a class="shotCard" href="assets/text-v2.png" data-img="assets/text-v2.png" data-cap="Edit Text" data-i18n-cap="shot_text" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
               <img src="assets/text-v2.png" width="3024" height="1792" alt="PenguinPDF Edit Text workspace" data-i18n-alt="alt_text" decoding="async" />
-              <span class="shotZoom" aria-hidden="true">+</span>
+              <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
             </a>
           </figure>
           <figure class="shotPanel" role="group" aria-label="Slide 2 of 4" data-i18n-aria-label="slide_2_of_4">
-            <figcaption class="shotMeta">
-              <span class="cap" data-i18n="shot_fill">Fill &amp; Sign</span>
-              <span class="shotCounter" aria-hidden="true">2 / 4</span>
-            </figcaption>
             <a class="shotCard" href="assets/fill-v2.png" data-img="assets/fill-v2.png" data-cap="Fill &amp; Sign" data-i18n-cap="shot_fill" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
               <img src="assets/fill-v2.png" width="3024" height="1792" alt="PenguinPDF Fill and Sign workspace" data-i18n-alt="alt_fill" decoding="async" loading="lazy" />
-              <span class="shotZoom" aria-hidden="true">+</span>
+              <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
             </a>
           </figure>
           <figure class="shotPanel" role="group" aria-label="Slide 3 of 4" data-i18n-aria-label="slide_3_of_4">
-            <figcaption class="shotMeta">
-              <span class="cap" data-i18n="shot_edit">Annotate PDF</span>
-              <span class="shotCounter" aria-hidden="true">3 / 4</span>
-            </figcaption>
             <a class="shotCard" href="assets/edit-v2.png" data-img="assets/edit-v2.png" data-cap="Annotate PDF" data-i18n-cap="shot_edit" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
               <img src="assets/edit-v2.png" width="3024" height="1792" alt="PenguinPDF Annotate PDF workspace with highlighted sample text" data-i18n-alt="alt_edit" decoding="async" loading="lazy" />
-              <span class="shotZoom" aria-hidden="true">+</span>
+              <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
             </a>
           </figure>
           <figure class="shotPanel" role="group" aria-label="Slide 4 of 4" data-i18n-aria-label="slide_4_of_4">
-            <figcaption class="shotMeta">
-              <span class="cap" data-i18n="shot_home">All tools in one place</span>
-              <span class="shotCounter" aria-hidden="true">4 / 4</span>
-            </figcaption>
             <a class="shotCard" href="assets/home-v2.png" data-img="assets/home-v2.png" data-cap="All tools in one place" data-i18n-cap="shot_home" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
               <img src="assets/home-v2.png" width="3024" height="1792" alt="PenguinPDF home screen with all PDF tools" data-i18n-alt="alt_home" decoding="async" loading="lazy" />
-              <span class="shotZoom" aria-hidden="true">+</span>
+              <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
             </a>
           </figure>
         </div>
@@ -867,6 +1054,13 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
         </button>
       </div>
+      <div class="carouselDots" id="carouselDots" role="group" aria-label="Choose screenshot" data-i18n-aria-label="choose_screenshot" hidden>
+        <button class="carouselDot" type="button" data-shot-index="0" aria-label="Show Edit Text screenshot" data-i18n-aria-label="show_shot_text"></button>
+        <button class="carouselDot" type="button" data-shot-index="1" aria-label="Show Fill and Sign screenshot" data-i18n-aria-label="show_shot_fill"></button>
+        <button class="carouselDot" type="button" data-shot-index="2" aria-label="Show Annotate PDF screenshot" data-i18n-aria-label="show_shot_edit"></button>
+        <button class="carouselDot" type="button" data-shot-index="3" aria-label="Show all tools screenshot" data-i18n-aria-label="show_shot_home"></button>
+      </div>
+      <p class="visuallyHidden" id="carouselStatus" aria-live="polite"></p>
     </section>
 
     <div class="secondaryLinks">
@@ -881,7 +1075,7 @@
     <div class="footerWrap">
       <footer>
         <div class="links">
-          <a href="#download-options" data-i18n="footer_downloads">Downloads</a>
+          <a id="allDownloadsLink" href="https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0" data-i18n="footer_downloads">Downloads</a>
           <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
           <a href="https://github.com/grojobil/PenguinPDF/blob/main/LICENSE.md" data-i18n="footer_license">License</a>
           <a href="https://github.com/grojobil/PenguinPDF/blob/main/THIRD_PARTY_LICENSES.md" data-i18n="footer_notices">Third-party licenses</a>
@@ -938,18 +1132,69 @@
     </div>
   </div>
 
+  <dialog class="downloadDialog" id="macDownloadDialog" aria-labelledby="macDownloadDialogTitle">
+    <div class="downloadDialogInner">
+      <div class="downloadDialogHeader">
+        <h2 class="downloadDialogTitle" id="macDownloadDialogTitle" data-i18n="mac_dialog_title">Download for macOS</h2>
+        <button class="closeX" type="button" data-dialog-close aria-label="Close" data-i18n-aria-label="close">×</button>
+      </div>
+      <div class="downloadGroup">
+        <a class="downloadChoice" id="macAppleDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg">
+          <span data-i18n="mac_apple">macOS Apple Silicon</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        </a>
+        <a class="downloadChoice" id="macIntelDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg">
+          <span data-i18n="mac_intel">macOS Intel</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        </a>
+      </div>
+      <p class="dialogHint" data-i18n="mac_guidance">Not sure? Open the Apple menu on your Mac and choose About This Mac. Look for Chip or Processor.</p>
+    </div>
+  </dialog>
+
+  <dialog class="downloadDialog" id="allDownloadsDialog" aria-labelledby="allDownloadsDialogTitle">
+    <div class="downloadDialogInner">
+      <div class="downloadDialogHeader">
+        <h2 class="downloadDialogTitle" id="allDownloadsDialogTitle" data-i18n="all_downloads_title">All downloads</h2>
+        <button class="closeX" type="button" data-dialog-close aria-label="Close" data-i18n-aria-label="close">×</button>
+      </div>
+      <div class="downloadGroup">
+        <h3 class="downloadGroupTitle">macOS</h3>
+        <a class="downloadChoice" id="allMacAppleDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg">
+          <span data-i18n="mac_apple">macOS Apple Silicon</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        </a>
+        <a class="downloadChoice" id="allMacIntelDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg">
+          <span data-i18n="mac_intel">macOS Intel</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        </a>
+      </div>
+      <div class="downloadGroup">
+        <h3 class="downloadGroupTitle">Windows</h3>
+        <a class="downloadChoice" id="allWindowsExeDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe">
+          <span data-i18n="win_exe">Windows EXE</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        </a>
+        <a class="downloadChoice" id="allWindowsMsiDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64_en-US.msi">
+          <span data-i18n="win_msi">Windows MSI (alternative)</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        </a>
+      </div>
+    </div>
+  </dialog>
+
   <!-- Image lightbox -->
-  <dialog class="imageDialog" id="imgOverlay" aria-labelledby="imgCaption">
+  <dialog class="imageDialog" id="imgOverlay" aria-label="Enlarged PenguinPDF screenshot" data-i18n-aria-label="lightbox_label" aria-describedby="lightboxStatus">
     <div class="lightboxContent">
       <div class="lightboxHeader">
-        <div class="lightboxCaptionGroup" aria-live="polite">
-          <p id="imgCaption" class="lightboxCaption"></p>
-          <span id="imgCounter" class="lightboxCounter" aria-hidden="true"></span>
-        </div>
+        <p class="visuallyHidden" id="lightboxStatus" aria-live="polite"></p>
         <button class="closeX" id="closeImgBtn" type="button" aria-label="Close image" data-i18n-aria-label="close_image">×</button>
       </div>
       <div class="lightboxStage">
-        <img id="imgLightbox" class="lightboxImg" alt="" />
+        <div class="lightboxFrame">
+          <img id="imgLightbox" class="lightboxImg" alt="" />
+          <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
+        </div>
         <button class="carouselArrow carouselPrev lightboxArrow" id="lightboxPrev" type="button" aria-label="Previous screenshot" data-i18n-aria-label="previous_screenshot">
           <!-- Lucide chevron-left, ISC licensed. -->
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
@@ -963,37 +1208,48 @@
   </dialog>
 
   <script>
-    const DOWNLOADS = {
+    const DOWNLOADS = Object.freeze({
+      macApple: "https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg",
+      macIntel: "https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg",
       win: "https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe",
-      choices: "#download-options"
-    };
+      winMsi: "https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64_en-US.msi",
+      release: "https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0"
+    });
 
     const I18N = {
       en: {
         top_download: "Download",
         hero_tagline: "PDFs, without the subscription.",
-        hero_desc: "Edit text, annotate, fill, sign, organize, and convert PDFs locally.<br/>No uploads. No tracking. Free to use.",
-        download_button: "Choose a download",
+        hero_desc: "Edit, convert, and sign PDFs. Free. Fully local.",
+        download_button: "Download",
+        download_mac: "Download for macOS",
         download_windows: "Download for Windows",
         downloads_label: "PenguinPDF 2.0.0 downloads",
+        platforms_label: "Download by platform",
         language_selector: "Language selector",
+        mac_dialog_title: "Download for macOS",
+        all_downloads_title: "All downloads",
         mac_apple: "macOS Apple Silicon",
         mac_intel: "macOS Intel",
+        mac_guidance: "Not sure? Open the Apple menu on your Mac and choose About This Mac. Look for Chip or Processor.",
         win_exe: "Windows EXE",
         win_msi: "Windows MSI (alternative)",
-        macos_info: "macOS download info",
-        windows_info: "Windows install info",
-        macos_tooltip: "Choose Apple Silicon for M1 or newer Macs.<br/><br/>Choose Intel for older Intel-based Macs.",
-        windows_tooltip: "The EXE is the standard Windows installer; the MSI is an alternative.<br/><br/>Check the v2.0.0 release notes for signing status before installing.",
+        windows_info: "Windows install information",
+        windows_tooltip: "To keep PenguinPDF free, the Windows installer is unsigned. Windows may show a security prompt. For the official download, choose More info > Run anyway.",
         request_mobile: "Request iOS/Android",
         see_all_downloads: "Release notes and downloads",
         screenshots_label: "PenguinPDF screenshots",
+        choose_screenshot: "Choose screenshot",
         previous_screenshot: "Previous screenshot",
         next_screenshot: "Next screenshot",
-        slide_1_of_4: "Slide 1 of 4",
-        slide_2_of_4: "Slide 2 of 4",
-        slide_3_of_4: "Slide 3 of 4",
-        slide_4_of_4: "Slide 4 of 4",
+        show_shot_text: "Show Edit Text screenshot",
+        show_shot_fill: "Show Fill and Sign screenshot",
+        show_shot_edit: "Show Annotate PDF screenshot",
+        show_shot_home: "Show all tools screenshot",
+        slide_1_of_4: "Slide 1 of 4: Edit Text",
+        slide_2_of_4: "Slide 2 of 4: Fill and Sign",
+        slide_3_of_4: "Slide 3 of 4: Annotate PDF",
+        slide_4_of_4: "Slide 4 of 4: All tools",
         shot_text: "Edit Text",
         shot_fill: "Fill & Sign",
         shot_edit: "Annotate PDF",
@@ -1003,6 +1259,7 @@
         alt_edit: "PenguinPDF Annotate PDF workspace with highlighted sample text",
         alt_home: "PenguinPDF home screen with all PDF tools",
         enlarge_image: "Enlarge screenshot",
+        lightbox_label: "Enlarged PenguinPDF screenshot",
         footer_downloads: "Downloads",
         footer_license: "License",
         footer_notices: "Third-party licenses",
@@ -1021,28 +1278,36 @@
       es: {
         top_download: "Descargar",
         hero_tagline: "PDFs, sin suscripción.",
-        hero_desc: "Edita texto, anota, rellena, firma, organiza y convierte PDFs en tu equipo.<br/>Sin subidas. Sin rastreo. Gratis.",
-        download_button: "Elegir una descarga",
+        hero_desc: "Edita, convierte y firma PDFs. Gratis. Todo en tu equipo.",
+        download_button: "Descargar",
+        download_mac: "Descargar para macOS",
         download_windows: "Descargar para Windows",
         downloads_label: "Descargas de PenguinPDF 2.0.0",
+        platforms_label: "Descargar por plataforma",
         language_selector: "Selector de idioma",
+        mac_dialog_title: "Descargar para macOS",
+        all_downloads_title: "Todas las descargas",
         mac_apple: "macOS Apple Silicon",
         mac_intel: "macOS Intel",
+        mac_guidance: "¿No estás seguro? Abre el menú Apple en tu Mac y elige Acerca de esta Mac. Busca Chip o Procesador.",
         win_exe: "Windows EXE",
         win_msi: "Windows MSI (alternativa)",
-        macos_info: "Información de descarga para macOS",
         windows_info: "Información de instalación para Windows",
-        macos_tooltip: "Elige Apple Silicon para Macs con M1 o posterior.<br/><br/>Elige Intel para Macs antiguos con procesador Intel.",
-        windows_tooltip: "El EXE es el instalador estándar de Windows; el MSI es una alternativa.<br/><br/>Consulta el estado de la firma en las notas de la versión 2.0.0 antes de instalar.",
+        windows_tooltip: "Para mantener PenguinPDF gratis, el instalador de Windows no está firmado. Windows puede mostrar un aviso de seguridad. Para la descarga oficial, elige Más información > Ejecutar de todas formas.",
         request_mobile: "Solicitar iOS/Android",
         see_all_downloads: "Notas de la versión y descargas",
         screenshots_label: "Capturas de PenguinPDF",
+        choose_screenshot: "Elegir captura",
         previous_screenshot: "Captura anterior",
         next_screenshot: "Captura siguiente",
-        slide_1_of_4: "Captura 1 de 4",
-        slide_2_of_4: "Captura 2 de 4",
-        slide_3_of_4: "Captura 3 de 4",
-        slide_4_of_4: "Captura 4 de 4",
+        show_shot_text: "Mostrar captura de Editar texto",
+        show_shot_fill: "Mostrar captura de Rellenar y firmar",
+        show_shot_edit: "Mostrar captura de Anotar PDF",
+        show_shot_home: "Mostrar captura de todas las herramientas",
+        slide_1_of_4: "Captura 1 de 4: Editar texto",
+        slide_2_of_4: "Captura 2 de 4: Rellenar y firmar",
+        slide_3_of_4: "Captura 3 de 4: Anotar PDF",
+        slide_4_of_4: "Captura 4 de 4: Todas las herramientas",
         shot_text: "Editar texto",
         shot_fill: "Rellenar y firmar",
         shot_edit: "Anotar PDF",
@@ -1052,6 +1317,7 @@
         alt_edit: "Espacio de trabajo Anotar PDF de PenguinPDF con texto de ejemplo resaltado",
         alt_home: "Pantalla de inicio de PenguinPDF con todas las herramientas PDF",
         enlarge_image: "Ampliar captura",
+        lightbox_label: "Captura ampliada de PenguinPDF",
         footer_downloads: "Descargas",
         footer_license: "Licencia",
         footer_notices: "Licencias de terceros",
@@ -1071,49 +1337,93 @@
 
     const LANG_STORAGE_KEY = "penguinpdf_lang";
     const metaDescription = document.querySelector('meta[name="description"]');
+    const downloadBtn = document.getElementById("downloadBtn");
+    const macPlatformLink = document.getElementById("macPlatformLink");
+    const allDownloadsLink = document.getElementById("allDownloadsLink");
+    const macDownloadDialog = document.getElementById("macDownloadDialog");
+    const allDownloadsDialog = document.getElementById("allDownloadsDialog");
+    const windowsInfoButton = document.getElementById("windowsInfoButton");
+    const dialogReturnFocus = new WeakMap();
+    let currentDownloadPlatform = "other";
 
-    function isWindows() {
-      const ua = navigator.userAgent || "";
-      const platform = (navigator.platform || "").toLowerCase();
-      if (/Android|iPhone|iPad|iPod|Mobile/i.test(ua) || navigator.userAgentData?.mobile) return false;
-      return /Win/i.test(ua) || platform.includes("win");
+    function getDownloadPlatform(userAgent = navigator.userAgent, maxTouchPoints = navigator.maxTouchPoints || 0) {
+      const ua = String(userAgent || "");
+      const isIPadDesktop = /Macintosh/i.test(ua) && Number(maxTouchPoints) > 1;
+      if (isIPadDesktop || /Android|iPhone|iPad|iPod|Mobile/i.test(ua)) return "other";
+      if (/Windows NT|Windows|Win64|Win32/i.test(ua)) return "windows";
+      if (/Macintosh|Mac OS X/i.test(ua)) return "mac";
+      return "other";
     }
 
-    function getDownloadUrl() {
-      if (isWindows()) return DOWNLOADS.win;
-      return DOWNLOADS.choices;
+    function isModifiedLinkClick(event) {
+      return event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
+        (event.button !== undefined && event.button !== 0);
+    }
+
+    function openDownloadDialog(dialog, trigger = document.activeElement) {
+      if (!dialog || dialog.open || typeof dialog.showModal !== "function") return false;
+      dialogReturnFocus.set(dialog, trigger);
+      dialog.showModal();
+      dialog.querySelector("[data-dialog-close]")?.focus();
+      return true;
+    }
+
+    function closeDownloadDialog(dialog) {
+      if (!dialog?.open) return;
+      const returnFocus = dialogReturnFocus.get(dialog);
+      dialog.close();
+      dialogReturnFocus.delete(dialog);
+      returnFocus?.focus();
+    }
+
+    function isBackdropClick(event, dialog) {
+      if (event.target !== dialog) return false;
+      const rect = dialog.getBoundingClientRect();
+      return event.clientX < rect.left || event.clientX > rect.right ||
+        event.clientY < rect.top || event.clientY > rect.bottom;
+    }
+
+    function configureDownloadRoute() {
+      currentDownloadPlatform = getDownloadPlatform();
+      if (!downloadBtn) return currentDownloadPlatform;
+      downloadBtn.href = currentDownloadPlatform === "windows" ? DOWNLOADS.win : DOWNLOADS.release;
+      downloadBtn.dataset.downloadPlatform = currentDownloadPlatform;
+      return currentDownloadPlatform;
     }
 
     function updateShotCardCaptions(dict) {
       document.querySelectorAll(".shotCard[data-i18n-cap]").forEach((card) => {
         const key = card.getAttribute("data-i18n-cap");
-        const caption = dict[key];
-        if (!caption) return;
-        card.setAttribute("data-cap", caption.replace(/&amp;/g, "&"));
+        if (dict[key]) card.setAttribute("data-cap", dict[key]);
       });
+    }
+
+    function updateDownloadLabel(dict) {
+      const downloadLabel = downloadBtn?.querySelector("[data-i18n]");
+      if (!downloadLabel) return;
+      const key = currentDownloadPlatform === "mac"
+        ? "download_mac"
+        : currentDownloadPlatform === "windows" ? "download_windows" : "download_button";
+      downloadLabel.textContent = dict[key];
     }
 
     function applyLanguage(lang) {
       const selectedLang = I18N[lang] ? lang : "en";
       const dict = I18N[selectedLang];
-
       document.documentElement.setAttribute("lang", selectedLang);
 
       document.querySelectorAll("[data-i18n]").forEach((el) => {
         const key = el.getAttribute("data-i18n");
         if (dict[key] !== undefined) el.textContent = dict[key];
       });
-
       document.querySelectorAll("[data-i18n-html]").forEach((el) => {
         const key = el.getAttribute("data-i18n-html");
         if (dict[key] !== undefined) el.innerHTML = dict[key];
       });
-
       document.querySelectorAll("[data-i18n-aria-label]").forEach((el) => {
         const key = el.getAttribute("data-i18n-aria-label");
         if (dict[key] !== undefined) el.setAttribute("aria-label", dict[key]);
       });
-
       for (const attribute of ["alt", "title"]) {
         document.querySelectorAll(`[data-i18n-${attribute}]`).forEach((el) => {
           const key = el.getAttribute(`data-i18n-${attribute}`);
@@ -1121,25 +1431,17 @@
         });
       }
 
-      const downloadLabel = document.querySelector("#downloadBtn [data-i18n]");
-      if (downloadLabel && isWindows()) downloadLabel.textContent = dict.download_windows;
-
+      updateDownloadLabel(dict);
       updateShotCardCaptions(dict);
-
-      if (imgOverlay.open && lightboxShotIndex >= 0) {
-        renderLightboxShot(lightboxShotIndex);
-      }
-
-      if (metaDescription && dict.page_description) {
-        metaDescription.setAttribute("content", dict.page_description);
-      }
+      carouselStatus.textContent = shotPanels[activeShotIndex]?.getAttribute("aria-label") || "";
+      if (imgOverlay.open && lightboxShotIndex >= 0) renderLightboxShot(lightboxShotIndex);
+      if (metaDescription && dict.page_description) metaDescription.setAttribute("content", dict.page_description);
 
       document.querySelectorAll(".langBtn").forEach((btn) => {
         const active = btn.getAttribute("data-lang") === selectedLang;
         btn.classList.toggle("active", active);
         btn.setAttribute("aria-pressed", String(active));
       });
-
       try {
         localStorage.setItem(LANG_STORAGE_KEY, selectedLang);
       } catch (_) {
@@ -1160,17 +1462,52 @@
       return (navigator.language || "").toLowerCase().startsWith("es") ? "es" : "en";
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const btn = document.getElementById("downloadBtn");
-      if (btn) btn.href = getDownloadUrl();
-
-      document.querySelectorAll(".langBtn").forEach((langBtn) => {
-        langBtn.addEventListener("click", () => {
-          applyLanguage(langBtn.getAttribute("data-lang"));
-        });
+    for (const dialog of [macDownloadDialog, allDownloadsDialog]) {
+      dialog.querySelector("[data-dialog-close]").addEventListener("click", () => closeDownloadDialog(dialog));
+      dialog.addEventListener("cancel", (event) => {
+        event.preventDefault();
+        closeDownloadDialog(dialog);
       });
+      dialog.addEventListener("click", (event) => {
+        if (isBackdropClick(event, dialog)) closeDownloadDialog(dialog);
+      });
+    }
 
-      applyLanguage(getInitialLanguage());
+    downloadBtn.addEventListener("click", (event) => {
+      if (isModifiedLinkClick(event) || currentDownloadPlatform === "windows") return;
+      const dialog = currentDownloadPlatform === "mac" ? macDownloadDialog : allDownloadsDialog;
+      if (typeof dialog.showModal !== "function") return;
+      event.preventDefault();
+      openDownloadDialog(dialog, downloadBtn);
+    });
+    macPlatformLink.addEventListener("click", (event) => {
+      if (isModifiedLinkClick(event) || typeof macDownloadDialog.showModal !== "function") return;
+      event.preventDefault();
+      openDownloadDialog(macDownloadDialog, macPlatformLink);
+    });
+    allDownloadsLink.addEventListener("click", (event) => {
+      if (isModifiedLinkClick(event) || typeof allDownloadsDialog.showModal !== "function") return;
+      event.preventDefault();
+      openDownloadDialog(allDownloadsDialog, allDownloadsLink);
+    });
+
+    windowsInfoButton.addEventListener("click", () => {
+      windowsInfoButton.removeAttribute("data-dismissed");
+      const expanded = windowsInfoButton.getAttribute("aria-expanded") === "true";
+      windowsInfoButton.setAttribute("aria-expanded", String(!expanded));
+    });
+    for (const event of ["focus", "mouseenter"]) {
+      windowsInfoButton.addEventListener(event, () => windowsInfoButton.removeAttribute("data-dismissed"));
+    }
+    document.addEventListener("pointerdown", (event) => {
+      if (!windowsInfoButton.closest(".windows").contains(event.target)) {
+        windowsInfoButton.setAttribute("aria-expanded", "false");
+      }
+    });
+    windowsInfoButton.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      windowsInfoButton.setAttribute("aria-expanded", "false");
+      windowsInfoButton.setAttribute("data-dismissed", "true");
     });
 
     // Help modal wiring
@@ -1197,9 +1534,8 @@
     helpBtn.addEventListener("click", openHelp);
     closeBtn.addEventListener("click", closeHelp);
     closeX.addEventListener("click", closeHelp);
-
-    overlay.addEventListener("click", (e) => {
-      if (e.target === overlay) closeHelp();
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) closeHelp();
     });
 
     // Without JavaScript, every capture remains a normal full-size image link.
@@ -1208,10 +1544,14 @@
     const shotCards = [...document.querySelectorAll(".shotCard")];
     const carouselPrev = document.getElementById("carouselPrev");
     const carouselNext = document.getElementById("carouselNext");
+    const carouselDots = document.getElementById("carouselDots");
+    const shotDots = [...document.querySelectorAll(".carouselDot")];
+    const carouselStatus = document.getElementById("carouselStatus");
     let activeShotIndex = 0;
 
     function wrapShotIndex(index, total = shotPanels.length) {
-      return total > 0 ? (index + total) % total : 0;
+      if (!Number.isFinite(total) || total <= 0) return 0;
+      return ((Number(index) % total) + total) % total;
     }
 
     function getShotIndexForKey(key, currentIndex, total = shotPanels.length) {
@@ -1223,37 +1563,79 @@
       return undefined;
     }
 
-    function selectShot(index) {
+    function getShotSlot(index, activeIndex, total = shotPanels.length) {
+      if (total <= 0) return "offstage";
+      const current = wrapShotIndex(index, total);
+      const active = wrapShotIndex(activeIndex, total);
+      if (current === active) return "active";
+      if (current === wrapShotIndex(active - 1, total)) return "prev";
+      if (current === wrapShotIndex(active + 1, total)) return "next";
+      return "offstage";
+    }
+
+    function getOffstageSide(index, activeIndex, total = shotPanels.length) {
+      const forwardDistance = wrapShotIndex(index - activeIndex, total);
+      return forwardDistance > total / 2 ? "before" : "after";
+    }
+
+    function selectShot(index, options = {}) {
       activeShotIndex = wrapShotIndex(index);
       shotPanels.forEach((panel, panelIndex) => {
-        panel.hidden = panelIndex !== activeShotIndex;
+        const slot = getShotSlot(panelIndex, activeShotIndex);
+        const isActive = slot === "active";
+        const isOffstage = slot === "offstage";
+        panel.classList.remove("is-active", "is-prev", "is-next", "is-offstage", "is-offstage-before", "is-offstage-after");
+        panel.classList.add(`is-${slot}`);
+        if (isOffstage) panel.classList.add(`is-offstage-${getOffstageSide(panelIndex, activeShotIndex)}`);
+        panel.dataset.shotSlot = slot;
+        panel.setAttribute("aria-hidden", String(!isActive));
+        panel.toggleAttribute("inert", isOffstage);
+        shotCards[panelIndex].tabIndex = isActive ? 0 : -1;
+        if (isActive) shotCards[panelIndex].setAttribute("aria-current", "true");
+        else shotCards[panelIndex].removeAttribute("aria-current");
       });
+      shotDots.forEach((dot, dotIndex) => {
+        const active = dotIndex === activeShotIndex;
+        dot.setAttribute("aria-current", String(active));
+        dot.tabIndex = active ? 0 : -1;
+      });
+      carouselStatus.textContent = shotPanels[activeShotIndex]?.getAttribute("aria-label") || "";
+      if (options.focus === "card") shotCards[activeShotIndex]?.focus();
+      if (options.focus === "dot") shotDots[activeShotIndex]?.focus();
     }
 
     if (screenshotCarousel && shotPanels.length === shotCards.length && shotPanels.length > 0) {
       screenshotCarousel.classList.add("carouselReady");
       carouselPrev.hidden = false;
       carouselNext.hidden = false;
+      carouselDots.hidden = false;
       selectShot(0);
 
       carouselPrev.addEventListener("click", () => selectShot(activeShotIndex - 1));
       carouselNext.addEventListener("click", () => selectShot(activeShotIndex + 1));
       screenshotCarousel.addEventListener("keydown", (event) => {
-        if (event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.target.closest(".carouselDots")) return;
         const nextIndex = getShotIndexForKey(event.key, activeShotIndex);
         if (nextIndex === undefined) return;
-        const moveCardFocus = shotCards.includes(event.target);
         event.preventDefault();
-        selectShot(nextIndex);
-        if (moveCardFocus) shotCards[nextIndex].focus();
+        selectShot(nextIndex, { focus: shotCards.includes(event.target) ? "card" : undefined });
+      });
+      shotDots.forEach((dot, dotIndex) => {
+        dot.addEventListener("click", () => selectShot(dotIndex));
+        dot.addEventListener("keydown", (event) => {
+          if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+          const nextIndex = getShotIndexForKey(event.key, activeShotIndex);
+          if (nextIndex === undefined) return;
+          event.preventDefault();
+          event.stopPropagation();
+          selectShot(nextIndex, { focus: "dot" });
+        });
       });
     }
 
-    // A native dialog keeps the enlarged capture modal to keyboard and pointer input.
     const imgOverlay = document.getElementById("imgOverlay");
     const imgLightbox = document.getElementById("imgLightbox");
-    const imgCaption = document.getElementById("imgCaption");
-    const imgCounter = document.getElementById("imgCounter");
+    const lightboxStatus = document.getElementById("lightboxStatus");
     const closeImgBtn = document.getElementById("closeImgBtn");
     const lightboxPrev = document.getElementById("lightboxPrev");
     const lightboxNext = document.getElementById("lightboxNext");
@@ -1265,18 +1647,18 @@
       selectShot(lightboxShotIndex);
       const card = shotCards[lightboxShotIndex];
       const image = card.querySelector("img");
-      imageReturnFocus = card;
       imgLightbox.src = card.getAttribute("data-img");
       imgLightbox.alt = image.alt;
-      imgCaption.textContent = card.getAttribute("data-cap") || "";
-      imgCounter.textContent = `${lightboxShotIndex + 1} / ${shotCards.length}`;
+      lightboxStatus.textContent = shotPanels[lightboxShotIndex].getAttribute("aria-label") || card.getAttribute("data-cap") || "";
     }
 
     function openImg(index, trigger) {
+      if (typeof imgOverlay.showModal !== "function") return false;
       imageReturnFocus = trigger;
       renderLightboxShot(index);
       imgOverlay.showModal();
       closeImgBtn.focus();
+      return true;
     }
 
     function closeImg() {
@@ -1284,10 +1666,9 @@
       imgOverlay.close();
       imgLightbox.removeAttribute("src");
       imgLightbox.alt = "";
-      imgCaption.textContent = "";
-      imgCounter.textContent = "";
+      lightboxStatus.textContent = "";
       lightboxShotIndex = -1;
-      const returnFocus = imageReturnFocus;
+      const returnFocus = shotCards[activeShotIndex] || imageReturnFocus;
       imageReturnFocus = undefined;
       returnFocus?.focus();
     }
@@ -1300,6 +1681,7 @@
       closeImg();
     });
     imgOverlay.addEventListener("keydown", (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
       const nextIndex = getShotIndexForKey(event.key, lightboxShotIndex);
       if (nextIndex !== undefined) {
         event.preventDefault();
@@ -1316,37 +1698,46 @@
         focusable[nextFocus].focus();
       }
     });
-    imgOverlay.addEventListener("click", (e) => {
-      if (e.target === imgOverlay) closeImg();
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        closeHelp();
-      }
-      const activeOverlay = document.querySelector(".overlay.open");
-      if (e.key === "Tab" && activeOverlay) {
-        const focusable = [...activeOverlay.querySelectorAll("a[href], button:not([disabled])")];
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
+    imgOverlay.addEventListener("click", (event) => {
+      if (isBackdropClick(event, imgOverlay)) closeImg();
     });
 
     shotCards.forEach((card, index) => {
       card.addEventListener("click", (event) => {
-        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+        if (isModifiedLinkClick(event)) return;
+        if (index !== activeShotIndex) {
+          event.preventDefault();
+          selectShot(index, { focus: "card" });
+          return;
+        }
         if (typeof imgOverlay.showModal !== "function") return;
         event.preventDefault();
         openImg(index, card);
       });
     });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeHelp();
+      const activeOverlay = document.querySelector(".overlay.open");
+      if (event.key === "Tab" && activeOverlay) {
+        const focusable = [...activeOverlay.querySelectorAll("a[href], button:not([disabled])")];
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    document.querySelectorAll(".langBtn").forEach((langBtn) => {
+      langBtn.addEventListener("click", () => applyLanguage(langBtn.getAttribute("data-lang")));
+    });
+    configureDownloadRoute();
+    applyLanguage(getInitialLanguage());
   </script>
 </body>
 </html>
