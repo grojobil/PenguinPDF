@@ -60,6 +60,17 @@ PenguinPDF does not bundle or automatically install LibreOffice.
 - No telemetry or tracking
 - No subscriptions
 
+## Download Statistics
+
+The website displays recorded GitHub installer downloads, including repeat and
+test downloads, not unique people or installations. A free GitHub workflow
+updates the total every six hours and preserves previously observed asset counts
+when installers are replaced. Previously deleted assets with unknown counts are
+not included. There is no visitor tracking on the website.
+
+See [the current platform/release breakdown](docs/downloads.json) and
+[statistics maintenance notes](WEBSITE-STATS.md).
+
 ## Contact
 
 Questions, support, or feedback:
