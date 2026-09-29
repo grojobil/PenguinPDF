@@ -325,6 +325,17 @@ test("the download counter is display-only and has no inflated claim", () => {
   assert.doesNotMatch(site, /1,000\+|thousands of downloads|thousand-plus downloads/i);
 });
 
+test("the download statistic uses a soft sticker treatment with lighter text", () => {
+  assert.match(site, /\.downloadCount\{[^}]*background:rgba\(255,255,255,0\.55\)/);
+  assert.match(site, /\.downloadCount\{[^}]*backdrop-filter:blur\(14px\)/);
+  assert.match(site, /\.downloadCount\{[^}]*transform:rotate\(-3deg\)/);
+  for (const className of ["downloadCountValue", "downloadCountLabel"]) {
+    const styles = site.match(new RegExp(`\\.${className}\\{([^}]+)\\}`))?.[1];
+    assert.match(styles, /font-weight:500/);
+    assert.match(styles, /color:var\(--muted\)/);
+  }
+});
+
 test("download statistics stay hidden while loading and use localized copy after arrival", async () => {
   let resolveResponse;
   const requests = [];

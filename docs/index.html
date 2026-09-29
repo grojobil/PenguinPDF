@@ -96,25 +96,32 @@
       top:0;
       display:flex;
       flex-direction:column;
-      align-items:flex-start;
-      gap:3px;
-      min-height:44px;
+      align-items:center;
+      gap:4px;
+      min-width:92px;
+      padding:8px 14px;
+      border-radius:8px;
+      background:rgba(255,255,255,0.55);
+      border:1px solid rgba(255,255,255,0.60);
+      box-shadow:0 5px 16px rgba(0,0,0,0.04);
+      backdrop-filter:blur(14px);
+      transform:rotate(-3deg);
       cursor:default;
       font-variant-numeric:tabular-nums;
     }
     .downloadCountValue{
-      font-size:28px;
-      font-weight:650;
+      font-size:22px;
+      font-weight:500;
       line-height:1;
-      color:rgba(23,23,26,0.86);
+      color:var(--muted);
     }
     .downloadCountLabel{
       font-size:10px;
-      font-weight:600;
+      font-weight:500;
       line-height:1.2;
       letter-spacing:0;
       text-transform:uppercase;
-      color:rgba(23,23,26,0.66);
+      color:var(--muted);
     }
     .pill{
       display:inline-flex;
@@ -999,8 +1006,8 @@
     @media (max-width: 600px){
       .container{ padding:16px 20px 84px; }
       .topbar{ height:78px; }
-      .downloadCount{ top:48px; min-height:30px; flex-direction:row; align-items:baseline; gap:8px; }
-      .downloadCountValue{ font-size:22px; }
+      .downloadCount{ top:48px; min-height:32px; flex-direction:row; align-items:center; gap:8px; padding:6px 10px; transform:none; }
+      .downloadCountValue{ font-size:18px; }
       .hero{ margin-top:8px; }
       .brandHero{ gap:12px; }
       .brandHero img{ width:52px; height:52px; border-radius:12px; }
