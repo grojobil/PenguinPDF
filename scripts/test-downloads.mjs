@@ -214,13 +214,13 @@ test("each page load centers Home even after navigating away from it", () => {
   assert.doesNotMatch(homeImage, /loading="lazy"/);
 });
 
-function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0) {
+function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0, fetcher) {
   let activeElement;
   const element = (id = "") => {
     const listeners = new Map();
     const attributes = new Map();
     return {
-      id, hidden: false, open: false, dataset: {}, textContent: "", href: "", scrollHeight: 360,
+      id, hidden: id === "downloadCount", open: false, dataset: {}, textContent: "", href: "", scrollHeight: 360,
       style: { setProperty(name, value) { this[name] = value; }, removeProperty(name) { delete this[name]; } },
       classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
       addEventListener(type, callback) {
@@ -296,7 +296,7 @@ function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0) {
     requestAnimationFrame(callback) { callback(); },
   };
   const context = createContext({
-    document, window, localStorage, URLSearchParams,
+    document, window, localStorage, URLSearchParams, AbortSignal, fetch: fetcher,
     navigator: { userAgent, platform: "", language: "en-US", maxTouchPoints },
   });
   new Script(siteScript).runInContext(context);
@@ -310,9 +310,73 @@ function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0) {
   };
 }
 
-test("the landing page has no download-count badge, inflated claim, or statistics request", () => {
-  assert.doesNotMatch(site, /downloadCount|download_count|loadDownloadStats|downloads\.json/);
+test("the download counter is display-only and has no inflated claim", () => {
+  const counter = getElementMarkup("div", "downloadCount");
+  const openingTag = counter.match(/^<div\b[^>]*>/)?.[0];
+  assert.doesNotMatch(openingTag, /\b(?:href|tabindex|onclick|role)=/);
+  assert.doesNotMatch(counter, /<(?:a|button)\b/);
+  assert.match(counter, /\bid="downloadCountLabel"/);
+  assert.match(site, /\.downloadCount\{[^}]*cursor:default/);
+  assert.doesNotMatch(site, /\.downloadCount:hover/);
   assert.doesNotMatch(site, /1,000\+|thousands of downloads|thousand-plus downloads/i);
+});
+
+test("download statistics stay hidden while loading and use localized copy after arrival", async () => {
+  let resolveResponse;
+  const requests = [];
+  const visit = runSite("Mozilla/5.0 (Macintosh)", false, 0, (url, options) => {
+    requests.push({ url, options });
+    return new Promise(resolve => { resolveResponse = resolve; });
+  });
+  const counter = visit.getElement("downloadCount");
+  const label = visit.getElement("downloadCountLabel");
+  assert.equal(counter.hidden, true);
+  new Script('applyLanguage("es")').runInContext(visit.context);
+  resolveResponse({ ok: true, json: async () => ({ schemaVersion: 1, total: 204, updatedAt: "2026-09-29T20:00:00Z" }) });
+  await new Promise(setImmediate);
+  assert.equal(counter.hidden, false);
+  assert.equal(label.textContent, "204 descargas");
+  assert.match(counter.title, /incluidas repeticiones y pruebas/);
+  new Script('applyLanguage("en")').runInContext(visit.context);
+  assert.equal(label.textContent, "204 downloads");
+  assert.match(counter.title, /including repeat and test downloads/);
+  assert.match(counter.title, /Earlier deleted installers are not included/);
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].url, "downloads.json");
+  assert.equal(requests[0].options.credentials, "omit");
+  assert.equal(requests[0].options.cache, "no-cache");
+  assert.ok(requests[0].options.signal instanceof AbortSignal);
+});
+
+test("a verified zero is displayed, but malformed statistics are never shown as zero", async () => {
+  const valid = runSite("", false, 0, async () => ({ ok: true, json: async () => ({ schemaVersion: 1, total: 0, updatedAt: "2026-09-29" }) }));
+  await new Promise(setImmediate);
+  assert.equal(valid.getElement("downloadCountLabel").textContent, "0 downloads");
+  assert.equal(valid.getElement("downloadCount").hidden, false);
+  for (const stats of [null, {}, { schemaVersion: 1, total: -1, updatedAt: "2026-09-29" },
+    { schemaVersion: 1, total: "204", updatedAt: "2026-09-29" },
+    { schemaVersion: 1, total: 204, updatedAt: "invalid" },
+    { schemaVersion: 2, total: 204, updatedAt: "2026-09-29" }]) {
+    const visit = runSite("", false, 0, async () => ({ ok: true, json: async () => stats }));
+    await new Promise(setImmediate);
+    assert.equal(visit.getElement("downloadCount").hidden, true);
+    assert.equal(visit.getElement("downloadCountLabel").textContent, "");
+  }
+});
+
+test("statistics failures leave download routing and the Mac chooser functional", async () => {
+  for (const fetcher of [
+    async () => { throw new Error("offline"); },
+    async () => ({ ok: false, status: 404 }),
+    async () => ({ ok: true, json: async () => { throw new Error("invalid JSON"); } }),
+  ]) {
+    const visit = runSite("Mozilla/5.0 (Macintosh)", false, 0, fetcher);
+    await new Promise(setImmediate);
+    assert.equal(visit.getElement("downloadCount").hidden, true);
+    assert.equal(visit.downloadLabel.textContent, "Download for macOS");
+    assert.ok(visit.downloadButton.dispatch("click").defaultPrevented);
+    assert.equal(visit.getElement("macDownloadDialog").open, true);
+  }
 });
 
 test("Windows downloads EXE directly without guessing a Mac architecture", () => {

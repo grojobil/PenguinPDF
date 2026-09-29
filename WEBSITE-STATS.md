@@ -2,8 +2,8 @@
 
 ## Scope
 
-Keep recorded download statistics available to the owner without displaying a
-download-count badge on the landing page. The underlying GitHub data is public.
+Display a small, localized, non-clickable recorded-download badge on the website.
+Keep recorded statistics and history available to the owner. The data is public.
 Keep installer totals separate from visitors, button clicks, and installations.
 No app telemetry, cookies, paid service, or private-source publishing is added.
 
@@ -21,9 +21,9 @@ This is a recorded total, not a complete lifetime total.
 
 The GitHub workflow refreshes the snapshot every six hours, on release edits,
 and on manual dispatch. It uses public-repository Actions, with no paid service
-or visitor-side GitHub API calls. The landing page does not request statistics.
-Lookup failures leave the last published snapshot unchanged. The GitHub token
-stays in Actions and is never shipped to browsers.
+or visitor-side GitHub API calls. The page reads one same-origin JSON snapshot.
+Lookup failures leave the last published snapshot unchanged; malformed JSON is
+not displayed. The GitHub token stays in Actions and is never shipped to browsers.
 
 Owner access:
 
@@ -76,7 +76,7 @@ Official references:
 ## Acceptance
 
 - Test snapshot merging, asset replacement, malformed data, and API pagination.
-- Verify the landing page has no download-count badge or statistics request.
+- Verify the badge is non-clickable, localized, and hidden when statistics fail.
 - Verify desktop/mobile layout and existing download chooser/carousel behavior.
-- After authorized publication, verify the live page and retained statistics.
+- After authorized publication, verify the live badge and retained statistics.
 - Do not claim visitor analytics is active until its dashboard receives a test event.
