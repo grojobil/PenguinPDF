@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "startedAt": "2026-09-29T19:18:43.806Z",
-  "updatedAt": "2026-09-29T19:18:43.806Z",
+  "updatedAt": "2026-09-29T19:27:07.097Z",
   "total": 204,
   "byPlatform": {
     "macOS": 51,
     "Windows": 153
   },
   "byRelease": {
-    "v2.0.0": 39,
-    "v1.0.0": 165
+    "v1.0.0": 165,
+    "v2.0.0": 39
   },
   "assets": [
     {
