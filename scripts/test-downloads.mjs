@@ -310,6 +310,16 @@ function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0, fetcher)
   };
 }
 
+test("the download counter is display-only, not a link or keyboard action", () => {
+  const counter = getElementMarkup("div", "downloadCount");
+  const openingTag = counter.match(/^<div\b[^>]*>/)?.[0];
+  assert.doesNotMatch(openingTag, /\b(?:href|tabindex|onclick|role)=/);
+  assert.doesNotMatch(counter, /<(?:a|button)\b/);
+  assert.match(counter, /\bid="downloadCountLabel"/);
+  assert.match(site, /\.downloadCount\{[^}]*cursor:default/);
+  assert.doesNotMatch(site, /\.downloadCount:hover/);
+});
+
 test("download statistics stay hidden while loading and use localized copy after arrival", async () => {
   let resolveResponse;
   const requests = [];
