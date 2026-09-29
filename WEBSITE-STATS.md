@@ -2,7 +2,8 @@
 
 ## Scope
 
-Display a small, localized recorded-download total on the existing website.
+Keep recorded download statistics available to the owner without displaying a
+download-count badge on the landing page. The underlying GitHub data is public.
 Keep installer totals separate from visitors, button clicks, and installations.
 No app telemetry, cookies, paid service, or private-source publishing is added.
 
@@ -20,9 +21,20 @@ This is a recorded total, not a complete lifetime total.
 
 The GitHub workflow refreshes the snapshot every six hours, on release edits,
 and on manual dispatch. It uses public-repository Actions, with no paid service
-or visitor-side GitHub API calls. The page reads one same-origin JSON snapshot.
-Lookup failures leave the last published snapshot unchanged; malformed JSON is
-not displayed. The GitHub token stays in Actions and is never shipped to browsers.
+or visitor-side GitHub API calls. The landing page does not request statistics.
+Lookup failures leave the last published snapshot unchanged. The GitHub token
+stays in Actions and is never shipped to browsers.
+
+Owner access:
+
+- Current totals, platform/release breakdowns, and update timestamp:
+  https://grojobil.github.io/PenguinPDF/downloads.json
+- Timestamped snapshot history, starting September 29, 2026:
+  https://github.com/grojobil/PenguinPDF/commits/main/docs/downloads.json
+- Refresh status and manual refresh:
+  https://github.com/grojobil/PenguinPDF/actions/workflows/download-stats.yml
+- Repository views/clones (not website traffic or installer downloads):
+  https://github.com/grojobil/PenguinPDF/graphs/traffic
 
 Before replacing or deleting release assets, run the refresh workflow and wait
 for success. Removed IDs remain in the ledger, so their observed counts survive
@@ -64,7 +76,7 @@ Official references:
 ## Acceptance
 
 - Test snapshot merging, asset replacement, malformed data, and API pagination.
-- Verify English/Spanish counter text and failed-fetch behavior.
+- Verify the landing page has no download-count badge or statistics request.
 - Verify desktop/mobile layout and existing download chooser/carousel behavior.
-- After authorized publication, verify the live counter and refresh workflow.
+- After authorized publication, verify the live page and retained statistics.
 - Do not claim visitor analytics is active until its dashboard receives a test event.

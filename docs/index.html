@@ -90,24 +90,6 @@
       z-index: 5;
     }
 
-    .downloadCount{
-      position:absolute;
-      left:0;
-      top:0;
-      min-height:36px;
-      cursor:default;
-      font-variant-numeric:tabular-nums;
-    }
-    .downloadCount svg{
-      width:16px;
-      height:16px;
-      fill:none;
-      stroke:currentColor;
-      stroke-width:1.7;
-      stroke-linecap:round;
-      stroke-linejoin:round;
-      flex:0 0 16px;
-    }
     .pill{
       display:inline-flex;
       align-items:center;
@@ -990,8 +972,6 @@
 
     @media (max-width: 600px){
       .container{ padding:16px 20px 84px; }
-      .topbar{ height:78px; }
-      .downloadCount{ top:42px; padding:8px 10px; }
       .hero{ margin-top:8px; }
       .brandHero{ gap:12px; }
       .brandHero img{ width:52px; height:52px; border-radius:12px; }
@@ -1035,7 +1015,7 @@
       .heroTagline{ font-size:22px; }
     }
     @media (max-width: 600px) and (max-height: 650px){
-      .topbar{ height:78px; }
+      .topbar{ height:36px; }
       .hero{ margin-top:8px; }
       .brandHero{ margin-bottom:8px; }
       .heroTagline{ margin:4px 0 8px; }
@@ -1053,11 +1033,6 @@
   <div class="container" id="mainContainer">
 
     <div class="topbar">
-      <div class="pill downloadCount" id="downloadCount" hidden>
-        <!-- Lucide download, ISC licensed. -->
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-        <span id="downloadCountLabel"></span>
-      </div>
       <div class="topright">
         <div class="pill">
           <a href="#download-options" data-i18n="top_download">Download</a>
@@ -1343,8 +1318,6 @@
     const I18N = {
       en: {
         top_download: "Download",
-        download_count: "{count} downloads",
-        download_count_detail: "Recorded GitHub installer downloads, including repeat and test downloads. Earlier deleted installers are not included. Updated {date}.",
         hero_tagline: "Your free, local PDF toolbox.",
         hero_desc: "Edit, annotate, fill & sign, organize, and convert PDFs.",
         download_button: "Download",
@@ -1407,8 +1380,6 @@
       },
       es: {
         top_download: "Descargar",
-        download_count: "{count} descargas",
-        download_count_detail: "Descargas registradas de instaladores en GitHub, incluidas repeticiones y pruebas. No incluye instaladores eliminados anteriormente. Actualizado: {date}.",
         hero_tagline: "Tus herramientas PDF, gratis y en tu equipo.",
         hero_desc: "Edita, anota, rellena y firma, organiza y convierte PDFs.",
         download_button: "Descargar",
@@ -1472,39 +1443,6 @@
     };
 
     const LANG_STORAGE_KEY = "penguinpdf_lang";
-    const downloadCount = document.getElementById("downloadCount");
-    const downloadCountLabel = document.getElementById("downloadCountLabel");
-    let downloadStats = null;
-
-    function isValidDownloadStats(stats) {
-      return stats?.schemaVersion === 1 && Number.isSafeInteger(stats.total) && stats.total >= 0 &&
-        typeof stats.updatedAt === "string" && Number.isFinite(Date.parse(stats.updatedAt));
-    }
-
-    function renderDownloadCount(lang) {
-      if (!isValidDownloadStats(downloadStats)) return;
-      const selectedLang = I18N[lang] ? lang : "en";
-      const dict = I18N[selectedLang];
-      const count = downloadStats.total.toLocaleString(selectedLang);
-      const date = new Date(downloadStats.updatedAt).toLocaleDateString(selectedLang, { dateStyle: "medium" });
-      downloadCountLabel.textContent = dict.download_count.replace("{count}", count);
-      downloadCount.title = dict.download_count_detail.replace("{date}", date);
-      downloadCount.hidden = false;
-    }
-
-    async function loadDownloadStats() {
-      try {
-        const response = await fetch("downloads.json", { credentials: "omit", cache: "no-cache", signal: AbortSignal.timeout(8000) });
-        if (!response.ok) return;
-        const stats = await response.json();
-        if (!isValidDownloadStats(stats)) return;
-        downloadStats = stats;
-        renderDownloadCount(document.documentElement.lang);
-      } catch (_) {
-        // Statistics never block downloads or replace an unavailable count with zero.
-      }
-    }
-
     const metaDescription = document.querySelector('meta[name="description"]');
     const downloadBtn = document.getElementById("downloadBtn");
     const macPlatformLink = document.getElementById("macPlatformLink");
@@ -1640,7 +1578,6 @@
       }
 
       updateDownloadLabel(dict);
-      renderDownloadCount(selectedLang);
       updateShotCardCaptions(dict);
       carouselStatus.textContent = shotPanels[activeShotIndex]?.getAttribute("aria-label") || "";
       if (imgOverlay.open && lightboxShotIndex >= 0) renderLightboxShot(lightboxShotIndex);
@@ -1962,7 +1899,6 @@
     });
     configureDownloadRoute();
     applyLanguage(getInitialLanguage());
-    loadDownloadStats();
   </script>
 </body>
 </html>
