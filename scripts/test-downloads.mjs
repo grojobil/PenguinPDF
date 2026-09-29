@@ -336,6 +336,20 @@ test("the download statistic uses a soft sticker treatment with lighter text", (
   }
 });
 
+test("mobile retains the stacked tilted sticker and a fixed bottom-right language selector", () => {
+  const mobileStyles = site.split("@media (max-width: 600px){")[1]?.split("@media (max-width: 360px){")[0];
+  assert.ok(mobileStyles);
+  const stickerStyles = mobileStyles.match(/\.downloadCount\{([^}]+)\}/)?.[1];
+  assert.match(stickerStyles, /min-width:80px/);
+  assert.doesNotMatch(stickerStyles, /flex-direction:row|transform:none|top:/);
+  const languageStyles = mobileStyles.match(/\.langSwitch\{([^}]+)\}/)?.[1];
+  assert.match(languageStyles, /position:fixed/);
+  assert.match(languageStyles, /top:auto/);
+  assert.match(languageStyles, /left:auto/);
+  assert.match(languageStyles, /right:max\(14px, env\(safe-area-inset-right/);
+  assert.match(languageStyles, /bottom:calc\(12px \+ env\(safe-area-inset-bottom/);
+});
+
 test("download statistics stay hidden while loading and use localized copy after arrival", async () => {
   let resolveResponse;
   const requests = [];
