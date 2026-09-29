@@ -94,19 +94,27 @@
       position:absolute;
       left:0;
       top:0;
-      min-height:36px;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:3px;
+      min-height:44px;
       cursor:default;
       font-variant-numeric:tabular-nums;
     }
-    .downloadCount svg{
-      width:16px;
-      height:16px;
-      fill:none;
-      stroke:currentColor;
-      stroke-width:1.7;
-      stroke-linecap:round;
-      stroke-linejoin:round;
-      flex:0 0 16px;
+    .downloadCountValue{
+      font-size:28px;
+      font-weight:650;
+      line-height:1;
+      color:rgba(23,23,26,0.86);
+    }
+    .downloadCountLabel{
+      font-size:10px;
+      font-weight:600;
+      line-height:1.2;
+      letter-spacing:0;
+      text-transform:uppercase;
+      color:rgba(23,23,26,0.66);
     }
     .pill{
       display:inline-flex;
@@ -991,7 +999,8 @@
     @media (max-width: 600px){
       .container{ padding:16px 20px 84px; }
       .topbar{ height:78px; }
-      .downloadCount{ top:42px; padding:8px 10px; }
+      .downloadCount{ top:48px; min-height:30px; flex-direction:row; align-items:baseline; gap:8px; }
+      .downloadCountValue{ font-size:22px; }
       .hero{ margin-top:8px; }
       .brandHero{ gap:12px; }
       .brandHero img{ width:52px; height:52px; border-radius:12px; }
@@ -1053,10 +1062,9 @@
   <div class="container" id="mainContainer">
 
     <div class="topbar">
-      <div class="pill downloadCount" id="downloadCount" hidden>
-        <!-- Lucide download, ISC licensed. -->
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-        <span id="downloadCountLabel"></span>
+      <div class="downloadCount" id="downloadCount" hidden>
+        <span class="downloadCountValue" id="downloadCountValue"></span>
+        <span class="downloadCountLabel" id="downloadCountLabel"></span>
       </div>
       <div class="topright">
         <div class="pill">
@@ -1343,7 +1351,7 @@
     const I18N = {
       en: {
         top_download: "Download",
-        download_count: "{count} downloads",
+        download_count_label: "Downloads",
         download_count_detail: "Recorded GitHub installer downloads, including repeat and test downloads. Earlier deleted installers are not included. Updated {date}.",
         hero_tagline: "Your free, local PDF toolbox.",
         hero_desc: "Edit, annotate, fill & sign, organize, and convert PDFs.",
@@ -1407,7 +1415,7 @@
       },
       es: {
         top_download: "Descargar",
-        download_count: "{count} descargas",
+        download_count_label: "Descargas",
         download_count_detail: "Descargas registradas de instaladores en GitHub, incluidas repeticiones y pruebas. No incluye instaladores eliminados anteriormente. Actualizado: {date}.",
         hero_tagline: "Tus herramientas PDF, gratis y en tu equipo.",
         hero_desc: "Edita, anota, rellena y firma, organiza y convierte PDFs.",
@@ -1473,6 +1481,7 @@
 
     const LANG_STORAGE_KEY = "penguinpdf_lang";
     const downloadCount = document.getElementById("downloadCount");
+    const downloadCountValue = document.getElementById("downloadCountValue");
     const downloadCountLabel = document.getElementById("downloadCountLabel");
     let downloadStats = null;
 
@@ -1487,7 +1496,8 @@
       const dict = I18N[selectedLang];
       const count = downloadStats.total.toLocaleString(selectedLang);
       const date = new Date(downloadStats.updatedAt).toLocaleDateString(selectedLang, { dateStyle: "medium" });
-      downloadCountLabel.textContent = dict.download_count.replace("{count}", count);
+      downloadCountValue.textContent = count;
+      downloadCountLabel.textContent = dict.download_count_label;
       downloadCount.title = dict.download_count_detail.replace("{date}", date);
       downloadCount.hidden = false;
     }

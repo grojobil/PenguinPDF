@@ -315,8 +315,12 @@ test("the download counter is display-only and has no inflated claim", () => {
   const openingTag = counter.match(/^<div\b[^>]*>/)?.[0];
   assert.doesNotMatch(openingTag, /\b(?:href|tabindex|onclick|role)=/);
   assert.doesNotMatch(counter, /<(?:a|button)\b/);
+  assert.doesNotMatch(openingTag, /\bclass="[^"]*\bpill\b/);
+  assert.doesNotMatch(counter, /<svg\b/);
+  assert.match(counter, /\bid="downloadCountValue"/);
   assert.match(counter, /\bid="downloadCountLabel"/);
   assert.match(site, /\.downloadCount\{[^}]*cursor:default/);
+  assert.match(site, /\.downloadCountLabel\{[^}]*text-transform:uppercase/);
   assert.doesNotMatch(site, /\.downloadCount:hover/);
   assert.doesNotMatch(site, /1,000\+|thousands of downloads|thousand-plus downloads/i);
 });
@@ -329,16 +333,19 @@ test("download statistics stay hidden while loading and use localized copy after
     return new Promise(resolve => { resolveResponse = resolve; });
   });
   const counter = visit.getElement("downloadCount");
+  const value = visit.getElement("downloadCountValue");
   const label = visit.getElement("downloadCountLabel");
   assert.equal(counter.hidden, true);
   new Script('applyLanguage("es")').runInContext(visit.context);
   resolveResponse({ ok: true, json: async () => ({ schemaVersion: 1, total: 204, updatedAt: "2026-09-29T20:00:00Z" }) });
   await new Promise(setImmediate);
   assert.equal(counter.hidden, false);
-  assert.equal(label.textContent, "204 descargas");
+  assert.equal(value.textContent, "204");
+  assert.equal(label.textContent, "Descargas");
   assert.match(counter.title, /incluidas repeticiones y pruebas/);
   new Script('applyLanguage("en")').runInContext(visit.context);
-  assert.equal(label.textContent, "204 downloads");
+  assert.equal(value.textContent, "204");
+  assert.equal(label.textContent, "Downloads");
   assert.match(counter.title, /including repeat and test downloads/);
   assert.match(counter.title, /Earlier deleted installers are not included/);
   assert.equal(requests.length, 1);
@@ -351,7 +358,8 @@ test("download statistics stay hidden while loading and use localized copy after
 test("a verified zero is displayed, but malformed statistics are never shown as zero", async () => {
   const valid = runSite("", false, 0, async () => ({ ok: true, json: async () => ({ schemaVersion: 1, total: 0, updatedAt: "2026-09-29" }) }));
   await new Promise(setImmediate);
-  assert.equal(valid.getElement("downloadCountLabel").textContent, "0 downloads");
+  assert.equal(valid.getElement("downloadCountValue").textContent, "0");
+  assert.equal(valid.getElement("downloadCountLabel").textContent, "Downloads");
   assert.equal(valid.getElement("downloadCount").hidden, false);
   for (const stats of [null, {}, { schemaVersion: 1, total: -1, updatedAt: "2026-09-29" },
     { schemaVersion: 1, total: "204", updatedAt: "2026-09-29" },
@@ -360,6 +368,7 @@ test("a verified zero is displayed, but malformed statistics are never shown as 
     const visit = runSite("", false, 0, async () => ({ ok: true, json: async () => stats }));
     await new Promise(setImmediate);
     assert.equal(visit.getElement("downloadCount").hidden, true);
+    assert.equal(visit.getElement("downloadCountValue").textContent, "");
     assert.equal(visit.getElement("downloadCountLabel").textContent, "");
   }
 });

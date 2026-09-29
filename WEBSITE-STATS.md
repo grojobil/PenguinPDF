@@ -2,7 +2,7 @@
 
 ## Scope
 
-Display a small, localized, non-clickable recorded-download badge on the website.
+Display a small, localized, non-clickable recorded-download statistic on the website.
 Keep recorded statistics and history available to the owner. The data is public.
 Keep installer totals separate from visitors, button clicks, and installations.
 No app telemetry, cookies, paid service, or private-source publishing is added.
@@ -76,7 +76,7 @@ Official references:
 ## Acceptance
 
 - Test snapshot merging, asset replacement, malformed data, and API pagination.
-- Verify the badge is non-clickable, localized, and hidden when statistics fail.
+- Verify the statistic is non-clickable, localized, and hidden when statistics fail.
 - Verify desktop/mobile layout and existing download chooser/carousel behavior.
-- After authorized publication, verify the live badge and retained statistics.
+- After authorized publication, verify the live statistic and retained statistics.
 - Do not claim visitor analytics is active until its dashboard receives a test event.
