@@ -18,6 +18,10 @@ warning; consult the
 [release notes](https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0)
 before installing.
 
+The 2.0.0 installers were refreshed on September 28, 2026. Existing 2.0.0
+users must download and reinstall; the in-app version check cannot distinguish
+two builds with the same version number.
+
 ## PenguinPDF 2.0.0
 
 Version 2 provides distinct Edit Text, Annotate PDF, and Fill & Sign tools,
