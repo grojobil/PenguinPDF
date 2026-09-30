@@ -1,7 +1,20 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-30T01:31:24.216768Z",
-  "ratingCount": 0,
-  "ratingSum": 0,
-  "featured": []
+  "updatedAt": "2026-09-30T04:07:00.491795Z",
+  "ratingCount": 2,
+  "ratingSum": 10,
+  "featured": [
+    {
+      "id": "a00f6d8a44cb4fbc",
+      "rating": 5,
+      "comment": "Great polished app with all the functionality you would ever want for your pdfs, can’t believe it’s free",
+      "displayName": "James Saba"
+    },
+    {
+      "id": "1c3f27068e745e2f",
+      "rating": 5,
+      "comment": "This app is amazing, super easy to use and intuitive",
+      "displayName": "Sarah Feldman"
+    }
+  ]
 }
