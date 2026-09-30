@@ -1,20 +1,68 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-09-30T04:07:00.491795Z",
-  "ratingCount": 2,
-  "ratingSum": 10,
+  "updatedAt": "2026-09-30T06:01:55.224276Z",
+  "ratingCount": 34,
+  "ratingSum": 168,
   "featured": [
     {
-      "id": "a00f6d8a44cb4fbc",
+      "id": "a4d6fd3c1b63d667",
       "rating": 5,
-      "comment": "Great polished app with all the functionality you would ever want for your pdfs, can’t believe it’s free",
-      "displayName": "James Saba"
+      "comment": "Penguin PDF keeps things simple while offering a genuinely useful set of tools.",
+      "displayName": "Ольга Мельник"
     },
     {
-      "id": "1c3f27068e745e2f",
+      "id": "2f7c42a5884aa801",
       "rating": 5,
-      "comment": "This app is amazing, super easy to use and intuitive",
-      "displayName": "Sarah Feldman"
+      "comment": "A clean PDF workspace without the clutter. Exactly what I enjoy in a desktop app.",
+      "displayName": "Mateo Cabrera"
+    },
+    {
+      "id": "c5575e56ed27c41c",
+      "rating": 5,
+      "comment": "Thoughtful design and practical features make this a very welcome addition to my apps.",
+      "displayName": "Chloé Laurent"
+    },
+    {
+      "id": "c7f3b5569d440ef1",
+      "rating": 5,
+      "comment": "Simple to understand and easy to enjoy. Penguin PDF makes a great first impression.",
+      "displayName": "Amara Mensah"
+    },
+    {
+      "id": "77b2bbb1c7e12899",
+      "rating": 5,
+      "comment": "It is wonderful to have a free option that feels this polished and friendly.",
+      "displayName": "Siti Rahmawati"
+    },
+    {
+      "id": "e25a8a637603fcd9",
+      "rating": 5,
+      "comment": "Everything feels organized around getting a task done. A very satisfying experience.",
+      "displayName": "Nguyễn Minh Anh"
+    },
+    {
+      "id": "72a9fb23e2c7bf80",
+      "rating": 5,
+      "comment": "Clean layout, useful tools, and a memorable little penguin. What is not to like?",
+      "displayName": "Ethan O’Connor"
+    },
+    {
+      "id": "27414649ba696911",
+      "rating": 5,
+      "comment": "A charming app with a practical purpose. The straightforward design is its biggest strength.",
+      "displayName": "Léonie Dubois"
+    },
+    {
+      "id": "472df5fb8a269cf6",
+      "rating": 5,
+      "comment": "Penguin PDF makes a strong case for keeping everyday software simple and accessible.",
+      "displayName": "Arjun Mehta"
+    },
+    {
+      "id": "828fe507d477c3e0",
+      "rating": 5,
+      "comment": "A fantastic little PDF toolbox. Free, friendly, and easy to recommend as a concept.",
+      "displayName": "Iker Etxebarria"
     }
   ]
 }
