@@ -4,6 +4,7 @@ const COPY = {
     title: "Simple. Powerful. Actually useful.",
     intro: "Feedback from people using PenguinPDF.",
     link: "Leave a review",
+    selectedLabel: "Featured reviews",
     invitation: "Tried PenguinPDF? Tell us what you think.",
     unavailable: "Reviews are unavailable right now. You can still leave yours.",
     anonymous: "PenguinPDF user",
@@ -11,14 +12,19 @@ const COPY = {
     single: "from 1 rating",
     plural: "from {count} ratings",
     private: "Optional feedback via Google Forms. Comments are published only with permission.",
-    aggregate: "The average includes all genuine ratings, not just featured comments.",
-    featured: "Selected feedback, shared with permission. The average includes all genuine ratings.",
+    aggregate: "The average includes all valid submitted ratings, not just featured comments.",
+    featured: "Selected feedback, shared with permission. The average includes all valid submitted ratings.",
+    fiveStar: "Selected five-star reviews, shared with permission. The average includes all valid submitted ratings.",
+    previous: "Previous reviews",
+    next: "Next reviews",
+    range: "Reviews {start} to {end} of {count}",
   },
   es: {
     tag: "Lo que dice la gente",
     title: "Simple. Potente. Útil de verdad.",
     intro: "Opiniones de personas que usan PenguinPDF.",
     link: "Dejar una reseña",
+    selectedLabel: "Reseñas destacadas",
     invitation: "¿Has probado PenguinPDF? Cuéntanos qué te parece.",
     unavailable: "Las reseñas no están disponibles ahora. Puedes dejar la tuya.",
     anonymous: "Usuario de PenguinPDF",
@@ -26,8 +32,12 @@ const COPY = {
     single: "de 1 valoración",
     plural: "de {count} valoraciones",
     private: "Opinión opcional mediante Google Forms. Solo publicamos comentarios con permiso.",
-    aggregate: "La media incluye todas las valoraciones auténticas, no solo los comentarios destacados.",
-    featured: "Opiniones seleccionadas, publicadas con permiso. La media incluye todas las valoraciones auténticas.",
+    aggregate: "La media incluye todas las valoraciones válidas enviadas, no solo los comentarios destacados.",
+    featured: "Opiniones seleccionadas, publicadas con permiso. La media incluye todas las valoraciones válidas enviadas.",
+    fiveStar: "Reseñas seleccionadas de cinco estrellas, publicadas con permiso. La media incluye todas las valoraciones válidas enviadas.",
+    previous: "Reseñas anteriores",
+    next: "Reseñas siguientes",
+    range: "Reseñas {start} a {end} de {count}",
   },
 };
 
@@ -37,7 +47,7 @@ export function isValidReviews(data) {
       !Number.isSafeInteger(data.ratingSum) || data.ratingSum < data.ratingCount ||
       data.ratingSum > data.ratingCount * 5 || typeof data.updatedAt !== "string" ||
       !Number.isFinite(Date.parse(data.updatedAt)) || !Array.isArray(data.featured) ||
-      data.featured.length > Math.min(6, data.ratingCount)) return false;
+      data.featured.length > Math.min(10, data.ratingCount)) return false;
   const ids = new Set();
   let featuredSum = 0;
   const valid = data.featured.every(review => {
@@ -65,7 +75,7 @@ export function reviewView(data, language, failed = false) {
     average: count ? (data.ratingSum / count).toLocaleString(lang, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " / 5" : "",
     count: count === 1 ? copy.single : copy.plural.replace("{count}", count.toLocaleString(lang)),
     status: failed ? copy.unavailable : count ? copy.intro : copy.invitation,
-    policy: valid && data.featured.length ? copy.featured : count ? copy.aggregate : copy.private,
+    policy: valid && data.featured.length ? data.featured.every(review => review.rating === 5) ? copy.fiveStar : copy.featured : count ? copy.aggregate : copy.private,
     featured: valid ? data.featured : [],
     hasRatings: count > 0,
   };
@@ -99,9 +109,13 @@ export function renderReviews(doc, data, language, failed = false) {
   element("reviewAverage").textContent = view.average;
   element("reviewCount").textContent = view.count;
   element("reviewSummary").hidden = !view.hasRatings;
+  element("reviewSummary").setAttribute("title", view.copy.aggregate);
+  element("reviewLink").setAttribute("title", view.copy.private);
   element("reviewStatus").textContent = view.status;
   element("reviewStatus").hidden = !view.status;
-  element("reviewPolicy").textContent = view.policy;
+  element("reviewCaption").textContent = view.copy.selectedLabel;
+  element("reviewCaption").hidden = view.featured.length === 0;
+  element("reviewGrid").setAttribute("aria-description", view.policy);
   const cards = view.featured.map(review => {
     const card = doc.createElement("article");
     card.className = "reviewCard";
@@ -137,6 +151,15 @@ export function renderReviews(doc, data, language, failed = false) {
   });
   element("reviewGrid").replaceChildren(...cards);
   element("reviewGrid").hidden = cards.length === 0;
+  element("reviewGrid").style.setProperty("--review-count", Math.max(1, cards.length));
+  element("reviewsPrevious").setAttribute("aria-label", view.copy.previous);
+  element("reviewsNext").setAttribute("aria-label", view.copy.next);
+}
+
+export function reviewRange(total, scrollLeft, width, step) {
+  const visible = Math.max(1, Math.round((width + 14) / Math.max(1, step)));
+  const start = Math.min(Math.max(0, total - visible), Math.max(0, Math.round(scrollLeft / Math.max(1, step))));
+  return { start: total ? start + 1 : 0, end: Math.min(total, start + visible), previous: start > 0, next: start + visible < total, overflow: total > visible };
 }
 
 export async function fetchReviews(fetcher) {
@@ -154,7 +177,36 @@ export async function fetchReviews(fetcher) {
 if (typeof document !== "undefined" && document.getElementById("reviews")) {
   let snapshot = null;
   let failed = false;
-  const render = () => renderReviews(document, snapshot, document.documentElement.lang, failed);
+  const grid = document.getElementById("reviewGrid");
+  const previous = document.getElementById("reviewsPrevious");
+  const next = document.getElementById("reviewsNext");
+  const updateNavigation = () => {
+    const view = reviewView(snapshot, document.documentElement.lang, failed);
+    const step = (grid.firstElementChild?.getBoundingClientRect().width || grid.clientWidth) + 14;
+    const range = reviewRange(view.featured.length, grid.scrollLeft, grid.clientWidth, step);
+    document.getElementById("reviewNavigation").hidden = !range.overflow;
+    previous.disabled = !range.previous;
+    next.disabled = !range.next;
+    document.getElementById("reviewCarouselStatus").textContent = range.overflow ? view.copy.range.replace("{start}", range.start).replace("{end}", range.end).replace("{count}", view.featured.length) : "";
+  };
+  const move = direction => {
+    const step = (grid.firstElementChild?.getBoundingClientRect().width || grid.clientWidth) + 14;
+    grid.scrollTo({ left: grid.scrollLeft + direction * step, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  };
+  previous.addEventListener("click", () => move(-1));
+  next.addEventListener("click", () => move(1));
+  grid.addEventListener("scroll", updateNavigation, { passive: true });
+  grid.addEventListener("keydown", event => {
+    if (event.target === grid && ["ArrowLeft", "ArrowRight"].includes(event.key)) {
+      event.preventDefault();
+      move(event.key === "ArrowLeft" ? -1 : 1);
+    }
+  });
+  new ResizeObserver(updateNavigation).observe(grid);
+  const render = () => {
+    renderReviews(document, snapshot, document.documentElement.lang, failed);
+    updateNavigation();
+  };
   render();
   new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   fetchReviews(fetch).then(data => { snapshot = data; }).catch(() => { failed = true; }).finally(render);

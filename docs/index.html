@@ -656,7 +656,7 @@
       text-transform:uppercase;
     }
     .reviews h2{ margin:14px 0 0; font-size:32px; font-weight:650; line-height:1.2; color:rgba(23,23,26,0.9); overflow-wrap:anywhere; }
-    .reviewMeta{ display:flex; align-items:center; justify-content:center; gap:18px; flex-wrap:wrap; margin-top:18px; }
+    .reviewActions{ display:flex; justify-content:center; margin-top:22px; }
     .reviewLink{
       display:inline-flex;
       align-items:center;
@@ -671,13 +671,28 @@
       text-decoration:none;
     }
     .reviewLink:hover{ background:rgba(255,255,255,0.82); }
+    .reviewLink:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
     .reviewLink svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.7; }
-    .reviewSummary{ display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; }
+    .reviewSummary{ display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:18px; }
     .reviewSummary > svg{ width:17px; height:17px; fill:#e9a83f; stroke:#e9a83f; }
     .reviewAverage{ font-size:18px; font-weight:600; color:rgba(23,23,26,0.78); }
-    .reviewCount,.reviewStatus,.reviewPolicy{ color:rgba(23,23,26,0.64); font-size:13px; line-height:1.55; }
+    .reviewCount,.reviewStatus{ color:rgba(23,23,26,0.64); font-size:13px; line-height:1.55; }
     .reviewStatus{ margin:10px 0 0; font-size:16px; text-align:center; }
-    .reviewGrid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:20px; }
+    .reviewCaption{ margin:20px 0 10px; color:rgba(23,23,26,0.54); font-size:12px; font-weight:500; line-height:1.4; }
+    .reviewGrid{
+      --review-count:3;
+      --review-columns:min(3,var(--review-count));
+      display:grid;
+      grid-auto-flow:column;
+      grid-auto-columns:calc((100% - (var(--review-columns) - 1)*14px)/var(--review-columns));
+      gap:14px;
+      overflow-x:auto;
+      overscroll-behavior-x:contain;
+      scroll-snap-type:x mandatory;
+      scrollbar-width:none;
+    }
+    .reviewGrid::-webkit-scrollbar{ display:none; }
+    .reviewGrid:focus-visible{ outline:2px solid var(--accent); outline-offset:4px; }
     .reviewCard{
       min-width:0;
       padding:22px;
@@ -690,6 +705,7 @@
       flex-direction:column;
       align-items:flex-start;
       gap:14px;
+      scroll-snap-align:start;
     }
     .reviewStars{ display:inline-flex; gap:3px; color:#e9a83f; }
     .reviewStars svg{ width:17px; height:17px; stroke:currentColor; stroke-width:1.5; fill:currentColor; }
@@ -699,15 +715,19 @@
     .reviewAvatar{ display:grid; place-items:center; flex:0 0 36px; width:36px; height:36px; border-radius:50%; background:rgba(205,197,227,0.3); color:rgba(23,23,26,0.6); font-size:12px; font-weight:500; }
     .reviewAvatar svg{ width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.5; }
     .reviewName{ font-size:13px; font-weight:500; color:rgba(23,23,26,0.65); overflow-wrap:anywhere; }
-    .reviewPolicy{ margin:14px 0 0; text-align:center; }
+    .reviewNavigation{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:16px; }
+    .reviewArrow{ display:grid; place-items:center; width:36px; height:36px; padding:0; border:1px solid rgba(255,255,255,0.85); border-radius:50%; color:rgba(23,23,26,0.7); background:rgba(255,255,255,0.58); cursor:pointer; }
+    .reviewArrow:hover:not(:disabled){ background:rgba(255,255,255,0.85); }
+    .reviewArrow:disabled{ opacity:0.3; cursor:default; }
+    .reviewArrow:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+    .reviewArrow svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; }
     .reviews [hidden]{ display:none; }
-    @media (max-width: 800px){ .reviewGrid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width: 800px){ .reviewGrid{ --review-columns:min(2,var(--review-count)); } }
     @media (max-width: 640px){
       .reviews{ margin-top:28px; padding-top:22px; }
       .reviews h2{ font-size:24px; }
       .reviewStatus{ font-size:15px; }
-      .reviewMeta{ gap:12px; }
-      .reviewGrid{ grid-template-columns:minmax(0,1fr); }
+      .reviewGrid{ --review-columns:1; }
     }
 
     .footerWrap{
@@ -1265,21 +1285,32 @@
         <h2 id="reviewsTitle">Simple. Powerful. Actually useful.</h2>
       </div>
       <p class="reviewStatus" id="reviewStatus" aria-live="polite">Tried PenguinPDF? Tell us what you think.</p>
-      <div class="reviewMeta">
-        <div class="reviewSummary" id="reviewSummary" hidden>
+      <div class="reviewSummary" id="reviewSummary" hidden>
           <!-- Lucide star, ISC licensed. -->
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.48 2.317a.562.562 0 0 1 1.04 0l2.125 4.305a2 2 0 0 0 1.506 1.095l4.75.694a.562.562 0 0 1 .31.96l-3.436 3.348a2 2 0 0 0-.575 1.77l.81 4.728a.562.562 0 0 1-.815.592l-4.248-2.232a2 2 0 0 0-1.862 0L6.838 19.81a.562.562 0 0 1-.815-.592l.81-4.727a2 2 0 0 0-.575-1.771L2.822 9.373a.562.562 0 0 1 .31-.96l4.749-.693a2 2 0 0 0 1.507-1.095z" /></svg>
           <span class="reviewAverage" id="reviewAverage"></span>
           <span class="reviewCount" id="reviewCount"></span>
-        </div>
+      </div>
+      <p class="reviewCaption" id="reviewCaption" hidden>Featured reviews</p>
+      <div class="reviewGrid" id="reviewGrid" role="group" aria-labelledby="reviewCaption" tabindex="0" hidden></div>
+      <div class="reviewNavigation" id="reviewNavigation" hidden>
+        <button class="reviewArrow" id="reviewsPrevious" type="button" aria-label="Previous reviews" disabled>
+          <!-- Lucide chevron-left, ISC licensed. -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+        </button>
+        <button class="reviewArrow" id="reviewsNext" type="button" aria-label="Next reviews">
+          <!-- Lucide chevron-right, ISC licensed. -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+        <span class="visuallyHidden" id="reviewCarouselStatus" aria-live="polite"></span>
+      </div>
+      <div class="reviewActions">
         <a class="reviewLink" id="reviewLink" href="https://docs.google.com/forms/d/e/1FAIpQLSdDG363hP184VcRrEbm67f1sHMdC1gQ4e8KNolZITTuYUiQAA/viewform?usp=header" target="_blank" rel="noopener noreferrer">
           <!-- Lucide message-square, ISC licensed. -->
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2 2z" /></svg>
           <span id="reviewLinkLabel">Leave a review</span>
         </a>
       </div>
-      <div class="reviewGrid" id="reviewGrid" hidden></div>
-      <p class="reviewPolicy" id="reviewPolicy">Optional feedback via Google Forms. Comments are published only with permission.</p>
     </section>
 
     <div class="secondaryLinks">

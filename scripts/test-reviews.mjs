@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { fetchReviews, isValidReviews, renderReviews, reviewView } from "../docs/reviews.mjs";
+import { fetchReviews, isValidReviews, renderReviews, reviewRange, reviewView } from "../docs/reviews.mjs";
 
 const publicSnapshot = JSON.parse(readFileSync(new URL("../docs/reviews.json", import.meta.url)));
 const empty = { schemaVersion: 1, updatedAt: "2026-09-29T12:00:00Z", ratingCount: 0, ratingSum: 0, featured: [] };
@@ -25,6 +25,7 @@ function fakeDocument() {
       className: "",
       hidden: false,
       children: [],
+      style: { setProperty(name, value) { attributes[name] = String(value); } },
       setAttribute(name, value) { attributes[name] = value; },
       getAttribute(name) { return attributes[name]; },
       append(...children) { this.children.push(...children); },
@@ -48,7 +49,12 @@ test("review section follows screenshots and precedes release/mobile links", () 
   assert.match(site, /id="reviewLink"[^>]*href="https:\/\/docs\.google\.com\/forms\/d\/e\/1FAIpQLSdDG363hP184VcRrEbm67f1sHMdC1gQ4e8KNolZITTuYUiQAA\/viewform\?usp=header"/);
   assert.match(site, /<script type="module" src="reviews\.mjs"><\/script>/);
   assert.match(site, /\.reviewCard\{[^}]*border-radius:8px/);
-  assert.match(site, /\.reviewGrid\{ grid-template-columns:minmax\(0,1fr\)/);
+  assert.match(site, /\.reviewGrid\{ --review-columns:1;/);
+  assert.match(site, /scroll-snap-type:x mandatory/);
+  assert.match(site, /id="reviewsNext"/);
+  assert.ok(site.indexOf('id="reviewSummary"') < site.indexOf('id="reviewGrid"'));
+  assert.ok(site.indexOf('id="reviewLink"') > site.indexOf('id="reviewNavigation"'));
+  assert.doesNotMatch(site, /id="reviewPolicy"|class="reviewMeta"/);
 });
 
 test("public snapshot is valid and the empty state invents no ratings or testimonials", () => {
@@ -61,6 +67,7 @@ test("public snapshot is valid and the empty state invents no ratings or testimo
   renderReviews(doc, empty, "en");
   assert.ok(doc.getElementById("reviewSummary").hidden);
   assert.ok(doc.getElementById("reviewGrid").hidden);
+  assert.ok(doc.getElementById("reviewCaption").hidden);
   assert.equal(doc.getElementById("reviewsTitle").textContent, "Simple. Powerful. Actually useful.");
   assert.equal(doc.getElementById("reviewsTag").textContent, "What people are saying");
 });
@@ -81,8 +88,44 @@ test("average includes low and unfeatured ratings, not only the 5-star quote", (
   const view = reviewView(fixture(), "en");
   assert.equal(view.average, "3.3 / 5");
   assert.equal(view.count, "from 3 ratings");
-  assert.match(view.policy, /Selected feedback/);
-  assert.match(view.policy, /all genuine ratings/);
+  assert.match(view.policy, /Selected five-star reviews/);
+  assert.match(view.policy, /all valid submitted ratings/);
+});
+
+test("minimal review layout keeps selection and rating context without a visible policy paragraph", () => {
+  const doc = fakeDocument();
+  renderReviews(doc, fixture(), "en");
+  assert.equal(doc.getElementById("reviewCaption").textContent, "Featured reviews");
+  assert.equal(doc.getElementById("reviewCaption").hidden, false);
+  assert.match(doc.getElementById("reviewSummary").getAttribute("title"), /all valid submitted ratings/);
+  assert.match(doc.getElementById("reviewGrid").getAttribute("aria-description"), /Selected five-star reviews/);
+  assert.match(doc.getElementById("reviewLink").getAttribute("title"), /Google Forms/);
+  renderReviews(doc, fixture(), "es");
+  assert.equal(doc.getElementById("reviewCaption").textContent, "Reseñas destacadas");
+  assert.match(doc.getElementById("reviewSummary").getAttribute("title"), /todas las valoraciones/);
+});
+
+test("up to ten selected comments do not limit the aggregate or invent a verified-user count", () => {
+  const data = fixture();
+  data.ratingCount = 100;
+  data.ratingSum = 350;
+  data.featured = Array.from({length:10}, (_, index) => ({id:index.toString(16).padStart(16,"0"),rating:5,comment:`QA layout ${index}`,displayName:""}));
+  assert.ok(isValidReviews(data));
+  const view = reviewView(data,"en");
+  assert.equal(view.average,"3.5 / 5");
+  assert.equal(view.count,"from 100 ratings");
+  assert.equal(view.featured.length,10);
+  data.featured.push({id:"1000000000000000",rating:5,comment:"QA excess",displayName:""});
+  assert.equal(isValidReviews(data),false);
+});
+
+test("carousel range follows desktop, mobile, overflow, and the final visible group", () => {
+  assert.deepEqual(reviewRange(10,0,960,324.6667), {start:1,end:3,previous:false,next:true,overflow:true});
+  assert.deepEqual(reviewRange(10,7*324.6667,960,324.6667), {start:8,end:10,previous:true,next:false,overflow:true});
+  assert.deepEqual(reviewRange(2,364,350,364), {start:2,end:2,previous:true,next:false,overflow:true});
+  assert.deepEqual(reviewRange(2,0,960,487), {start:1,end:2,previous:false,next:false,overflow:false});
+  assert.equal(reviewRange(0,0,0,0).overflow,false);
+  assert.match(module,/prefers-reduced-motion/);
 });
 
 test("ratings without public comments still display the aggregate", () => {
@@ -92,6 +135,7 @@ test("ratings without public comments still display the aggregate", () => {
   renderReviews(doc, data, "en");
   assert.equal(doc.getElementById("reviewSummary").hidden, false);
   assert.equal(doc.getElementById("reviewGrid").hidden, true);
+  assert.equal(doc.getElementById("reviewCaption").hidden, true);
   assert.equal(doc.getElementById("reviewStatus").hidden, false);
 });
 
