@@ -1329,10 +1329,11 @@
           <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
           <a href="https://github.com/grojobil/PenguinPDF/blob/main/LICENSE.md" data-i18n="footer_license">License</a>
           <a href="https://github.com/grojobil/PenguinPDF/blob/main/THIRD_PARTY_LICENSES.md" data-i18n="footer_notices">Third-party licenses</a>
+          <a id="privacyLink" href="privacy.html" data-i18n="footer_privacy">Privacy</a>
           <a href="https://penguinpdf.gumroad.com/l/sqlly" target="_blank" rel="noreferrer" data-i18n="footer_support">Support the project</a>
           <a href="mailto:penguin.pdf.tools@gmail.com" data-i18n="footer_contact">Contact us</a>
         </div>
-        <span data-i18n="footer_note">PenguinPDF runs locally, no tracking, no accounts.</span>
+        <span data-i18n="footer_note">The app runs locally, with no tracking or accounts.</span>
       </footer>
     </div>
 
@@ -1537,8 +1538,9 @@
         footer_downloads: "Downloads",
         footer_license: "License",
         footer_notices: "Third-party licenses",
+        footer_privacy: "Privacy",
         footer_support: "Support the project",
-        footer_note: "PenguinPDF runs locally, no tracking, no accounts.",
+        footer_note: "The app runs locally, with no tracking or accounts.",
         help_title: "Help",
         help_local_files: "Files never leave your computer",
         help_platforms: "macOS (.dmg) & Windows (.exe)",
@@ -1601,8 +1603,9 @@
         footer_downloads: "Descargas",
         footer_license: "Licencia",
         footer_notices: "Licencias de terceros",
+        footer_privacy: "Privacidad",
         footer_support: "Apoyar el proyecto",
-        footer_note: "PenguinPDF corre localmente, sin rastreo ni cuentas.",
+        footer_note: "La app funciona localmente, sin rastreo ni cuentas.",
         help_title: "Ayuda",
         help_local_files: "Tus archivos nunca salen de tu computadora",
         help_platforms: "macOS (.dmg) y Windows (.exe)",
@@ -1784,6 +1787,7 @@
       }
 
       updateDownloadLabel(dict);
+      document.getElementById("privacyLink").href = selectedLang === "es" ? "privacy.html?lang=es" : "privacy.html";
       renderDownloadCount(selectedLang);
       updateShotCardCaptions(dict);
       carouselStatus.textContent = shotPanels[activeShotIndex]?.getAttribute("aria-label") || "";
@@ -2109,5 +2113,6 @@
     loadDownloadStats();
   </script>
   <script type="module" src="reviews.mjs?v=5d5f3b29dcfa"></script>
+  <script type="module" src="analytics.mjs?v=1"></script>
 </body>
 </html>
