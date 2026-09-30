@@ -75,6 +75,11 @@ analytics module and focused tests only. No specialist commits or deployment.
 - Dashboard: private, sessions/referrers/browser/country enabled; individual
   pageview, screen-size, and regional collection disabled. Live QA page and
   installer events received. No installer event came from opening the chooser.
-  Final campaign-label validation follows the protocol correction above.
+  The `attribution-check` campaign and its installer source label were visible.
+  GoatCounter's non-WebSocket fallback loaded the complete dashboard widgets;
+  this is documented without changing security or collection preferences.
 - Publication: explicitly approved by the user; initial deployment succeeded
-  at `b1caec8`. Campaign-label correction and its final live check are in progress.
+  at `b1caec8`, and the campaign-label correction deployed at `1684f1e`.
+  Live HTML/module/privacy disclosure verified; source hashes matched deployed
+  module and disclosure. Desktop/mobile proof saved outside Git. The app,
+  installers, ads, and unrelated review-automation work were left untouched.

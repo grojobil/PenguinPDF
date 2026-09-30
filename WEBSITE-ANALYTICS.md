@@ -3,6 +3,9 @@
 The private dashboard is https://penguinpdf.goatcounter.com/. Sign in using
 the PenguinPDF account. No API key or analytics account is required by visitors.
 This integration is only in the public website, not the desktop application.
+If widgets stay blank or controls stall, use
+https://penguinpdf.goatcounter.com/?no-websocket=1. This is GoatCounter's own
+dashboard-loading fallback; it does not change data collection or site settings.
 
 ## Reading The Dashboard
 
@@ -13,9 +16,14 @@ This integration is only in the public website, not the desktop application.
 - Top referrers: referring domains when the browser supplies them. Missing
   referral data does not prove that the visitor came directly.
 - Campaigns: homepage visits associated with a tagged link. For installer
-  attribution, select `download-installer` or a platform event and read its
-  Top referrers. Tagged clicks have a label such as `facebook / video-ad`.
+  attribution, open `download-installer` or a platform event to expand its
+  referrers. Tagged clicks have a label such as `facebook / video-ad` (spaces
+  may be displayed as `%20` by GoatCounter).
   GoatCounter does not populate its Campaigns widget from event query tags.
+
+The path filter narrows the Pages list; do not assume that the dashboard-wide
+Totals or Top referrers become installer-only when that filter changes. Use the
+event's own expanded referrers for click attribution, not overall visitor sources.
 
 The any-installer event and format-specific event describe the same click.
 Do not sum them, or add events to homepage visits to claim a number of people.
@@ -81,6 +89,10 @@ from GoatCounter are also respected; no new preference is written by this code.
 events. These are clearly separate from organic page and installer events. QA tags
 may be used, but no actual campaign is implied. The dashboard may batch data
 before showing a hit. Tests must never be relabeled as genuine users.
+Live verification received Windows EXE and Apple Silicon QA click events,
+the separate QA page, and the `attribution-check` campaign. The QA installer
+source label appeared in the dashboard. A browser-blocked installer navigation
+still counted as a click, demonstrating why these are not completed downloads.
 
 Run:
 
