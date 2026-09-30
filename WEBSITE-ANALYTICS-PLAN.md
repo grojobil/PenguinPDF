@@ -34,6 +34,8 @@ document uploads, API secrets, or individual-pageview export collection.
 3. Allow only bounded source/campaign codes in `utm_source`/`utm_campaign`;
    strip other query parameters, fragments, referral paths, and click IDs.
    Use native URL APIs and HTTPS requests without credentials or a Referer.
+   Use the sanitized codes as an event referrer label because GoatCounter's
+   campaign query parsing applies to page visits only, not click events.
 4. Add EN/ES website privacy disclosure and owner documentation explaining
    approximate unique visits, clicks versus completed downloads, future-only
    attribution, ad URL tagging, and exclusion of QA traffic.
@@ -67,11 +69,12 @@ analytics module and focused tests only. No specialist commits or deployment.
 - Planning and source inspection: complete.
 - Implementation and focused tests: complete with one Sol/high specialist;
   coordinator reviewed the module, payload boundaries, and integration.
-- Local regression: 75 Node tests and 10 Python tests passed. Privacy links and
+- Local regression: 76 Node tests and 10 Python tests passed. Privacy links and
   Spanish disclosure checked at 390px; no horizontal overflow. The committed
   Pages workflow includes the focused analytics tests, without unrelated work.
 - Dashboard: private, sessions/referrers/browser/country enabled; individual
-  pageview, screen-size, and regional collection disabled. Protocol QA POST
-  returned HTTP 200; visible live website events still pending.
-- Publication: explicitly approved by the user; deployment and final dashboard
-  verification pending.
+  pageview, screen-size, and regional collection disabled. Live QA page and
+  installer events received. No installer event came from opening the chooser.
+  Final campaign-label validation follows the protocol correction above.
+- Publication: explicitly approved by the user; initial deployment succeeded
+  at `b1caec8`. Campaign-label correction and its final live check are in progress.

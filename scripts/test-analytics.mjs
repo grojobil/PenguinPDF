@@ -5,6 +5,7 @@ import {
   analyticsMode,
   buildCountURL,
   hasPrivacyOptOut,
+  installerAttributionLabel,
   installerEventForURL,
   isPublishedHomepage,
   sanitizeAttribution,
@@ -105,6 +106,19 @@ test("website loads the local sidecar once after handlers and links bilingual pr
   assert.doesNotMatch(siteHTML, /<script\b[^>]*\bsrc="https:\/\/penguinpdf\.goatcounter\.com\/count\.js/);
 });
 
+test("installer attribution labels cover tag combinations and reject unsafe values", () => {
+  const referrer = "https://search.example/private?q=pdf";
+  assert.equal(installerAttributionLabel("?utm_source=Facebook&utm_campaign=video-ad", referrer), "facebook / video-ad");
+  assert.equal(installerAttributionLabel("?utm_source=Facebook", referrer), "source:facebook");
+  assert.equal(installerAttributionLabel("?utm_campaign=video-ad", referrer), "campaign:video-ad");
+  assert.equal(installerAttributionLabel("", referrer), "https://search.example");
+  assert.equal(installerAttributionLabel("", "https://grojobil.github.io/private?q=secret"), "");
+  assert.equal(installerAttributionLabel("?utm_source=bad.value&utm_campaign=also%2Fbad&token=SECRET", referrer), "https://search.example");
+  assert.equal(installerAttributionLabel("?utm_source=one&utm_source=two&utm_campaign=Safe_2", referrer), "campaign:Safe_2");
+  assert.equal(installerAttributionLabel(`?utm_source=${"a".repeat(80)}&utm_campaign=${"b".repeat(80)}`).length, 163);
+  assert.doesNotMatch(installerAttributionLabel("?utm_source=javascript%3Aalert&email=private%40example.test", referrer), /javascript|alert|email|private/i);
+});
+
 test("privacy opt-outs and blocked storage fail closed without throwing", () => {
   for (const value of ["1", "yes", "YES"]) {
     const { window } = harness();
@@ -147,8 +161,8 @@ test("a visible page and every exact installer produce bounded attributed reques
     assert.equal(sent.length, 3);
     assert.deepEqual(sent.map(item => item.p), ["/PenguinPDF/", "download-installer", specificEvent]);
     assert.deepEqual(sent.map(item => item.t), ["PenguinPDF", "Installer link clicked", specificTitle]);
-    assert.deepEqual(sent.map(item => item.q), Array(3).fill("?utm_source=newsletter&utm_campaign=Fall_2026"));
-    assert.deepEqual(sent.map(item => item.r), Array(3).fill("https://search.example"));
+    assert.deepEqual(sent.map(item => item.q), ["?utm_source=newsletter&utm_campaign=Fall_2026", "", ""]);
+    assert.deepEqual(sent.map(item => item.r), ["https://search.example", "newsletter / Fall_2026", "newsletter / Fall_2026"]);
     assert.equal(sent[0].e, undefined);
     assert.equal(sent[1].e, "true");
     assert.equal(sent[2].e, "true");
@@ -259,13 +273,14 @@ test("fetch failures are swallowed and requests use the nonblocking privacy opti
   }
 });
 
-test("QA traffic is event-only and isolated from organic names", () => {
+test("QA page attribution uses a separate page while QA installer events stay isolated", () => {
   const env = harness({ href: `${site}?analytics=qa&utm_source=Manual_QA` });
   setupWebsiteAnalytics(env.window, env.document);
   env.document.dispatch("click", { target: anchor(`${release}${installers[3][0]}`) });
   const sent = payloads(env.calls);
-  assert.deepEqual(sent.map(item => item.p), ["qa-page-view", "qa-download-installer", "qa-download-windows-msi"]);
-  assert.deepEqual(sent.map(item => item.e), ["true", "true", "true"]);
-  assert.deepEqual(sent.map(item => item.q), Array(3).fill("?utm_source=manual_qa"));
-  assert.ok(sent.every(item => item.p.startsWith("qa-")));
+  assert.deepEqual(sent.map(item => item.p), ["/qa-page-view/", "qa-download-installer", "qa-download-windows-msi"]);
+  assert.deepEqual(sent.map(item => item.e), [undefined, "true", "true"]);
+  assert.deepEqual(sent.map(item => item.q), ["?utm_source=manual_qa", "", ""]);
+  assert.deepEqual(sent.map(item => item.r), ["", "source:manual_qa", "source:manual_qa"]);
+  assert.ok(sent.slice(1).every(item => item.p.startsWith("qa-")));
 });

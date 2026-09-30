@@ -12,8 +12,10 @@ This integration is only in the public website, not the desktop application.
   `download-windows-exe`, and `download-windows-msi`: installer choices.
 - Top referrers: referring domains when the browser supplies them. Missing
   referral data does not prove that the visitor came directly.
-- Campaigns: visits and events associated with a tagged link. Select/filter
-  the relevant page or event before interpreting its sources.
+- Campaigns: homepage visits associated with a tagged link. For installer
+  attribution, select `download-installer` or a platform event and read its
+  Top referrers. Tagged clicks have a label such as `facebook / video-ad`.
+  GoatCounter does not populate its Campaigns widget from event query tags.
 
 The any-installer event and format-specific event describe the same click.
 Do not sum them, or add events to homepage visits to claim a number of people.
@@ -41,7 +43,11 @@ Only `utm_source` and `utm_campaign` values consisting of 1-80 letters, digits,
 hyphens, or underscores are transmitted. Use campaign codes, never names,
 email addresses, document names, or other personal data. Other query data,
 including `fbclid`, is not forwarded. Referrer paths and queries are stripped.
-Both visits and installer events receive the same sanitized tags.
+Visits receive the sanitized query tags. Installer events carry the same codes
+in their referrer label, because GoatCounter ignores query tags on events.
+With no tags, an event retains the referring domain. A source-only label is
+`source:facebook`; a campaign-only label is `campaign:video-ad`. These labels
+describe attribution, not extra clicks or identities.
 
 Website integration alone does not change existing ad destinations. Updating
 active ads may require review; this task does not change ad spend, targeting,
@@ -71,8 +77,8 @@ from GoatCounter are also respected; no new preference is written by this code.
 
 ## Controlled QA
 
-`?analytics=qa` records only `qa-page-view` and `qa-download-*` event names.
-These are clearly separate from organic page and installer events. QA tags
+`?analytics=qa` records the separate `/qa-page-view/` page and `qa-download-*`
+events. These are clearly separate from organic page and installer events. QA tags
 may be used, but no actual campaign is implied. The dashboard may batch data
 before showing a hit. Tests must never be relabeled as genuine users.
 
@@ -84,5 +90,7 @@ node --test scripts/test-analytics.mjs scripts/test-downloads.mjs scripts/test-d
 
 The integration uses native browser requests matching the public protocol
 observed in GoatCounter's official client: https://gc.zgo.at/count.js.
+Event campaign handling was verified against GoatCounter's `Hit.Defaults`:
+https://github.com/arp242/goatcounter/blob/master/hit.go.
 GoatCounter owns session counting and aggregation. No external executable
 script, analytics dependency, token, or backend is bundled with PenguinPDF.

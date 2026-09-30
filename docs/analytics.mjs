@@ -71,6 +71,16 @@ export function sanitizeReferrer(referrer, pageOrigin = SITE_ORIGIN) {
   }
 }
 
+export function installerAttributionLabel(search = "", referrer = "", pageOrigin = SITE_ORIGIN) {
+  const attribution = new URLSearchParams(sanitizeAttribution(search));
+  const source = attribution.get("utm_source");
+  const campaign = attribution.get("utm_campaign");
+  if (source && campaign) return `${source} / ${campaign}`;
+  if (source) return `source:${source}`;
+  if (campaign) return `campaign:${campaign}`;
+  return sanitizeReferrer(referrer, pageOrigin);
+}
+
 export function installerEventForURL(href, base = `${SITE_ORIGIN}${HOMEPAGE_PATH}`) {
   try {
     const url = new URL(href, base);
@@ -130,6 +140,7 @@ export function setupWebsiteAnalytics(windowObject, documentObject) {
   const mode = analyticsMode(initialURL.search);
   const query = sanitizeAttribution(initialURL.search);
   const referrer = sanitizeReferrer(documentObject.referrer, initialURL.origin);
+  const installerReferrer = installerAttributionLabel(initialURL.search, documentObject.referrer, initialURL.origin);
   const seenInteractions = new WeakSet();
   let sequence = 0;
 
@@ -138,13 +149,13 @@ export function setupWebsiteAnalytics(windowObject, documentObject) {
     analyticsMode(asURL(windowObject.location)?.search ?? "") !== "off" &&
     !hasPrivacyOptOut(windowObject);
 
-  const post = (path, title, event = false) => {
+  const post = (path, title, event = false, requestReferrer = referrer, requestQuery = query) => {
     if (mode === "off" || !canCollect()) return false;
     const requestURL = buildCountURL({
       path: mode === "qa" && event ? `qa-${path}` : path,
       title,
-      referrer,
-      query,
+      referrer: requestReferrer,
+      query: requestQuery,
       event,
       rnd: `${Date.now().toString(36)}${(++sequence).toString(36)}`,
     });
@@ -165,7 +176,7 @@ export function setupWebsiteAnalytics(windowObject, documentObject) {
   let pageAttempted = false;
   const recordVisiblePage = () => {
     if (pageAttempted || (documentObject.visibilityState && documentObject.visibilityState !== "visible")) return;
-    pageAttempted = post(mode === "qa" ? "page-view" : HOMEPAGE_PATH, "PenguinPDF", mode === "qa");
+    pageAttempted = post(mode === "qa" ? "/qa-page-view/" : HOMEPAGE_PATH, "PenguinPDF");
     if (pageAttempted) documentObject.removeEventListener?.("visibilitychange", recordVisiblePage);
   };
   if (documentObject.visibilityState === "hidden" || documentObject.visibilityState === "prerender") {
@@ -183,8 +194,8 @@ export function setupWebsiteAnalytics(windowObject, documentObject) {
     const installer = installerEventForURL(anchor.getAttribute("href"), initialURL.href);
     if (!installer || !canCollect()) return;
     seenInteractions.add(event);
-    post("download-installer", "Installer link clicked", true);
-    post(installer.event, installer.title, true);
+    post("download-installer", "Installer link clicked", true, installerReferrer, "");
+    post(installer.event, installer.title, true, installerReferrer, "");
   };
 
   documentObject.addEventListener("click", recordInstaller);
