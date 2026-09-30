@@ -22,6 +22,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Test website, downloads, and review moderation
+        run: |
+          node --test scripts/test-download-stats.mjs scripts/test-downloads.mjs scripts/test-reviews.mjs
+          python3 scripts/test-reviews-import.py
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

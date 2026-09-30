@@ -635,6 +635,81 @@
       transform:scale(1.08);
     }
 
+    .reviews{
+      width:100%;
+      max-width:960px;
+      margin:44px auto 0;
+      padding:30px 0 0;
+      border-top:1px solid rgba(23,23,26,0.08);
+    }
+    .reviewsHeader{
+      text-align:center;
+    }
+    .reviewsTag{
+      display:inline-block;
+      padding:6px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.55);
+      color:rgba(23,23,26,0.58);
+      font-size:11px;
+      font-weight:600;
+      text-transform:uppercase;
+    }
+    .reviews h2{ margin:14px 0 0; font-size:32px; font-weight:650; line-height:1.2; color:rgba(23,23,26,0.9); overflow-wrap:anywhere; }
+    .reviewMeta{ display:flex; align-items:center; justify-content:center; gap:18px; flex-wrap:wrap; margin-top:18px; }
+    .reviewLink{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      padding:10px 14px;
+      border:1px solid rgba(255,255,255,0.8);
+      border-radius:8px;
+      background:rgba(255,255,255,0.55);
+      color:rgba(23,23,26,0.76);
+      font-size:14px;
+      font-weight:500;
+      text-decoration:none;
+    }
+    .reviewLink:hover{ background:rgba(255,255,255,0.82); }
+    .reviewLink svg{ width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.7; }
+    .reviewSummary{ display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; }
+    .reviewSummary > svg{ width:17px; height:17px; fill:#e9a83f; stroke:#e9a83f; }
+    .reviewAverage{ font-size:18px; font-weight:600; color:rgba(23,23,26,0.78); }
+    .reviewCount,.reviewStatus,.reviewPolicy{ color:rgba(23,23,26,0.64); font-size:13px; line-height:1.55; }
+    .reviewStatus{ margin:10px 0 0; font-size:16px; text-align:center; }
+    .reviewGrid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:20px; }
+    .reviewCard{
+      min-width:0;
+      padding:22px;
+      border:1px solid rgba(255,255,255,0.8);
+      border-radius:8px;
+      background:rgba(255,255,255,0.58);
+      box-shadow:0 8px 24px rgba(23,23,26,0.04);
+      backdrop-filter:blur(14px);
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:14px;
+    }
+    .reviewStars{ display:inline-flex; gap:3px; color:#e9a83f; }
+    .reviewStars svg{ width:17px; height:17px; stroke:currentColor; stroke-width:1.5; fill:currentColor; }
+    .reviewStars .emptyStar{ fill:none; color:rgba(23,23,26,0.2); }
+    .reviewCard blockquote{ margin:0; font-size:15px; line-height:1.65; color:rgba(23,23,26,0.82); white-space:pre-line; overflow-wrap:anywhere; }
+    .reviewAuthor{ display:flex; align-items:center; gap:10px; margin-top:auto; min-width:0; }
+    .reviewAvatar{ display:grid; place-items:center; flex:0 0 36px; width:36px; height:36px; border-radius:50%; background:rgba(205,197,227,0.3); color:rgba(23,23,26,0.6); font-size:12px; font-weight:500; }
+    .reviewAvatar svg{ width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.5; }
+    .reviewName{ font-size:13px; font-weight:500; color:rgba(23,23,26,0.65); overflow-wrap:anywhere; }
+    .reviewPolicy{ margin:14px 0 0; text-align:center; }
+    .reviews [hidden]{ display:none; }
+    @media (max-width: 800px){ .reviewGrid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (max-width: 640px){
+      .reviews{ margin-top:28px; padding-top:22px; }
+      .reviews h2{ font-size:24px; }
+      .reviewStatus{ font-size:15px; }
+      .reviewMeta{ gap:12px; }
+      .reviewGrid{ grid-template-columns:minmax(0,1fr); }
+    }
+
     .footerWrap{
       margin-top:40px;
       padding-top:24px;
@@ -1182,6 +1257,29 @@
         <button class="carouselDot" type="button" data-shot-index="3" aria-label="Show Annotate PDF screenshot" data-i18n-aria-label="show_shot_edit"></button>
       </div>
       <p class="visuallyHidden" id="carouselStatus" aria-live="polite"></p>
+    </section>
+
+    <section class="reviews" id="reviews" aria-labelledby="reviewsTitle">
+      <div class="reviewsHeader">
+        <span class="reviewsTag" id="reviewsTag">What people are saying</span>
+        <h2 id="reviewsTitle">Simple. Powerful. Actually useful.</h2>
+      </div>
+      <p class="reviewStatus" id="reviewStatus" aria-live="polite">Tried PenguinPDF? Tell us what you think.</p>
+      <div class="reviewMeta">
+        <div class="reviewSummary" id="reviewSummary" hidden>
+          <!-- Lucide star, ISC licensed. -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.48 2.317a.562.562 0 0 1 1.04 0l2.125 4.305a2 2 0 0 0 1.506 1.095l4.75.694a.562.562 0 0 1 .31.96l-3.436 3.348a2 2 0 0 0-.575 1.77l.81 4.728a.562.562 0 0 1-.815.592l-4.248-2.232a2 2 0 0 0-1.862 0L6.838 19.81a.562.562 0 0 1-.815-.592l.81-4.727a2 2 0 0 0-.575-1.771L2.822 9.373a.562.562 0 0 1 .31-.96l4.749-.693a2 2 0 0 0 1.507-1.095z" /></svg>
+          <span class="reviewAverage" id="reviewAverage"></span>
+          <span class="reviewCount" id="reviewCount"></span>
+        </div>
+        <a class="reviewLink" id="reviewLink" href="https://docs.google.com/forms/d/e/1FAIpQLSdDG363hP184VcRrEbm67f1sHMdC1gQ4e8KNolZITTuYUiQAA/viewform?usp=header" target="_blank" rel="noopener noreferrer">
+          <!-- Lucide message-square, ISC licensed. -->
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+          <span id="reviewLinkLabel">Leave a review</span>
+        </a>
+      </div>
+      <div class="reviewGrid" id="reviewGrid" hidden></div>
+      <p class="reviewPolicy" id="reviewPolicy">Optional feedback via Google Forms. Comments are published only with permission.</p>
     </section>
 
     <div class="secondaryLinks">
@@ -1979,5 +2077,6 @@
     applyLanguage(getInitialLanguage());
     loadDownloadStats();
   </script>
+  <script type="module" src="reviews.mjs"></script>
 </body>
 </html>

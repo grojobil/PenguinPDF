@@ -1,0 +1,177 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { test } from "node:test";
+import { fetchReviews, isValidReviews, renderReviews, reviewView } from "../docs/reviews.mjs";
+
+const publicSnapshot = JSON.parse(readFileSync(new URL("../docs/reviews.json", import.meta.url)));
+const empty = { schemaVersion: 1, updatedAt: "2026-09-29T12:00:00Z", ratingCount: 0, ratingSum: 0, featured: [] };
+const site = readFileSync(new URL("../docs/index.html", import.meta.url), "utf8");
+const module = readFileSync(new URL("../docs/reviews.mjs", import.meta.url), "utf8");
+const fixture = () => ({
+  schemaVersion: 1,
+  updatedAt: "2026-09-29T12:00:00Z",
+  ratingCount: 3,
+  ratingSum: 10,
+  featured: [{ id: "1234567890abcdef", rating: 5, comment: "QA example, not a customer review", displayName: "QA example" }],
+});
+
+function fakeDocument() {
+  const elements = new Map();
+  function element(tag = "div") {
+    const attributes = {};
+    return {
+      tagName: tag,
+      textContent: "",
+      className: "",
+      hidden: false,
+      children: [],
+      setAttribute(name, value) { attributes[name] = value; },
+      getAttribute(name) { return attributes[name]; },
+      append(...children) { this.children.push(...children); },
+      replaceChildren(...children) { this.children = children; },
+      set innerHTML(_) { throw new Error("Review content must not use innerHTML"); },
+    };
+  }
+  return {
+    getElementById(id) {
+      if (!elements.has(id)) elements.set(id, element());
+      return elements.get(id);
+    },
+    createElement: element,
+    createElementNS: (_, tag) => element(tag),
+  };
+}
+
+test("review section follows screenshots and precedes release/mobile links", () => {
+  assert.ok(site.indexOf('id="reviews"') > site.indexOf('id="carouselStatus"'));
+  assert.ok(site.indexOf('id="reviews"') < site.indexOf('class="secondaryLinks"'));
+  assert.match(site, /id="reviewLink"[^>]*href="https:\/\/docs\.google\.com\/forms\/d\/e\/1FAIpQLSdDG363hP184VcRrEbm67f1sHMdC1gQ4e8KNolZITTuYUiQAA\/viewform\?usp=header"/);
+  assert.match(site, /<script type="module" src="reviews\.mjs"><\/script>/);
+  assert.match(site, /\.reviewCard\{[^}]*border-radius:8px/);
+  assert.match(site, /\.reviewGrid\{ grid-template-columns:minmax\(0,1fr\)/);
+});
+
+test("public snapshot is valid and the empty state invents no ratings or testimonials", () => {
+  assert.ok(isValidReviews(publicSnapshot));
+  assert.ok(isValidReviews(empty));
+  assert.equal(empty.ratingCount, 0);
+  assert.equal(empty.ratingSum, 0);
+  assert.deepEqual(empty.featured, []);
+  const doc = fakeDocument();
+  renderReviews(doc, empty, "en");
+  assert.ok(doc.getElementById("reviewSummary").hidden);
+  assert.ok(doc.getElementById("reviewGrid").hidden);
+  assert.equal(doc.getElementById("reviewsTitle").textContent, "Simple. Powerful. Actually useful.");
+  assert.equal(doc.getElementById("reviewsTag").textContent, "What people are saying");
+});
+
+test("Unicode length matches the importer and featured stars agree with the aggregate", () => {
+  const data = fixture();
+  data.featured[0].comment = "😀".repeat(600);
+  assert.ok(isValidReviews(data));
+  data.featured[0].comment += "😀";
+  assert.equal(isValidReviews(data), false);
+  data.featured[0].comment = "QA example";
+  data.ratingCount = 1;
+  data.ratingSum = 1;
+  assert.equal(isValidReviews(data), false);
+});
+
+test("average includes low and unfeatured ratings, not only the 5-star quote", () => {
+  const view = reviewView(fixture(), "en");
+  assert.equal(view.average, "3.3 / 5");
+  assert.equal(view.count, "from 3 ratings");
+  assert.match(view.policy, /Selected feedback/);
+  assert.match(view.policy, /all genuine ratings/);
+});
+
+test("ratings without public comments still display the aggregate", () => {
+  const data = fixture();
+  data.featured = [];
+  const doc = fakeDocument();
+  renderReviews(doc, data, "en");
+  assert.equal(doc.getElementById("reviewSummary").hidden, false);
+  assert.equal(doc.getElementById("reviewGrid").hidden, true);
+  assert.equal(doc.getElementById("reviewStatus").hidden, false);
+});
+
+test("language changes localize headings, counts, stars and optional anonymous name", () => {
+  const data = fixture();
+  data.featured[0].displayName = "";
+  const doc = fakeDocument();
+  renderReviews(doc, data, "es");
+  assert.equal(doc.getElementById("reviewAverage").textContent, "3,3 / 5");
+  assert.equal(doc.getElementById("reviewsTitle").textContent, "Simple. Potente. Útil de verdad.");
+  assert.equal(doc.getElementById("reviewsTag").textContent, "Lo que dice la gente");
+  const card = doc.getElementById("reviewGrid").children[0];
+  assert.equal(card.children[0].getAttribute("aria-label"), "5 de 5 estrellas");
+  assert.equal(card.children[2].children[1].textContent, "Usuario de PenguinPDF");
+  renderReviews(doc, data, "en");
+  assert.equal(doc.getElementById("reviewGrid").children.length, 1);
+  assert.match(doc.getElementById("reviewLinkLabel").textContent, /Leave/);
+  assert.match(module, /attributeFilter: \["lang"\]/);
+});
+
+test("hostile comments and names remain literal text, never HTML", () => {
+  const data = fixture();
+  data.featured[0].comment = '<img src=x onerror="alert(1)"><script>attack()</script>';
+  data.featured[0].displayName = "<svg onload=attack()>";
+  const doc = fakeDocument();
+  renderReviews(doc, data, "en");
+  const card = doc.getElementById("reviewGrid").children[0];
+  assert.equal(card.children[1].textContent, data.featured[0].comment);
+  assert.equal(card.children[2].children[1].textContent, data.featured[0].displayName);
+  assert.doesNotMatch(module, /innerHTML\s*=/);
+});
+
+test("reviewer initials use the actual display name and anonymous reviews get a generic icon", () => {
+  const data = fixture();
+  const doc = fakeDocument();
+  data.featured[0].displayName = "QA Example";
+  renderReviews(doc, data, "en");
+  assert.equal(doc.getElementById("reviewGrid").children[0].children[2].children[0].textContent, "QE");
+  data.featured[0].displayName = "";
+  renderReviews(doc, data, "en");
+  assert.equal(doc.getElementById("reviewGrid").children[0].children[2].children[0].children[0].tagName, "svg");
+});
+
+test("invalid snapshots cannot show fabricated aggregate data or broken cards", () => {
+  for (const change of [{ ratingSum: 16 }, { ratingCount: -1 }, { ratingCount: 1.5 }, { updatedAt: "bad date" }, { schemaVersion: 2 }, { featured: [{}] }, { ratingCount: 0, ratingSum: 0, featured: fixture().featured }]) {
+    assert.equal(isValidReviews({ ...fixture(), ...change }), false);
+  }
+  const duplicate = fixture();
+  duplicate.featured.push({ ...duplicate.featured[0] });
+  assert.equal(isValidReviews(duplicate), false);
+  const doc = fakeDocument();
+  renderReviews(doc, { ...fixture(), ratingSum: 99 }, "en", true);
+  assert.ok(doc.getElementById("reviewSummary").hidden);
+  assert.match(doc.getElementById("reviewStatus").textContent, /unavailable/);
+});
+
+test("one rating has singular wording and 1-star reviews render correctly", () => {
+  const data = fixture();
+  data.ratingCount = 1;
+  data.ratingSum = 1;
+  data.featured[0].rating = 1;
+  const doc = fakeDocument();
+  renderReviews(doc, data, "en");
+  assert.equal(doc.getElementById("reviewCount").textContent, "from 1 rating");
+  const stars = doc.getElementById("reviewGrid").children[0].children[0].children;
+  assert.equal(stars.filter(star => star.getAttribute("class") === "emptyStar").length, 4);
+});
+
+test("same-origin review fetch omits credentials and validates failures", async () => {
+  let request;
+  assert.deepEqual(await fetchReviews(async (...args) => {
+    request = args;
+    return { ok: true, json: async () => empty };
+  }), empty);
+  assert.equal(request[0], "reviews.json");
+  assert.equal(request[1].credentials, "omit");
+  assert.equal(request[1].cache, "no-cache");
+  for (const fetcher of [
+    async () => ({ ok: false }),
+    async () => ({ ok: true, json: async () => ({}) }),
+    async () => { throw new Error("offline"); },
+  ]) await assert.rejects(fetchReviews(fetcher));
+});

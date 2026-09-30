@@ -1,2 +1,5 @@
 .DS_Store
 **/.DS_Store
+__pycache__/
+# Raw feedback and moderation records are private, never website assets.
+review-private/
