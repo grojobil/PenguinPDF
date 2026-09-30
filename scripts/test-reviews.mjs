@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { fetchReviews, isValidReviews, renderReviews, reviewRange, reviewView } from "../docs/reviews.mjs";
@@ -47,7 +48,9 @@ test("review section follows screenshots and precedes release/mobile links", () 
   assert.ok(site.indexOf('id="reviews"') > site.indexOf('id="carouselStatus"'));
   assert.ok(site.indexOf('id="reviews"') < site.indexOf('class="secondaryLinks"'));
   assert.match(site, /id="reviewLink"[^>]*href="https:\/\/docs\.google\.com\/forms\/d\/e\/1FAIpQLSdDG363hP184VcRrEbm67f1sHMdC1gQ4e8KNolZITTuYUiQAA\/viewform\?usp=header"/);
-  assert.match(site, /<script type="module" src="reviews\.mjs"><\/script>/);
+  const moduleHash = createHash("sha256").update(module).digest("hex").slice(0, 12);
+  assert.ok(site.includes(`<script type="module" src="reviews.mjs?v=${moduleHash}"></script>`),
+    "The review script URL must change with its contents to avoid stale browser caches");
   assert.match(site, /\.reviewCard\{[^}]*border-radius:8px/);
   assert.match(site, /\.reviewGrid\{ --review-columns:1;/);
   assert.match(site, /scroll-snap-type:x mandatory/);
