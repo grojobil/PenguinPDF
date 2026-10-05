@@ -1,0 +1,65 @@
+name: Refresh website reviews
+
+on:
+  schedule:
+    - cron: '37 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: website-data-updates
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: vars.REVIEWS_FEED_URL != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test website and review privacy
+        run: |
+          node --test scripts/test-downloads.mjs scripts/test-download-stats.mjs scripts/test-reviews.mjs scripts/test-review-data.mjs scripts/test-reviews-sync.mjs scripts/test-reviews-feed.mjs
+          python3 scripts/test-reviews-import.py
+      - name: Read the prepared public review feed
+        env:
+          REVIEWS_FEED_URL: ${{ vars.REVIEWS_FEED_URL }}
+        run: node scripts/sync-reviews.mjs
+      - name: Save changed reviews only
+        id: snapshot
+        run: |
+          if git diff --quiet -- docs/reviews.json; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/reviews.json
+          git commit -m 'Refresh submitted website reviews'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+      - name: Upload updated Pages artifact
+        if: steps.snapshot.outputs.changed == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+          name: github-pages
+      - name: Publish the updated website
+        id: deployment
+        if: steps.snapshot.outputs.changed == 'true'
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages

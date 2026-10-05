@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { fetchReviews, isValidReviews, renderReviews, reviewRange, reviewView } from "../docs/reviews.mjs";
+import { fetchReviews, isValidReviews, renderAllReviews, renderReviews, reviewDateLabel, reviewPage, reviewRange, reviewView, setupReviewDialog } from "../docs/reviews.mjs";
 
 const publicSnapshot = JSON.parse(readFileSync(new URL("../docs/reviews.json", import.meta.url)));
 const empty = { schemaVersion: 1, updatedAt: "2026-09-29T12:00:00Z", ratingCount: 0, ratingSum: 0, featured: [] };
@@ -18,23 +18,36 @@ const fixture = () => ({
 
 function fakeDocument() {
   const elements = new Map();
+  let doc;
   function element(tag = "div") {
     const attributes = {};
+    const listeners = new Map();
     return {
       tagName: tag,
       textContent: "",
       className: "",
       hidden: false,
       children: [],
+      open: false,
+      disabled: false,
+      scrollTop: 0,
       style: { setProperty(name, value) { attributes[name] = String(value); } },
       setAttribute(name, value) { attributes[name] = value; },
       getAttribute(name) { return attributes[name]; },
       append(...children) { this.children.push(...children); },
       replaceChildren(...children) { this.children = children; },
+      addEventListener(name, callback) { listeners.set(name, callback); },
+      dispatch(name, event = {}) { listeners.get(name)?.({ target: this, ...event }); },
+      focus() { doc.activeElement = this; },
+      showModal() { this.open = true; },
+      close() { this.open = false; this.dispatch("close"); },
+      getBoundingClientRect() { return { left: 100, top: 100, right: 700, bottom: 600 }; },
       set innerHTML(_) { throw new Error("Review content must not use innerHTML"); },
     };
   }
-  return {
+  doc = {
+    documentElement: { lang: "en" },
+    activeElement: null,
     getElementById(id) {
       if (!elements.has(id)) elements.set(id, element());
       return elements.get(id);
@@ -42,6 +55,7 @@ function fakeDocument() {
     createElement: element,
     createElementNS: (_, tag) => element(tag),
   };
+  return doc;
 }
 
 test("review section follows screenshots and precedes release/mobile links", () => {
@@ -51,6 +65,8 @@ test("review section follows screenshots and precedes release/mobile links", () 
   const moduleHash = createHash("sha256").update(module).digest("hex").slice(0, 12);
   assert.ok(site.includes(`<script type="module" src="reviews.mjs?v=${moduleHash}"></script>`),
     "The review script URL must change with its contents to avoid stale browser caches");
+  const validatorHash = createHash("sha256").update(readFileSync(new URL("../docs/review-data.mjs", import.meta.url))).digest("hex").slice(0, 12);
+  assert.ok(module.includes(`./review-data.mjs?v=${validatorHash}`), "The imported validator must also bypass stale module caches");
   assert.match(site, /\.reviewCard\{[^}]*border-radius:8px/);
   assert.match(site, /\.reviewGrid\{ --review-columns:1;/);
   assert.match(site, /scroll-snap-type:x mandatory/);
@@ -221,4 +237,133 @@ test("same-origin review fetch omits credentials and validates failures", async 
     async () => ({ ok: true, json: async () => ({}) }),
     async () => { throw new Error("offline"); },
   ]) await assert.rejects(fetchReviews(fetcher));
+});
+
+function archiveFixture(total = 36) {
+  const reviews = Array.from({ length: total }, (_, index) => ({
+    id: index.toString(16).padStart(16, "0"), rating: index === 2 ? 4 : 5,
+    comment: `QA public comment ${index}, not customer feedback`, displayName: `QA ${index}`,
+  }));
+  return { schemaVersion: 2, updatedAt: empty.updatedAt, ratingCount: total + 1,
+    ratingSum: reviews.reduce((sum, review) => sum + review.rating, 0) + 1,
+    reviews, featured: reviews.filter(review => review.rating === 5).slice(0, 10) };
+}
+
+test("the rating count opens the full-review dialog without adding another section action", () => {
+  assert.match(site, /<button[^>]*id="reviewCount"[^>]*aria-haspopup="dialog"[^>]*aria-controls="allReviewsDialog"/);
+  assert.match(site, /<dialog[^>]*id="allReviewsDialog"[^>]*aria-labelledby="allReviewsTitle"/);
+  const doc = fakeDocument();
+  renderReviews(doc, archiveFixture(), "en");
+  assert.equal(doc.getElementById("reviewCount").disabled, false);
+  assert.match(doc.getElementById("reviewCount").getAttribute("aria-label"), /View all reviews/);
+  renderReviews(doc, fixture(), "en");
+  assert.equal(doc.getElementById("reviewCount").disabled, true, "Legacy featured-only data must not pretend to contain all reviews");
+});
+
+test("all public reviews include lower ratings and retain the complete aggregate", () => {
+  const data = archiveFixture();
+  const doc = fakeDocument();
+  renderAllReviews(doc, data, "en");
+  assert.equal(doc.getElementById("allReviewsList").children.length, 10);
+  assert.equal(doc.getElementById("allReviewsList").children[2].children[0].getAttribute("aria-label"), "4 out of 5 stars");
+  assert.match(doc.getElementById("allReviewsSummary").textContent, /from 37 ratings/);
+  assert.match(doc.getElementById("allReviewsNotice").textContent, /permission/);
+  assert.equal(doc.getElementById("allReviewsRange").textContent, "Reviews 1 to 10 of 36");
+  renderAllReviews(doc, data, "es", 3);
+  assert.equal(doc.getElementById("allReviewsList").children.length, 6);
+  assert.equal(doc.getElementById("allReviewsTitle").textContent, "Todas las reseñas");
+  assert.equal(doc.getElementById("allReviewsRange").textContent, "Reseñas 31 a 36 de 36");
+  assert.equal(doc.getElementById("allReviewsNext").disabled, true);
+});
+
+test("review pagination is bounded and shows every public comment once", () => {
+  assert.deepEqual(reviewPage(36, 99), { page: 3, pages: 4, start: 30, end: 36, previous: true, next: false });
+  assert.equal(reviewPage(36, -1).page, 0);
+  assert.equal(reviewPage(0).end, 0);
+  const data = archiveFixture();
+  const doc = fakeDocument();
+  const comments = [];
+  for (let page = 0; page < 4; page++) {
+    renderAllReviews(doc, data, "en", page);
+    comments.push(...doc.getElementById("allReviewsList").children.map(card => card.children[1].textContent));
+  }
+  assert.deepEqual(comments, data.reviews.map(review => review.comment));
+});
+
+test("private ratings without public comments show an honest empty dialog", () => {
+  const data = { ...archiveFixture(0), featured: [], reviews: [] };
+  const doc = fakeDocument();
+  renderAllReviews(doc, data, "en");
+  assert.equal(doc.getElementById("allReviewsList").children.length, 0);
+  assert.equal(doc.getElementById("allReviewsEmpty").hidden, false);
+  assert.equal(doc.getElementById("allReviewsNavigation").hidden, true);
+  assert.match(doc.getElementById("allReviewsSummary").textContent, /from 1 rating/);
+});
+
+test("dialog opens, paginates, dismisses, restores focus, and resets on reopen", () => {
+  const doc = fakeDocument();
+  const data = archiveFixture();
+  renderReviews(doc, data, "en");
+  const dialog = doc.getElementById("allReviewsDialog");
+  const trigger = doc.getElementById("reviewCount");
+  const refreshDialog = setupReviewDialog(doc, () => data);
+  trigger.focus();
+  trigger.dispatch("click");
+  assert.equal(dialog.open, true);
+  assert.equal(doc.activeElement, doc.getElementById("allReviewsClose"));
+  doc.getElementById("allReviewsNext").dispatch("click");
+  assert.equal(doc.getElementById("allReviewsRange").textContent, "Reviews 11 to 20 of 36");
+  assert.equal(doc.activeElement, doc.getElementById("allReviewsList"));
+  doc.documentElement.lang = "es";
+  refreshDialog();
+  assert.equal(doc.getElementById("allReviewsRange").textContent, "Reseñas 11 a 20 de 36");
+  dialog.dispatch("click", { clientX: 200, clientY: 200 });
+  assert.equal(dialog.open, true, "Clicking inside the dialog should not close it");
+  dialog.dispatch("click", { clientX: 10, clientY: 10 });
+  assert.equal(dialog.open, false);
+  assert.equal(doc.activeElement, trigger);
+  trigger.dispatch("click");
+  assert.equal(doc.getElementById("allReviewsRange").textContent, "Reseñas 1 a 10 de 36");
+  doc.getElementById("allReviewsClose").dispatch("click");
+  assert.equal(dialog.open, false);
+  assert.equal(doc.activeElement, trigger);
+});
+
+test("full-review text is rendered literally and invalid archives never enable the count", () => {
+  const data = archiveFixture(1);
+  data.reviews[0].comment = '<img src=x onerror="attack()">';
+  const doc = fakeDocument();
+  renderAllReviews(doc, data, "en");
+  assert.equal(doc.getElementById("allReviewsList").children[0].children[1].textContent, data.reviews[0].comment);
+  data.reviews.push({ ...data.reviews[0] });
+  renderReviews(doc, data, "en", true);
+  assert.equal(doc.getElementById("reviewCount").disabled, true);
+});
+
+test("real dates appear only in the full list and imports are not passed off as submitted dates", () => {
+  const data = archiveFixture(2);
+  Object.assign(data.reviews[0], { date: "2026-10-05", dateType: "submitted" });
+  Object.assign(data.reviews[1], { date: "2026-09-29", dateType: "imported" });
+  const doc = fakeDocument();
+  renderReviews(doc, data, "en");
+  assert.equal(doc.getElementById("reviewGrid").children[0].children[0].className, "reviewStars");
+  renderAllReviews(doc, data, "en");
+  const cards = doc.getElementById("allReviewsList").children;
+  const date = cards[0].children[0].children[1];
+  assert.equal(date.tagName, "time");
+  assert.equal(date.getAttribute("datetime"), "2026-10-05");
+  assert.equal(date.textContent, "Oct 5, 2026");
+  assert.equal(cards[1].children[0].children[1].textContent, "Imported Sep 29, 2026");
+  assert.equal(reviewDateLabel({}, "en"), "");
+  assert.match(reviewDateLabel(data.reviews[1], "es"), /^Importada el .*2026$/);
+  renderAllReviews(doc, data, "es");
+  assert.match(doc.getElementById("allReviewsList").children[1].children[0].children[1].textContent, /^Importada el /);
+});
+
+test("the carousel starts at the first source-selected reviews without assuming a permanent live count", () => {
+  const doc = fakeDocument();
+  renderReviews(doc, publicSnapshot, "en");
+  assert.deepEqual(doc.getElementById("reviewGrid").children.slice(0, 2).map(card => card.children[1].textContent),
+    publicSnapshot.featured.slice(0, 2).map(review => review.comment));
+  assert.ok(publicSnapshot.featured.length <= 10);
 });

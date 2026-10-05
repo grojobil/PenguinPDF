@@ -1,3 +1,6 @@
+import { isValidReviews } from "./review-data.mjs?v=f02d8b8ae7f3";
+export { isValidReviews } from "./review-data.mjs?v=f02d8b8ae7f3";
+
 const COPY = {
   en: {
     tag: "What people are saying",
@@ -18,6 +21,13 @@ const COPY = {
     previous: "Previous reviews",
     next: "Next reviews",
     range: "Reviews {start} to {end} of {count}",
+    allTitle: "All reviews",
+    browse: "View all reviews ({count} ratings)",
+    publicNotice: "Comments shared with permission. Newest first.",
+    noComments: "No public comments yet.",
+    close: "Close reviews",
+    importedDate: "Imported {date}",
+    submittedDate: "Submitted {date}",
   },
   es: {
     tag: "Lo que dice la gente",
@@ -38,30 +48,15 @@ const COPY = {
     previous: "Reseñas anteriores",
     next: "Reseñas siguientes",
     range: "Reseñas {start} a {end} de {count}",
+    allTitle: "Todas las reseñas",
+    browse: "Ver todas las reseñas ({count} valoraciones)",
+    publicNotice: "Comentarios publicados con permiso. Los más recientes primero.",
+    noComments: "Todavía no hay comentarios públicos.",
+    close: "Cerrar reseñas",
+    importedDate: "Importada el {date}",
+    submittedDate: "Enviada el {date}",
   },
 };
-
-export function isValidReviews(data) {
-  if (!data || data.schemaVersion !== 1 || !Number.isSafeInteger(data.ratingCount) ||
-      data.ratingCount < 0 || data.ratingCount > Math.floor(Number.MAX_SAFE_INTEGER / 5) ||
-      !Number.isSafeInteger(data.ratingSum) || data.ratingSum < data.ratingCount ||
-      data.ratingSum > data.ratingCount * 5 || typeof data.updatedAt !== "string" ||
-      !Number.isFinite(Date.parse(data.updatedAt)) || !Array.isArray(data.featured) ||
-      data.featured.length > Math.min(10, data.ratingCount)) return false;
-  const ids = new Set();
-  let featuredSum = 0;
-  const valid = data.featured.every(review => {
-    if (!review || typeof review.id !== "string" || !/^[a-f0-9]{16}$/.test(review.id) || ids.has(review.id) ||
-        !Number.isInteger(review.rating) || review.rating < 1 || review.rating > 5 ||
-        typeof review.comment !== "string" || !review.comment.trim() || [...review.comment].length > 600 ||
-        typeof review.displayName !== "string" || [...review.displayName].length > 60) return false;
-    ids.add(review.id);
-    featuredSum += review.rating;
-    return true;
-  });
-  const remaining = data.ratingCount - data.featured.length;
-  return valid && data.ratingSum >= featuredSum + remaining && data.ratingSum <= featuredSum + remaining * 5;
-}
 
 export function reviewView(data, language, failed = false) {
   const lang = language === "es" ? "es" : "en";
@@ -77,6 +72,8 @@ export function reviewView(data, language, failed = false) {
     status: failed ? copy.unavailable : count ? copy.intro : copy.invitation,
     policy: valid && data.featured.length ? data.featured.every(review => review.rating === 5) ? copy.fiveStar : copy.featured : count ? copy.aggregate : copy.private,
     featured: valid ? data.featured : [],
+    all: valid && data.schemaVersion === 2 ? data.reviews : [],
+    hasArchive: valid && data.schemaVersion === 2,
     hasRatings: count > 0,
   };
 }
@@ -108,6 +105,9 @@ export function renderReviews(doc, data, language, failed = false) {
   element("reviewLinkLabel").textContent = view.copy.link;
   element("reviewAverage").textContent = view.average;
   element("reviewCount").textContent = view.count;
+  element("reviewCount").disabled = !view.hasArchive;
+  element("reviewCount").setAttribute("title", view.hasArchive ? view.copy.allTitle : view.copy.aggregate);
+  element("reviewCount").setAttribute("aria-label", view.copy.browse.replace("{count}", view.hasRatings ? data.ratingCount.toLocaleString(view.lang) : "0"));
   element("reviewSummary").hidden = !view.hasRatings;
   element("reviewSummary").setAttribute("title", view.copy.aggregate);
   element("reviewLink").setAttribute("title", view.copy.private);
@@ -116,7 +116,24 @@ export function renderReviews(doc, data, language, failed = false) {
   element("reviewCaption").textContent = view.copy.selectedLabel;
   element("reviewCaption").hidden = view.featured.length === 0;
   element("reviewGrid").setAttribute("aria-description", view.policy);
-  const cards = view.featured.map(review => {
+  const cards = view.featured.map(review => makeReviewCard(doc, review, view));
+  element("reviewGrid").replaceChildren(...cards);
+  element("reviewGrid").hidden = cards.length === 0;
+  element("reviewGrid").style.setProperty("--review-count", Math.max(1, cards.length));
+  element("reviewsPrevious").setAttribute("aria-label", view.copy.previous);
+  element("reviewsNext").setAttribute("aria-label", view.copy.next);
+}
+
+export function reviewDateLabel(review, language) {
+  if (!review.date) return "";
+  const locale = language === "es" ? "es" : "en";
+  const date = new Intl.DateTimeFormat(locale, {
+    year: "numeric", month: "short", day: "numeric", timeZone: "UTC",
+  }).format(new Date(`${review.date}T00:00:00Z`));
+  return review.dateType === "imported" ? COPY[locale].importedDate.replace("{date}", date) : date;
+}
+
+function makeReviewCard(doc, review, view, showDate = false) {
     const card = doc.createElement("article");
     card.className = "reviewCard";
     const quote = doc.createElement("blockquote");
@@ -146,14 +163,83 @@ export function renderReviews(doc, data, language, failed = false) {
     name.className = "reviewName";
     name.textContent = review.displayName || view.copy.anonymous;
     author.append(avatar, name);
-    card.append(makeStars(doc, review.rating, view.copy.rating), quote, author);
+    const stars = makeStars(doc, review.rating, view.copy.rating);
+    let header = stars;
+    if (showDate && review.date) {
+      header = doc.createElement("div");
+      header.className = "reviewCardHeader";
+      const date = doc.createElement("time");
+      date.className = "reviewDate";
+      date.setAttribute("datetime", review.date);
+      date.textContent = reviewDateLabel(review, view.lang);
+      if (review.dateType === "submitted") date.setAttribute("title", view.copy.submittedDate.replace("{date}", date.textContent));
+      header.append(stars, date);
+    }
+    card.append(header, quote, author);
     return card;
+}
+
+export function reviewPage(total, requested = 0) {
+  const pages = Math.max(1, Math.ceil(total / 10));
+  const page = Math.min(pages - 1, Math.max(0, Math.trunc(requested) || 0));
+  return { page, pages, start: page * 10, end: Math.min(total, (page + 1) * 10), previous: page > 0, next: page + 1 < pages };
+}
+
+export function renderAllReviews(doc, data, language, requested = 0) {
+  const view = reviewView(data, language);
+  const range = reviewPage(view.all.length, requested);
+  const element = id => doc.getElementById(id);
+  element("allReviewsTitle").textContent = view.copy.allTitle;
+  element("allReviewsSummary").textContent = view.hasRatings ? `${view.average} ${view.count}` : "";
+  element("allReviewsNotice").textContent = view.copy.publicNotice;
+  element("allReviewsEmpty").textContent = view.copy.noComments;
+  element("allReviewsEmpty").hidden = view.all.length > 0;
+  element("allReviewsList").replaceChildren(...view.all.slice(range.start, range.end).map(review => makeReviewCard(doc, review, view, true)));
+  element("allReviewsList").setAttribute("aria-label", view.copy.allTitle);
+  element("allReviewsClose").setAttribute("aria-label", view.copy.close);
+  element("allReviewsPrevious").setAttribute("aria-label", view.copy.previous);
+  element("allReviewsNext").setAttribute("aria-label", view.copy.next);
+  element("allReviewsPrevious").disabled = !range.previous;
+  element("allReviewsNext").disabled = !range.next;
+  element("allReviewsNavigation").hidden = view.all.length <= 10;
+  element("allReviewsRange").textContent = view.all.length ? view.copy.range
+    .replace("{start}", (range.start + 1).toLocaleString(view.lang))
+    .replace("{end}", range.end.toLocaleString(view.lang))
+    .replace("{count}", view.all.length.toLocaleString(view.lang)) : "";
+  return range;
+}
+
+export function setupReviewDialog(doc, getData) {
+  const dialog = doc.getElementById("allReviewsDialog");
+  const trigger = doc.getElementById("reviewCount");
+  let page = 0;
+  let returnFocus;
+  const render = () => { page = renderAllReviews(doc, getData(), doc.documentElement.lang, page).page; };
+  const move = direction => {
+    page += direction;
+    render();
+    doc.getElementById("allReviewsList").scrollTop = 0;
+    doc.getElementById("allReviewsList").focus({ preventScroll: true });
+  };
+  trigger.addEventListener("click", () => {
+    if (trigger.disabled || dialog.open || typeof dialog.showModal !== "function") return;
+    returnFocus = doc.activeElement;
+    page = 0;
+    render();
+    dialog.showModal();
+    doc.getElementById("allReviewsList").scrollTop = 0;
+    doc.getElementById("allReviewsClose").focus();
   });
-  element("reviewGrid").replaceChildren(...cards);
-  element("reviewGrid").hidden = cards.length === 0;
-  element("reviewGrid").style.setProperty("--review-count", Math.max(1, cards.length));
-  element("reviewsPrevious").setAttribute("aria-label", view.copy.previous);
-  element("reviewsNext").setAttribute("aria-label", view.copy.next);
+  doc.getElementById("allReviewsClose").addEventListener("click", () => dialog.close());
+  doc.getElementById("allReviewsPrevious").addEventListener("click", () => move(-1));
+  doc.getElementById("allReviewsNext").addEventListener("click", () => move(1));
+  dialog.addEventListener("close", () => { returnFocus?.focus(); });
+  dialog.addEventListener("click", event => {
+    if (event.target !== dialog) return;
+    const rect = dialog.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
+  });
+  return () => { if (dialog.open) render(); };
 }
 
 export function reviewRange(total, scrollLeft, width, step) {
@@ -180,6 +266,7 @@ if (typeof document !== "undefined" && document.getElementById("reviews")) {
   const grid = document.getElementById("reviewGrid");
   const previous = document.getElementById("reviewsPrevious");
   const next = document.getElementById("reviewsNext");
+  const renderDialog = setupReviewDialog(document, () => snapshot);
   const updateNavigation = () => {
     const view = reviewView(snapshot, document.documentElement.lang, failed);
     const step = (grid.firstElementChild?.getBoundingClientRect().width || grid.clientWidth) + 14;
@@ -205,6 +292,7 @@ if (typeof document !== "undefined" && document.getElementById("reviews")) {
   new ResizeObserver(updateNavigation).observe(grid);
   const render = () => {
     renderReviews(document, snapshot, document.documentElement.lang, failed);
+    renderDialog();
     updateNavigation();
   };
   render();

@@ -6,9 +6,10 @@ import hashlib
 import io
 import json
 import os
+import re
 from pathlib import Path
 import tempfile
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import zipfile
 
 
@@ -24,6 +25,39 @@ CONSENT = (
     "Sí, PenguinPDF puede publicar mi comentario y nombre público en su web."
 )
 DEFAULT_OUTPUT = Path(__file__).resolve().parent.parent / "docs" / "reviews.json"
+MAX_REVIEWS = 5000
+MAX_SNAPSHOT_BYTES = 200000
+
+
+def has_contact_or_link(value):
+    return any(re.search(pattern, value, re.IGNORECASE) for pattern in (
+        r"(?:https?://|www\.)\S+",
+        r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b",
+        r"(?:^|\s)\+?\d[\d\s().-]{7,}\d(?:$|\s)",
+    ))
+
+
+def assert_snapshot_limits(snapshot):
+    if len(snapshot["reviews"]) > MAX_REVIEWS:
+        raise ValueError("Public reviews exceed the 5000-review limit; nothing truncated.")
+    serialized = json.dumps(snapshot, ensure_ascii=False, separators=(",", ":"))
+    if len(serialized.encode("utf-8")) > MAX_SNAPSHOT_BYTES:
+        raise ValueError("Public snapshot exceeds 200000 bytes; nothing truncated.")
+
+
+def public_date_metadata(response):
+    if "date" not in response and "dateType" not in response:
+        return {}
+    if ("date" not in response or "dateType" not in response or
+            not isinstance(response["date"], str) or
+            not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", response["date"]) or
+            response["dateType"] not in ("submitted", "imported")):
+        raise ValueError("Review date metadata needs a valid ISO day and submitted/imported dateType.")
+    try:
+        date.fromisoformat(response["date"])
+    except ValueError:
+        raise ValueError("Review date metadata needs a valid Gregorian calendar day.") from None
+    return {key: response[key] for key in ("date", "dateType")}
 
 
 def read_responses(path):
@@ -77,35 +111,55 @@ def build_snapshot(responses, decisions, updated_at=None):
         raise ValueError("Explicitly moderate every CSV response; unknown or missing rows are not allowed.")
     genuine = []
     featured = []
+    public_reviews = []
     seen = set()
     for response in responses:
         decision = moderation[response["row"]]
         if decision["status"] == "exclude":
             continue
-        if any(response[field].upper().startswith("QA TEST") for field in ("comment", "displayName")):
+        if (type(response["rating"]) is not int or not 1 <= response["rating"] <= 5 or
+                not isinstance(response["id"], str) or not re.fullmatch(r"[a-f0-9]{16}", response["id"]) or
+                not isinstance(response["comment"], str) or not isinstance(response["displayName"], str) or
+                type(response["consent"]) is not bool):
+            raise ValueError("Invalid review response.")
+        if any(response[field].lstrip().upper().startswith("QA TEST") for field in ("comment", "displayName")):
             raise ValueError("QA TEST responses must be excluded, not counted as reviews.")
         if response["id"] in seen:
             raise ValueError("Duplicate exported response; explicitly exclude the duplicate.")
         seen.add(response["id"])
         genuine.append(response)
+        eligible = (response["consent"] and bool(response["comment"].strip()) and
+                    len(response["comment"]) <= 600 and len(response["displayName"]) <= 60 and
+                    not has_contact_or_link(response["comment"]) and
+                    not has_contact_or_link(response["displayName"]))
+        public_review = {key: response[key] for key in ("id", "rating", "comment", "displayName")}
+        public_review.update(public_date_metadata(response))
+        if eligible:
+            public_reviews.append(public_review)
         if decision.get("feature"):
-            if not response["consent"] or not response["comment"]:
+            if not response["consent"] or not response["comment"].strip():
                 raise ValueError(f"Row {response['row']} cannot be featured without consent and a comment.")
             if len(response["comment"]) > 600 or len(response["displayName"]) > 60:
                 raise ValueError("Featured comments must be at most 600 characters and names at most 60; do not silently edit quotes.")
-            featured.append({key: response[key] for key in ("id", "rating", "comment", "displayName")})
-    if len(featured) > 6:
-        raise ValueError("Feature at most six comments.")
-    return {
-        "schemaVersion": 1,
+            if not eligible:
+                raise ValueError("Featured comments and names cannot contain contact details or links.")
+            featured.append(public_review.copy())
+    if len(featured) > 10:
+        raise ValueError("Feature at most ten comments.")
+    snapshot = {
+        "schemaVersion": 2,
         "updatedAt": updated_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "ratingCount": len(genuine),
         "ratingSum": sum(response["rating"] for response in genuine),
         "featured": featured,
+        "reviews": public_reviews,
     }
+    assert_snapshot_limits(snapshot)
+    return snapshot
 
 
 def write_snapshot(path, snapshot):
+    assert_snapshot_limits(snapshot)
     path = Path(path)
     temporary = None
     try:

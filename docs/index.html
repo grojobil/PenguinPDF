@@ -677,6 +677,9 @@
     .reviewSummary > svg{ width:17px; height:17px; fill:#e9a83f; stroke:#e9a83f; }
     .reviewAverage{ font-size:18px; font-weight:600; color:rgba(23,23,26,0.78); }
     .reviewCount,.reviewStatus{ color:rgba(23,23,26,0.64); font-size:13px; line-height:1.55; }
+    button.reviewCount{ padding:3px 0; border:0; background:none; font-family:inherit; cursor:pointer; text-decoration:underline; text-decoration-color:rgba(23,23,26,0.20); text-underline-offset:3px; }
+    button.reviewCount:hover{ color:rgba(23,23,26,0.88); text-decoration-color:currentColor; }
+    button.reviewCount:disabled{ cursor:default; text-decoration:none; }
     .reviewStatus{ margin:10px 0 0; font-size:16px; text-align:center; }
     .reviewCaption{ margin:20px 0 10px; color:rgba(23,23,26,0.54); font-size:12px; font-weight:500; line-height:1.4; }
     .reviewGrid{
@@ -906,6 +909,20 @@
       backdrop-filter:blur(18px);
     }
     .downloadDialogInner{ padding:24px; }
+    .reviewsDialog{ width:min(660px, calc(100% - 32px)); overflow:hidden; }
+    .reviewsDialogInner{ padding:22px; display:flex; flex-direction:column; max-height:min(620px, 85dvh); box-sizing:border-box; }
+    .reviewsDialog .downloadDialogHeader{ flex:0 0 auto; margin-bottom:6px; }
+    .reviewsDialogSummary{ margin:0; font-size:15px; font-weight:500; color:rgba(23,23,26,0.72); }
+    .reviewsDialogNotice{ margin:8px 0 16px; font-size:12px; line-height:1.5; color:rgba(23,23,26,0.58); }
+    .allReviewList{ min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:0 6px; border-top:1px solid rgba(23,23,26,0.08); }
+    .allReviewList .reviewCard{ padding:20px 0; border:0; border-bottom:1px solid rgba(23,23,26,0.08); border-radius:0; background:none; box-shadow:none; backdrop-filter:none; gap:10px; }
+    .allReviewList .reviewCard blockquote{ font-size:14px; }
+    .reviewCardHeader{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px 16px; width:100%; }
+    .reviewDate{ color:rgba(23,23,26,0.52); font-size:11px; line-height:1.5; }
+    .allReviewList .reviewAvatar{ flex-basis:30px; width:30px; height:30px; }
+    .reviewsDialog .reviewNavigation{ flex:0 0 auto; margin-top:14px; }
+    .reviewsDialog [hidden]{ display:none; }
+    @media(max-width:640px){ .reviewsDialogInner{ padding:18px; } .reviewsDialog .downloadDialogTitle{ font-size:20px; } }
     .downloadDialogHeader{
       display:flex;
       align-items:center;
@@ -1289,7 +1306,7 @@
           <!-- Lucide star, ISC licensed. -->
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.48 2.317a.562.562 0 0 1 1.04 0l2.125 4.305a2 2 0 0 0 1.506 1.095l4.75.694a.562.562 0 0 1 .31.96l-3.436 3.348a2 2 0 0 0-.575 1.77l.81 4.728a.562.562 0 0 1-.815.592l-4.248-2.232a2 2 0 0 0-1.862 0L6.838 19.81a.562.562 0 0 1-.815-.592l.81-4.727a2 2 0 0 0-.575-1.771L2.822 9.373a.562.562 0 0 1 .31-.96l4.749-.693a2 2 0 0 0 1.507-1.095z" /></svg>
           <span class="reviewAverage" id="reviewAverage"></span>
-          <span class="reviewCount" id="reviewCount"></span>
+          <button class="reviewCount" id="reviewCount" type="button" aria-haspopup="dialog" aria-controls="allReviewsDialog" disabled></button>
       </div>
       <p class="reviewCaption" id="reviewCaption" hidden>Featured reviews</p>
       <div class="reviewGrid" id="reviewGrid" role="group" aria-labelledby="reviewCaption" tabindex="0" hidden></div>
@@ -1447,6 +1464,31 @@
           <span data-i18n="win_msi">Windows MSI (alternative)</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
         </a>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="downloadDialog reviewsDialog" id="allReviewsDialog" aria-labelledby="allReviewsTitle" aria-describedby="allReviewsNotice">
+    <div class="reviewsDialogInner">
+      <div class="downloadDialogHeader">
+        <h2 class="downloadDialogTitle" id="allReviewsTitle">All reviews</h2>
+        <button class="closeX" id="allReviewsClose" type="button" aria-label="Close reviews">
+          <!-- Lucide x, ISC licensed. -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m18 6-12 12M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="reviewsDialogSummary" id="allReviewsSummary"></p>
+      <p class="reviewsDialogNotice" id="allReviewsNotice">Comments shared with permission. Newest first.</p>
+      <div class="allReviewList" id="allReviewsList" role="region" aria-label="All reviews" tabindex="0"></div>
+      <p class="reviewStatus" id="allReviewsEmpty" hidden>No public comments yet.</p>
+      <div class="reviewNavigation" id="allReviewsNavigation" hidden>
+        <button class="reviewArrow" id="allReviewsPrevious" type="button" aria-label="Previous reviews" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <span class="reviewCount" id="allReviewsRange" aria-live="polite"></span>
+        <button class="reviewArrow" id="allReviewsNext" type="button" aria-label="Next reviews">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
       </div>
     </div>
   </dialog>
@@ -2112,7 +2154,7 @@
     applyLanguage(getInitialLanguage());
     loadDownloadStats();
   </script>
-  <script type="module" src="reviews.mjs?v=5d5f3b29dcfa"></script>
+  <script type="module" src="reviews.mjs?v=f5a2b8b7e2c1"></script>
   <script type="module" src="analytics.mjs?v=2"></script>
 </body>
 </html>

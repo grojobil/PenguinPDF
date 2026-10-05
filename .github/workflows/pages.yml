@@ -28,7 +28,7 @@ jobs:
 
       - name: Test website, downloads, and review moderation
         run: |
-          node --test scripts/test-download-stats.mjs scripts/test-downloads.mjs scripts/test-reviews.mjs
+          node --test scripts/test-download-stats.mjs scripts/test-downloads.mjs scripts/test-reviews.mjs scripts/test-review-data.mjs scripts/test-reviews-sync.mjs scripts/test-reviews-feed.mjs
           node --test scripts/test-analytics.mjs
           python3 scripts/test-reviews-import.py
 

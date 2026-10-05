@@ -12,7 +12,7 @@ permissions:
   pages: write
 
 concurrency:
-  group: download-statistics
+  group: website-data-updates
   cancel-in-progress: false
 
 jobs:
