@@ -202,3 +202,6 @@ optional feedback link.
 - Live deployment exposed an older-page cache path, so the public legacy JSON
   format is retained separately. New clients fetch the full versioned archive;
   cached old clients continue showing valid totals and featured comments.
+- Website deployments and data refreshes share a serialized workflow group.
+  Main-page builds use current `main`, avoiding an older queued build restoring
+  stale review counts after a newer automatic refresh.
