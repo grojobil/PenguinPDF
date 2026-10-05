@@ -340,7 +340,7 @@ test("full-review text is rendered literally and invalid archives never enable t
   assert.equal(doc.getElementById("reviewCount").disabled, true);
 });
 
-test("real dates appear only in the full list and imports are not passed off as submitted dates", () => {
+test("real dates appear only in the full list and historical reviews remain undated", () => {
   const data = archiveFixture(2);
   Object.assign(data.reviews[0], { date: "2026-10-05", dateType: "submitted" });
   Object.assign(data.reviews[1], { date: "2026-09-29", dateType: "imported" });
@@ -353,11 +353,11 @@ test("real dates appear only in the full list and imports are not passed off as 
   assert.equal(date.tagName, "time");
   assert.equal(date.getAttribute("datetime"), "2026-10-05");
   assert.equal(date.textContent, "Oct 5, 2026");
-  assert.equal(cards[1].children[0].children[1].textContent, "Imported Sep 29, 2026");
+  assert.equal(cards[1].children[0].className, "reviewStars");
   assert.equal(reviewDateLabel({}, "en"), "");
-  assert.match(reviewDateLabel(data.reviews[1], "es"), /^Importada el .*2026$/);
+  assert.equal(reviewDateLabel(data.reviews[1], "es"), "");
   renderAllReviews(doc, data, "es");
-  assert.match(doc.getElementById("allReviewsList").children[1].children[0].children[1].textContent, /^Importada el /);
+  assert.equal(doc.getElementById("allReviewsList").children[1].children[0].className, "reviewStars");
 });
 
 test("the carousel starts at the first source-selected reviews without assuming a permanent live count", () => {

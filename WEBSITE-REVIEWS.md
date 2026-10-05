@@ -182,9 +182,10 @@ optional feedback link.
 ## Dated Review Sync
 
 - Dates display only in All reviews. Six direct form submissions use their
-  real submitted calendar day in America/Los_Angeles. Thirty records matched
-  to the original private import receipt are labeled Imported Sep 29, 2026;
-  original oral-feedback dates were not supplied and are not invented.
+  real submitted calendar day in America/Los_Angeles. Thirty historical records
+  remain undated in the UI: original oral-feedback dates were not supplied and
+  are not invented. Import provenance is retained internally in the snapshot,
+  but neither the import label nor its date appears on those review cards.
 - Import fingerprints include canonical source time (seconds) inside a hash,
   so the same comment submitted later does not inherit an old import label.
   Public records contain only the calendar date and submitted/imported label,

@@ -115,8 +115,8 @@ code and working current data and report that concrete limitation.
   metadata to public review records. Show localized dates only in All Reviews,
   never the featured carousel. Do not publish precise response timestamps.
 - Submitted dates come from the source form in America/Los_Angeles. The 30
-  historical records identified by the existing private import receipt show
-  their actual import date (2026-09-29), explicitly labeled Imported. Do not
+  historical records identified by the existing private import receipt remain
+  undated in the UI, with import provenance retained only in the data. Do not
   invent original dates or distribute reviews over an unsupported timeline.
 - A public-safe fingerprint map identifies historical imports by exact rating,
   trimmed comment/name, and a canonical UTC response instant truncated to a

@@ -26,7 +26,6 @@ const COPY = {
     publicNotice: "Comments shared with permission. Newest first.",
     noComments: "No public comments yet.",
     close: "Close reviews",
-    importedDate: "Imported {date}",
     submittedDate: "Submitted {date}",
   },
   es: {
@@ -53,7 +52,6 @@ const COPY = {
     publicNotice: "Comentarios publicados con permiso. Los más recientes primero.",
     noComments: "Todavía no hay comentarios públicos.",
     close: "Cerrar reseñas",
-    importedDate: "Importada el {date}",
     submittedDate: "Enviada el {date}",
   },
 };
@@ -125,12 +123,12 @@ export function renderReviews(doc, data, language, failed = false) {
 }
 
 export function reviewDateLabel(review, language) {
-  if (!review.date) return "";
+  if (!review.date || review.dateType === "imported") return "";
   const locale = language === "es" ? "es" : "en";
   const date = new Intl.DateTimeFormat(locale, {
     year: "numeric", month: "short", day: "numeric", timeZone: "UTC",
   }).format(new Date(`${review.date}T00:00:00Z`));
-  return review.dateType === "imported" ? COPY[locale].importedDate.replace("{date}", date) : date;
+  return date;
 }
 
 function makeReviewCard(doc, review, view, showDate = false) {
@@ -165,7 +163,7 @@ function makeReviewCard(doc, review, view, showDate = false) {
     author.append(avatar, name);
     const stars = makeStars(doc, review.rating, view.copy.rating);
     let header = stars;
-    if (showDate && review.date) {
+    if (showDate && review.date && review.dateType === "submitted") {
       header = doc.createElement("div");
       header.className = "reviewCardHeader";
       const date = doc.createElement("time");
