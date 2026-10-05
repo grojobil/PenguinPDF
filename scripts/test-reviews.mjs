@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { fetchReviews, isValidReviews, renderAllReviews, renderReviews, reviewDateLabel, reviewPage, reviewRange, reviewView, setupReviewDialog } from "../docs/reviews.mjs";
 
-const publicSnapshot = JSON.parse(readFileSync(new URL("../docs/reviews.json", import.meta.url)));
+const publicSnapshot = JSON.parse(readFileSync(new URL("../docs/reviews-v2.json", import.meta.url)));
 const empty = { schemaVersion: 1, updatedAt: "2026-09-29T12:00:00Z", ratingCount: 0, ratingSum: 0, featured: [] };
 const site = readFileSync(new URL("../docs/index.html", import.meta.url), "utf8");
 const module = readFileSync(new URL("../docs/reviews.mjs", import.meta.url), "utf8");
@@ -229,7 +229,7 @@ test("same-origin review fetch omits credentials and validates failures", async 
     request = args;
     return { ok: true, json: async () => empty };
   }), empty);
-  assert.equal(request[0], "reviews.json");
+  assert.equal(request[0], "reviews-v2.json");
   assert.equal(request[1].credentials, "omit");
   assert.equal(request[1].cache, "no-cache");
   for (const fetcher of [

@@ -249,7 +249,7 @@ export function reviewRange(total, scrollLeft, width, step) {
 }
 
 export async function fetchReviews(fetcher) {
-  const response = await fetcher("reviews.json", {
+  const response = await fetcher("reviews-v2.json", {
     cache: "no-cache",
     credentials: "omit",
     signal: AbortSignal.timeout(8000),

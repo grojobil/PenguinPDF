@@ -24,7 +24,7 @@ CONSENT = (
     "Yes, PenguinPDF may publish my comment and display name on its website. / "
     "Sí, PenguinPDF puede publicar mi comentario y nombre público en su web."
 )
-DEFAULT_OUTPUT = Path(__file__).resolve().parent.parent / "docs" / "reviews.json"
+DEFAULT_OUTPUT = Path(__file__).resolve().parent.parent / "docs" / "reviews-v2.json"
 MAX_REVIEWS = 5000
 MAX_SNAPSHOT_BYTES = 200000
 

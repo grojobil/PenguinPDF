@@ -3,12 +3,37 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { isFeedURL, readPublicFeed, sameReviews, syncReviews, validatePublicFeed } from "./sync-reviews.mjs";
+import { isValidReviews } from "../docs/review-data.mjs";
+import { isFeedURL, legacyReviews, readPublicFeed, sameReviews, syncReviews, validatePublicFeed } from "./sync-reviews.mjs";
 
 const url = "https://script.google.com/macros/s/QA_FEED/exec";
 const empty = { schemaVersion:1, updatedAt:"2026-09-29T12:00:00Z", ratingCount:0, ratingSum:0, featured:[] };
 const data = () => ({ ...empty, ratingCount:3, ratingSum:11, featured:[{id:"0000000000000001",rating:5,comment:"QA fixture, not a customer review",displayName:""}] });
 const response = (body, options = {}) => new Response(typeof body === "string" ? body : JSON.stringify(body), { headers:{"content-type":"application/json"}, ...options });
+
+test("cached legacy pages receive compatible ratings while the new UI keeps the full archive", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "penguin-compatibility-"));
+  try {
+    const path = join(directory, "reviews-v2.json");
+    const compatibilityPath = join(directory, "reviews.json");
+    const review = { ...data().featured[0], date: "2026-10-05", dateType: "submitted" };
+    const modern = { ...data(), schemaVersion: 2, featured: [review], reviews: [review] };
+    await writeFile(path, JSON.stringify(modern));
+    const fetcher = async () => response(modern);
+    assert.equal(await syncReviews(url, { path, compatibilityPath, fetcher }), true);
+    const legacy = JSON.parse(await readFile(compatibilityPath, "utf8"));
+    assert.ok(isValidReviews(legacy));
+    assert.equal(legacy.schemaVersion, 1);
+    assert.equal(legacy.ratingCount, modern.ratingCount);
+    assert.equal(legacy.ratingSum, modern.ratingSum);
+    assert.deepEqual(Object.keys(legacy.featured[0]).sort(), ["comment", "displayName", "id", "rating"]);
+    assert.equal(await syncReviews(url, { path, compatibilityPath, fetcher }), false);
+    const before = await readFile(path, "utf8");
+    await assert.rejects(syncReviews(url, { path, compatibilityPath, fetcher: async () => response({}) }));
+    assert.equal(await readFile(path, "utf8"), before);
+    assert.deepEqual(legacyReviews(modern), legacy);
+  } finally { await rm(directory, { recursive: true, force: true }); }
+});
 
 test("feed accepts only the fixed public Apps Script deployment URL", () => {
   assert.ok(isFeedURL(url));

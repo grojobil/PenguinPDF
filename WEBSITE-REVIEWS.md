@@ -99,6 +99,9 @@ genuine ratings regardless of score, and exclude only confirmed inauthentic/test
 entries. `row` is a CSV record number including the header, not a physical line.
 Select at most ten consented comments; never invent or edit quotes/names. A
 manual snapshot will be replaced by the next successful automatic refresh.
+The full snapshot is `docs/reviews-v2.json`; `docs/reviews.json` is the
+featured-only compatibility feed for cached older pages. The normal sync
+updates both together, including all ratings in both averages.
 
 From the public repository root:
 
@@ -196,3 +199,6 @@ optional feedback link.
 - Final local checks: 104 Node tests and 18 Python importer tests pass, including
   real calendar validation, paired date metadata, late repost provenance,
   private-field rejection, lower ratings, storage failures, and legacy data.
+- Live deployment exposed an older-page cache path, so the public legacy JSON
+  format is retained separately. New clients fetch the full versioned archive;
+  cached old clients continue showing valid totals and featured comments.

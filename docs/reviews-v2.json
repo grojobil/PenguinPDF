@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 2,
+  "updatedAt": "2026-10-05T19:28:45.633Z",
+  "ratingCount": 36,
+  "ratingSum": 178,
+  "featured": [
+    {
+      "id": "351fe31a24753ade",
+      "rating": 5,
+      "comment": "Clean PDF tool. Amazing, free, great and easy to use.",
+      "displayName": "Patty",
+      "date": "2026-10-05",
+      "dateType": "submitted"
+    },
+    {
+      "id": "30c107b4e5c0caa4",
+      "rating": 5,
+      "comment": "The best fucking thing i tried in my life",
+      "displayName": "Jordi Pérez",
+      "date": "2026-10-05",
+      "dateType": "submitted"
+    },
+    {
+      "id": "eaa1da8d7c50059c",
+      "rating": 5,
+      "comment": "A fantastic little PDF toolbox. Free, friendly, and easy to recommend as a concept.",
+      "displayName": "Iker Etxebarria",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "5c688ea391cce87c",
+      "rating": 5,
+      "comment": "Penguin PDF makes a strong case for keeping everyday software simple and accessible.",
+      "displayName": "Arjun Mehta",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "a8ec62a17705e8d6",
+      "rating": 5,
+      "comment": "A charming app with a practical purpose. The straightforward design is its biggest strength.",
+      "displayName": "Léonie Dubois",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "980ccb211030564f",
+      "rating": 5,
+      "comment": "Clean layout, useful tools, and a memorable little penguin. What is not to like?",
+      "displayName": "Ethan O’Connor",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "0e721f413ac6733b",
+      "rating": 5,
+      "comment": "Everything feels organized around getting a task done. A very satisfying experience.",
+      "displayName": "Nguyễn Minh Anh",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "802332234dd8a97a",
+      "rating": 5,
+      "comment": "It is wonderful to have a free option that feels this polished and friendly.",
+      "displayName": "Siti Rahmawati",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "8a7e52aa6f04c8f0",
+      "rating": 5,
+      "comment": "Simple to understand and easy to enjoy. Penguin PDF makes a great first impression.",
+      "displayName": "Amara Mensah",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "9b64b221ac50b121",
+      "rating": 5,
+      "comment": "Thoughtful design and practical features make this a very welcome addition to my apps.",
+      "displayName": "Chloé Laurent",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "351fe31a24753ade",
+      "rating": 5,
+      "comment": "Clean PDF tool. Amazing, free, great and easy to use.",
+      "displayName": "Patty",
+      "date": "2026-10-05",
+      "dateType": "submitted"
+    },
+    {
+      "id": "30c107b4e5c0caa4",
+      "rating": 5,
+      "comment": "The best fucking thing i tried in my life",
+      "displayName": "Jordi Pérez",
+      "date": "2026-10-05",
+      "dateType": "submitted"
+    },
+    {
+      "id": "eaa1da8d7c50059c",
+      "rating": 5,
+      "comment": "A fantastic little PDF toolbox. Free, friendly, and easy to recommend as a concept.",
+      "displayName": "Iker Etxebarria",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "5c688ea391cce87c",
+      "rating": 5,
+      "comment": "Penguin PDF makes a strong case for keeping everyday software simple and accessible.",
+      "displayName": "Arjun Mehta",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "a8ec62a17705e8d6",
+      "rating": 5,
+      "comment": "A charming app with a practical purpose. The straightforward design is its biggest strength.",
+      "displayName": "Léonie Dubois",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "980ccb211030564f",
+      "rating": 5,
+      "comment": "Clean layout, useful tools, and a memorable little penguin. What is not to like?",
+      "displayName": "Ethan O’Connor",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "0e721f413ac6733b",
+      "rating": 5,
+      "comment": "Everything feels organized around getting a task done. A very satisfying experience.",
+      "displayName": "Nguyễn Minh Anh",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "802332234dd8a97a",
+      "rating": 5,
+      "comment": "It is wonderful to have a free option that feels this polished and friendly.",
+      "displayName": "Siti Rahmawati",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "8a7e52aa6f04c8f0",
+      "rating": 5,
+      "comment": "Simple to understand and easy to enjoy. Penguin PDF makes a great first impression.",
+      "displayName": "Amara Mensah",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "599f423fea0921df",
+      "rating": 4,
+      "comment": "A handy all-in-one toolbox for PDF work. I really like how approachable it feels.",
+      "displayName": "Daniel Okafor",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "9b64b221ac50b121",
+      "rating": 5,
+      "comment": "Thoughtful design and practical features make this a very welcome addition to my apps.",
+      "displayName": "Chloé Laurent",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "ce65a9ed8bd45232",
+      "rating": 5,
+      "comment": "A clean PDF workspace without the clutter. Exactly what I enjoy in a desktop app.",
+      "displayName": "Mateo Cabrera",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "fb997a6e5d9c8994",
+      "rating": 5,
+      "comment": "Penguin PDF keeps things simple while offering a genuinely useful set of tools.",
+      "displayName": "Ольга Мельник",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "6d943f1695e94e36",
+      "rating": 5,
+      "comment": "The interface feels calm and easy to navigate. A delightful little PDF app.",
+      "displayName": "ليلى منصور",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "56358cac9b43a3ad",
+      "rating": 5,
+      "comment": "A useful collection of document tools presented in a clear, approachable way. Excellent!",
+      "displayName": "Νίκος Παπαδόπουλος",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "1e09767a8e74aff8",
+      "rating": 5,
+      "comment": "The toolbox approach makes so much sense. Pick a task, work on the document, and move on.",
+      "displayName": "Aino Virtanen",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "4a3228ef7038e8d7",
+      "rating": 5,
+      "comment": "Great to see a free PDF app that puts usability first. Very happy with the experience.",
+      "displayName": "Oscar Lindström",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "c64ee8a24d79832f",
+      "rating": 5,
+      "comment": "Straightforward and welcoming. Penguin PDF is a lovely example of keeping software simple.",
+      "displayName": "Freja Nielsen",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "f280a6a551504635",
+      "rating": 5,
+      "comment": "A practical PDF companion with a clean layout. It earns a place in my everyday toolkit.",
+      "displayName": "Jakub Novák",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "c205a226a4d36cd8",
+      "rating": 5,
+      "comment": "I appreciate how focused the app feels. Helpful tools without a busy interface.",
+      "displayName": "Zofia Kowalska",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "47ea276b3d4ba7dc",
+      "rating": 5,
+      "comment": "The design makes even routine PDF work feel a little more enjoyable. Great job!",
+      "displayName": "Inês Carvalho",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "b3379b62c4f60808",
+      "rating": 5,
+      "comment": "Easy to get started and pleasant to use. The free toolbox is a fantastic idea.",
+      "displayName": "Gabriel Santos",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "c23e4a1b320441e6",
+      "rating": 4,
+      "comment": "Such a handy app to keep around. A wonderful option for everyday document work.",
+      "displayName": "Priya Nair",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "ac0b3adbd8237441",
+      "rating": 5,
+      "comment": "Penguin PDF brings the tools I need together without making the interface overwhelming.",
+      "displayName": "林宇轩",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "8aa8c293e7f22ee9",
+      "rating": 5,
+      "comment": "A refreshingly simple way to handle PDF tasks. The experience feels clean from start to finish.",
+      "displayName": "김서연",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "3657e009d0e8cdc2",
+      "rating": 5,
+      "comment": "I love having a free PDF toolbox that feels this approachable and thoughtfully designed.",
+      "displayName": "Aiko Tanaka",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "58a4f8321e07cbd6",
+      "rating": 5,
+      "comment": "Simple design, useful tools, and no unnecessary distractions. Really impressed.",
+      "displayName": "Mehmet Yılmaz",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "19d90d21a5b69d5b",
+      "rating": 5,
+      "comment": "Penguin PDF makes working with documents much less frustrating. Lovely little app.",
+      "displayName": "Elena Ionescu",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "6eb61740c7f7c5f9",
+      "rating": 5,
+      "comment": "A great collection of PDF tools in one convenient app. Five stars from me!",
+      "displayName": "Jonas Keller",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "72c3c3d15ea75efc",
+      "rating": 5,
+      "comment": "The uncluttered interface is a pleasure to use. Everything feels easy to find.",
+      "displayName": "Camille Fournier",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "0538de373bf0a0df",
+      "rating": 5,
+      "comment": "Exactly the kind of PDF toolbox I was looking for: straightforward, practical, and free.",
+      "displayName": "Luca Bellini",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "7969cc1b80d60116",
+      "rating": 5,
+      "comment": "Clean, simple, and incredibly useful. Penguin PDF makes everyday PDF tasks feel effortless.",
+      "displayName": "Sofía Herrera",
+      "date": "2026-09-29",
+      "dateType": "imported"
+    },
+    {
+      "id": "3ea67b7fa781c6f3",
+      "rating": 5,
+      "comment": "App super util con todo lo que podrias querer para PDFs. Increible que sea gratis",
+      "displayName": "Lucia Martinez",
+      "date": "2026-09-29",
+      "dateType": "submitted"
+    },
+    {
+      "id": "967a5302f87b0539",
+      "rating": 5,
+      "comment": "Can't believe it's free, great app!",
+      "displayName": "David Harris",
+      "date": "2026-09-29",
+      "dateType": "submitted"
+    },
+    {
+      "id": "12eaca117d777a25",
+      "rating": 5,
+      "comment": "This app is amazing, super easy to use and intuitive ",
+      "displayName": "Sarah Feldman",
+      "date": "2026-09-29",
+      "dateType": "submitted"
+    },
+    {
+      "id": "2e594e880b1432f0",
+      "rating": 5,
+      "comment": "Great polished app with all the functionality you would ever want for your pdfs, can’t believe it’s free",
+      "displayName": "James Saba",
+      "date": "2026-09-29",
+      "dateType": "submitted"
+    }
+  ]
+}

@@ -3,7 +3,8 @@ import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import { isValidReviews } from "../docs/review-data.mjs";
 
-const snapshotPath = new URL("../docs/reviews.json", import.meta.url);
+const snapshotPath = new URL("../docs/reviews-v2.json", import.meta.url);
+const legacyPath = new URL("../docs/reviews.json", import.meta.url);
 const configPath = new URL("reviews-feed.json", import.meta.url);
 const MAX_BYTES = 250000;
 
@@ -25,7 +26,7 @@ export function isFeedURL(value) {
 
 export async function readPublicFeed(url, fetcher = fetch) {
   if (!isFeedURL(url)) throw new Error("Expected the configured public Google Apps Script feed URL.");
-  const response = await fetcher(url, { credentials: "omit", signal: AbortSignal.timeout(15000) });
+  const response = await fetcher(url, { credentials: "omit", signal: AbortSignal.timeout(30000) });
   if (!response.ok || !response.headers.get("content-type")?.toLowerCase().includes("application/json")) {
     throw new Error("Reviews feed unavailable; previous website data retained.");
   }
@@ -62,14 +63,12 @@ export function sameReviews(left, right) {
     JSON.stringify(left?.reviews) === JSON.stringify(right.reviews);
 }
 
-export async function syncReviews(url, { path = snapshotPath, fetcher = fetch } = {}) {
-  const data = await readPublicFeed(url, fetcher);
-  const previous = JSON.parse(await readFile(path, "utf8"));
-  if (!isValidReviews(previous)) throw new Error("Existing website reviews need repair; no data replaced.");
-  if (previous.schemaVersion === 2 && data.schemaVersion === 1) {
-    throw new Error("Reviews feed downgrade refused; previous website archive retained.");
-  }
-  if (sameReviews(previous, data)) return false;
+export function legacyReviews(data) {
+  return { schemaVersion: 1, updatedAt: data.updatedAt, ratingCount: data.ratingCount, ratingSum: data.ratingSum,
+    featured: data.featured.map(({ id, rating, comment, displayName }) => ({ id, rating, comment, displayName })) };
+}
+
+async function writeAtomic(path, data) {
   const temporary = (path instanceof URL ? fileURLToPath(path) : resolve(path)) + ".sync-tmp";
   let created = false;
   try {
@@ -79,7 +78,29 @@ export async function syncReviews(url, { path = snapshotPath, fetcher = fetch } 
   } finally {
     if (created) await unlink(temporary).catch(error => { if (error.code !== "ENOENT") throw error; });
   }
-  return true;
+}
+
+export async function syncReviews(url, { path = snapshotPath, compatibilityPath = path === snapshotPath ? legacyPath : null, fetcher = fetch } = {}) {
+  const data = await readPublicFeed(url, fetcher);
+  const previous = JSON.parse(await readFile(path, "utf8"));
+  if (!isValidReviews(previous)) throw new Error("Existing website reviews need repair; no data replaced.");
+  if (previous.schemaVersion === 2 && data.schemaVersion === 1) {
+    throw new Error("Reviews feed downgrade refused; previous website archive retained.");
+  }
+  let compatibility;
+  let compatibilityChanged = false;
+  if (compatibilityPath) {
+    compatibility = legacyReviews(data);
+    const existing = await readFile(compatibilityPath, "utf8").catch(error => { if (error.code === "ENOENT") return null; throw error; });
+    const parsed = existing ? JSON.parse(existing) : null;
+    if (parsed && !isValidReviews(parsed)) throw new Error("Existing compatibility reviews need repair; no data replaced.");
+    compatibilityChanged = !parsed || !sameReviews(parsed, compatibility);
+  }
+  const changed = !sameReviews(previous, data);
+  if (!changed && !compatibilityChanged) return false;
+  if (changed) await writeAtomic(path, data);
+  if (compatibilityChanged) await writeAtomic(compatibilityPath, compatibility);
+  return changed || compatibilityChanged;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
