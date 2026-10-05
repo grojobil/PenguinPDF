@@ -181,11 +181,18 @@ optional feedback link.
 
 ## Dated Review Sync
 
-- Dates display only in All reviews. Six direct form submissions use their
-  real submitted calendar day in America/Los_Angeles. Thirty historical records
-  remain undated in the UI: original oral-feedback dates were not supplied and
-  are not invented. Import provenance is retained internally in the snapshot,
-  but neither the import label nor its date appears on those review cards.
+- Dates display only in All reviews. Direct form submissions use their real
+  calendar day in America/Los_Angeles. The owner subsequently recovered the
+  original feedback dates for all thirty historical records, supplied in
+  `penguin_pdf_feedback_with_dates.xlsx`. Exact name/rating/comment matching
+  confirmed unchanged content before adding these dates to the feed's source
+  fingerprint map. All thirty now show their original feedback dates, ranging
+  from April 6 to September 29, 2026, with no import label. Historical records
+  without a supplied original date remain undated in the UI.
+- Date type `submitted` records when feedback was first provided, whether by
+  the form or the historical messages recovered by the owner. The feed orders
+  reviews by that calendar day before selecting featured cards; source time
+  and ID break ties. The workbook and raw messages stay outside Git.
 - Import fingerprints include canonical source time (seconds) inside a hash,
   so the same comment submitted later does not inherit an old import label.
   Public records contain only the calendar date and submitted/imported label,
@@ -197,7 +204,7 @@ optional feedback link.
   comments still require the publication permission in the review form.
 - Refreshes run hourly on Google and GitHub. Allow roughly two hours plus
   scheduler/deployment delays; failures preserve the last good website data.
-- Final local checks: 104 Node tests and 18 Python importer tests pass, including
+- Local checks cover Node website tests and 18 Python importer tests, including
   real calendar validation, paired date metadata, late repost provenance,
   private-field rejection, lower ratings, storage failures, and legacy data.
 - Live deployment exposed an older-page cache path, so the public legacy JSON

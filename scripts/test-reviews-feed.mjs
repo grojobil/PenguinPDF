@@ -573,7 +573,7 @@ test("runtime import map hashes exact original seconds; identical later reposts 
   assert.equal(future.date, "2026-10-05");
   assert.equal(future.dateType, "submitted");
   assert.ok(snapshot.reviews.filter(review => review.id !== historical.id).every(review => review.dateType === "submitted"));
-  assert.equal(harness.formattedDates.length, 4);
+  assert.equal(harness.formattedDates.length, 5);
   assert.equal(snapshot.ratingCount, 6);
   assert.equal(snapshot.reviews.length, 5);
   assert.equal(JSON.stringify(snapshot).includes(fingerprint), false);
@@ -585,6 +585,30 @@ test("runtime import map hashes exact original seconds; identical later reposts 
   assert.deepEqual(equivalent.featured[0], equivalent.reviews[0]);
 });
 
+test("recovered feedback dates preserve records and sort before selecting the newest cards", () => {
+  const { context } = createHarness();
+  const historical = record({ id: "original-feedback", timestamp: "2026-09-29T18:00:00.987Z" });
+  const fingerprint = publicId(JSON.stringify([historical.rating, historical.comment.trim(),
+    historical.displayName.trim(), "2026-09-29T18:00:00.000Z"]));
+  context.REVIEW_IMPORTED_DATES = { [fingerprint]: "2026-09-29" };
+  context.REVIEW_HISTORICAL_FEEDBACK_DATES = { [fingerprint]: "2026-04-06" };
+  const recent = record({ id: "new-feedback", comment: "A different genuine review.", timestamp: "2026-05-15T12:00:00Z" });
+  const repost = { ...historical, id: "later-identical", timestamp: "2026-10-05T18:00:00Z" };
+  const snapshot = plain(context.buildPublicReviews([historical, recent, repost], UPDATED));
+  assert.deepEqual(snapshot.reviews.map(review => review.id), [repost, recent, historical].map(review => publicId(review.id)));
+  const corrected = snapshot.reviews[2];
+  assert.equal(corrected.date, "2026-04-06");
+  assert.equal(corrected.dateType, "submitted");
+  assert.equal(corrected.comment, historical.comment);
+  assert.equal(corrected.displayName, historical.displayName);
+  assert.equal(corrected.rating, historical.rating);
+  assert.equal(snapshot.reviews[0].date, "2026-10-05");
+  assert.equal(snapshot.ratingCount, 3);
+  assert.equal(snapshot.ratingSum, 15);
+  assert.equal(snapshot.featured[0].id, publicId(repost.id));
+  assert.doesNotMatch(JSON.stringify(snapshot), /original-feedback|timestamp|T18:00:00/);
+});
+
 test("invalid mapped calendar days fail refresh before replacing last-good storage", () => {
   const harness = createHarness();
   const initial = harness.context.buildPublicReviews([record()], UPDATED);
@@ -594,10 +618,14 @@ test("invalid mapped calendar days fail refresh before replacing last-good stora
   const fingerprint = publicId(JSON.stringify([5, "A precise response from the form.", "Form Reviewer", "2026-09-29T12:00:00.000Z"]));
   for (const date of ["2025-02-29", "1900-02-29", "2100-02-29", "2026-04-31", "0000-01-01",
     "2026-00-01", "2026-13-01", "2026-01-00", "2026-01-32", "2026-9-29", "2026-09-29T00:00:00Z", null]) {
-    harness.context.REVIEW_IMPORTED_DATES = { [fingerprint]: date };
-    assert.throws(() => harness.context.refreshReviews(), /^Error: Review refresh failed\.$/);
-    assert.deepEqual([...harness.propertyData], [...before]);
-    assert.deepEqual(plain(harness.context.readStoredSnapshot_()), plain(initial));
+    for (const map of ["REVIEW_IMPORTED_DATES", "REVIEW_HISTORICAL_FEEDBACK_DATES"]) {
+      harness.context.REVIEW_IMPORTED_DATES = {};
+      harness.context.REVIEW_HISTORICAL_FEEDBACK_DATES = {};
+      harness.context[map] = { [fingerprint]: date };
+      assert.throws(() => harness.context.refreshReviews(), /^Error: Review refresh failed\.$/);
+      assert.deepEqual([...harness.propertyData], [...before]);
+      assert.deepEqual(plain(harness.context.readStoredSnapshot_()), plain(initial));
+    }
   }
 });
 

@@ -132,3 +132,22 @@ code and working current data and report that concrete limitation.
 - One Sol/medium worker updates backend date validation/feed/import/tests.
   Coordinator owns frontend display, known import map/data, browser setup,
   permissions, commit/push, live deployment, and end-to-end evidence.
+
+## Recovered Historical Dates (2026-10-05)
+
+- Match all 30 rows in the owner's dated feedback workbook by exact name,
+  rating, and comment. Preserve review IDs, wording, ratings, consent, and totals.
+- Add the source-provided original feedback dates to a fingerprint map in the
+  existing form-bound feed. `submitted` dates mean when feedback was first
+  provided, whether by the form or the historical messages recovered by the
+  owner. Unknown historical dates remain hidden as before.
+- Sort by the original feedback calendar date, using original source time and
+  ID only to break ties. Keep exact-source fingerprinting so a later identical
+  submission does not inherit an earlier date. Keep schema and cached-client
+  compatibility unchanged; do not create duplicate form responses.
+- Refresh the prepared Google snapshot with the tested saved script, sync both
+  website snapshots, and publish. Verify unchanged totals and review content,
+  all 30 provided dates, newest reviews first, and no visible import labels.
+- Keep the workbook and raw responses outside Git. This is a tightly coupled
+  feed/data/UI integration; the coordinator implements locally without a new
+  specialist or model escalation.

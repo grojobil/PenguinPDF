@@ -26,7 +26,7 @@ const COPY = {
     publicNotice: "Comments shared with permission. Newest first.",
     noComments: "No public comments yet.",
     close: "Close reviews",
-    submittedDate: "Submitted {date}",
+    submittedDate: "Feedback received on {date}",
   },
   es: {
     tag: "Lo que dice la gente",
@@ -52,7 +52,7 @@ const COPY = {
     publicNotice: "Comentarios publicados con permiso. Los más recientes primero.",
     noComments: "Todavía no hay comentarios públicos.",
     close: "Cerrar reseñas",
-    submittedDate: "Enviada el {date}",
+    submittedDate: "Opinión recibida el {date}",
   },
 };
 

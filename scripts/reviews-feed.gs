@@ -14,7 +14,7 @@ var REVIEW_CHUNK_PROPERTY_PREFIX = "reviews.feed.chunk.v2.";
 var REVIEW_SNAPSHOT_BYTE_LIMIT = 200000;
 var REVIEW_STORE_BYTE_LIMIT = 500000;
 var REVIEW_MAX_REVIEWS = 5000;
-// Known import provenance only; original feedback dates were not supplied.
+// Import provenance for historical feedback whose original date is unknown.
 var REVIEW_IMPORTED_DATES = {
   "08a753a8049a8577": "2026-09-29",
   "0969b2c71863b53e": "2026-09-29",
@@ -47,6 +47,39 @@ var REVIEW_IMPORTED_DATES = {
   "d38a1fdb53a7c0e9": "2026-09-29",
   "ea7f2d8d6e9f5bb7": "2026-09-29",
 };
+// Original feedback dates recovered by the owner, matched to exact source records.
+var REVIEW_HISTORICAL_FEEDBACK_DATES = {
+  "08a753a8049a8577": "2026-08-18",
+  "0969b2c71863b53e": "2026-04-06",
+  "223b930c536cf617": "2026-07-18",
+  "2aecb54689af13cb": "2026-04-12",
+  "2b9142dc7acc4101": "2026-04-24",
+  "2ba51b646a79f140": "2026-08-30",
+  "2ef259a2d2529c81": "2026-09-11",
+  "39972d1114ef4b85": "2026-06-30",
+  "42f9b298d488885e": "2026-06-24",
+  "4d9f331de13051b0": "2026-05-12",
+  "56b3bfde068ab427": "2026-04-30",
+  "57cb49fec740d730": "2026-05-31",
+  "5a61e3255dd4937f": "2026-05-18",
+  "60d4b7d7e8bcee36": "2026-09-17",
+  "6bba5654cd0cece5": "2026-08-24",
+  "760af31f5cf0979c": "2026-08-11",
+  "819a0a413c7f7c4f": "2026-07-06",
+  "84347bfd1fe0c7e9": "2026-09-29",
+  "8c143a39cd649dba": "2026-06-06",
+  "92b174a051df4ac4": "2026-07-30",
+  "9944a3ce2b429cfb": "2026-07-24",
+  "9a4b7eaa50de1a32": "2026-05-25",
+  "a9a6cb2ec3fa46e3": "2026-07-12",
+  "b10c00e3ec040d4b": "2026-06-18",
+  "b57b5c7de6c6af0b": "2026-04-18",
+  "c7ba09b083ba0efc": "2026-09-23",
+  "cd2d3171ea190316": "2026-06-12",
+  "d2846bf7a1983b98": "2026-05-06",
+  "d38a1fdb53a7c0e9": "2026-08-05",
+  "ea7f2d8d6e9f5bb7": "2026-09-05",
+};
 
 function buildPublicReviews(records, updatedAt) {
   if (!Array.isArray(records) || typeof updatedAt !== "string" || !isValidDateString_(updatedAt)) {
@@ -55,6 +88,7 @@ function buildPublicReviews(records, updatedAt) {
 
   var validated = records.map(validateRecord_);
   validated.sort(function (left, right) {
+    if (left.date !== right.date) return left.date > right.date ? -1 : 1;
     if (left.timestampMs !== right.timestampMs) return right.timestampMs - left.timestampMs;
     return left.sourceId < right.sourceId ? -1 : left.sourceId > right.sourceId ? 1 : 0;
   });
@@ -219,7 +253,7 @@ function validateRecord_(record) {
   }
   var timestampMs = new Date(record.timestamp).getTime();
   if (!Number.isFinite(timestampMs)) throw new Error("Invalid review records.");
-  return {
+  var validated = {
     sourceId: record.id,
     rating: record.rating,
     comment: record.comment,
@@ -227,24 +261,33 @@ function validateRecord_(record) {
     consent: record.consent,
     timestampMs: timestampMs,
   };
+  var metadata = reviewDate_(validated);
+  validated.date = metadata.date;
+  validated.dateType = metadata.dateType;
+  return validated;
 }
 
-function publicReview_(candidate) {
+function reviewDate_(candidate) {
   var fingerprint = publicReviewId_(JSON.stringify([
     candidate.rating, candidate.comment.trim(), candidate.displayName.trim(),
     new Date(Math.floor(candidate.timestampMs / 1000) * 1000).toISOString(),
   ]));
   var imported = Object.prototype.hasOwnProperty.call(REVIEW_IMPORTED_DATES, fingerprint);
-  var date = imported ? REVIEW_IMPORTED_DATES[fingerprint] :
+  var recovered = Object.prototype.hasOwnProperty.call(REVIEW_HISTORICAL_FEEDBACK_DATES, fingerprint);
+  var date = recovered ? REVIEW_HISTORICAL_FEEDBACK_DATES[fingerprint] : imported ? REVIEW_IMPORTED_DATES[fingerprint] :
     Utilities.formatDate(new Date(candidate.timestampMs), "America/Los_Angeles", "yyyy-MM-dd");
   if (!isValidCalendarDay_(date)) throw new Error("Invalid review date.");
+  return { date: date, dateType: imported && !recovered ? "imported" : "submitted" };
+}
+
+function publicReview_(candidate) {
   return {
     id: publicReviewId_(candidate.sourceId),
     rating: candidate.rating,
     comment: candidate.comment,
     displayName: candidate.displayName,
-    date: date,
-    dateType: imported ? "imported" : "submitted",
+    date: candidate.date,
+    dateType: candidate.dateType,
   };
 }
 
