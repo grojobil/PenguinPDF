@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "startedAt": "2026-09-29T19:18:43.806Z",
-  "updatedAt": "2026-11-01T22:11:00.720Z",
-  "total": 807,
+  "updatedAt": "2026-11-02T06:25:09.380Z",
+  "total": 809,
   "byPlatform": {
     "macOS": 301,
-    "Windows": 506
+    "Windows": 508
   },
   "byRelease": {
     "v1.0.0": 165,
-    "v2.0.0": 642
+    "v2.0.0": 644
   },
   "assets": [
     {
@@ -45,7 +45,7 @@
       "name": "PenguinPDF_x64-setup.exe",
       "release": "v2.0.0",
       "platform": "Windows",
-      "downloads": 266
+      "downloads": 268
     },
     {
       "id": 597401249,
