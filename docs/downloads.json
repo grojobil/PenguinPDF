@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "startedAt": "2026-09-29T19:18:43.806Z",
-  "updatedAt": "2026-11-03T19:37:29.812Z",
-  "total": 815,
+  "updatedAt": "2026-11-04T06:40:42.223Z",
+  "total": 816,
   "byPlatform": {
     "macOS": 303,
-    "Windows": 512
+    "Windows": 513
   },
   "byRelease": {
     "v1.0.0": 165,
-    "v2.0.0": 650
+    "v2.0.0": 651
   },
   "assets": [
     {
@@ -66,7 +66,7 @@
       "name": "PenguinPDF_x64_en-US.msi",
       "release": "v2.0.0",
       "platform": "Windows",
-      "downloads": 108
+      "downloads": 109
     }
   ]
 }
