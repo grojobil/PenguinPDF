@@ -1,9 +1,15 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-05T20:44:27.542Z",
-  "ratingCount": 36,
-  "ratingSum": 178,
+  "updatedAt": "2026-11-05T18:04:11.137Z",
+  "ratingCount": 37,
+  "ratingSum": 183,
   "featured": [
+    {
+      "id": "3dd138789ba651a1",
+      "rating": 5,
+      "comment": "Una buenísima herramienta y además gratis. ",
+      "displayName": "Cristina Quintana"
+    },
     {
       "id": "351fe31a24753ade",
       "rating": 5,
@@ -57,12 +63,6 @@
       "rating": 5,
       "comment": "A charming app with a practical purpose. The straightforward design is its biggest strength.",
       "displayName": "Léonie Dubois"
-    },
-    {
-      "id": "980ccb211030564f",
-      "rating": 5,
-      "comment": "Clean layout, useful tools, and a memorable little penguin. What is not to like?",
-      "displayName": "Ethan O’Connor"
     }
   ]
 }

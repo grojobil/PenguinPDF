@@ -1,9 +1,17 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-10-05T20:44:27.542Z",
-  "ratingCount": 36,
-  "ratingSum": 178,
+  "updatedAt": "2026-11-05T18:04:11.137Z",
+  "ratingCount": 37,
+  "ratingSum": 183,
   "featured": [
+    {
+      "id": "3dd138789ba651a1",
+      "rating": 5,
+      "comment": "Una buenísima herramienta y además gratis. ",
+      "displayName": "Cristina Quintana",
+      "date": "2026-11-05",
+      "dateType": "submitted"
+    },
     {
       "id": "351fe31a24753ade",
       "rating": 5,
@@ -75,17 +83,17 @@
       "displayName": "Léonie Dubois",
       "date": "2026-09-17",
       "dateType": "submitted"
-    },
-    {
-      "id": "980ccb211030564f",
-      "rating": 5,
-      "comment": "Clean layout, useful tools, and a memorable little penguin. What is not to like?",
-      "displayName": "Ethan O’Connor",
-      "date": "2026-09-11",
-      "dateType": "submitted"
     }
   ],
   "reviews": [
+    {
+      "id": "3dd138789ba651a1",
+      "rating": 5,
+      "comment": "Una buenísima herramienta y además gratis. ",
+      "displayName": "Cristina Quintana",
+      "date": "2026-11-05",
+      "dateType": "submitted"
+    },
     {
       "id": "351fe31a24753ade",
       "rating": 5,
