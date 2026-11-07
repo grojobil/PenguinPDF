@@ -84,10 +84,10 @@ Bug reports can also be filed through
 PenguinPDF is free to use. Optional support helps keep it available:
 [Support PenguinPDF](https://penguinpdf.gumroad.com/l/sqlly)
 
-## Mobile
+## Mobile requests
 
-PenguinPDF is coming to iPhone. There is no public mobile download yet.
-Share requests or feedback in [the mobile support issue](https://github.com/grojobil/PenguinPDF/issues/1/).
+Request iOS, iPadOS, or Android support in
+[the mobile support issue](https://github.com/grojobil/PenguinPDF/issues/1/).
 
 ## Licenses
 
