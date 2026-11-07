@@ -24,10 +24,14 @@ function evaluateJson(context, expression) {
   return JSON.parse(new Script(`JSON.stringify(${expression})`).runInContext(context));
 }
 
-test("browser tabs use the multi-size Windows penguin without changing the touch icon", () => {
-  assert.match(site, /<link rel="icon" type="image\/vnd\.microsoft\.icon" href="assets\/favicon-v2\.ico" \/>/);
-  assert.match(site, /<link rel="apple-touch-icon" href="assets\/app-icon\.png" \/>/);
-  const icon = readFileSync(new URL("../docs/assets/favicon-v2.ico", import.meta.url));
+test("browser tabs, touch bookmarks, and the hero use the refreshed penguin artwork", () => {
+  assert.match(site, /<link rel="icon" type="image\/vnd\.microsoft\.icon" href="assets\/penguinpdf-icon\.ico" \/>/);
+  assert.match(site, /<link rel="apple-touch-icon" href="assets\/penguinpdf-app\.png" \/>/);
+  assert.match(site, /<img src="assets\/penguinpdf-mascot\.png" alt="" /);
+  const touchIcon = readFileSync(new URL("../docs/assets/penguinpdf-app.png", import.meta.url));
+  assert.equal(touchIcon.readUInt32BE(16), 180);
+  assert.equal(touchIcon.readUInt32BE(20), 180);
+  const icon = readFileSync(new URL("../docs/assets/penguinpdf-icon.ico", import.meta.url));
   assert.equal(icon.readUInt16LE(0), 0);
   assert.equal(icon.readUInt16LE(2), 1);
   const sizes = [];
@@ -40,6 +44,16 @@ test("browser tabs use the multi-size Windows penguin without changing the touch
     sizes.push(width);
   }
   for (const size of [16, 32, 48, 256]) assert.ok(sizes.includes(size), `missing ${size}px icon`);
+});
+
+test("iPhone is announced in both languages without a mobile download link", () => {
+  const notice = site.match(/<p class="mobileComingSoon">[\s\S]*?<\/p>/)?.[0];
+  assert.ok(notice);
+  assert.match(notice, /Coming soon on iPhone/);
+  assert.doesNotMatch(notice, /<a\b|<button\b|\bhref=/);
+  const { context } = runSite("Mozilla/5.0 (iPhone; CPU iPhone OS)", false, 5);
+  assert.equal(new Script("I18N.en.iphone_coming_soon").runInContext(context), "Coming soon on iPhone");
+  assert.equal(new Script("I18N.es.iphone_coming_soon").runInContext(context), "Próximamente en iPhone");
 });
 
 test("all release installers remain available without cluttering the hero", () => {
