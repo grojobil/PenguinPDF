@@ -164,9 +164,9 @@ test("gallery retains four genuine screenshot links and uses dots instead of cap
 
   const expectedSlides = [
     "assets/home-v3.png",
-    "assets/text-v2.png",
-    "assets/fill-v2.png",
-    "assets/edit-v2.png",
+    "assets/text-v3.png",
+    "assets/fill-v3.png",
+    "assets/edit-v3.png",
   ];
   const slideLinks = [...gallery.matchAll(/<a class="shotCard" href="([^"]+)"/g)].map((match) => match[1]);
   assert.deepEqual(slideLinks, expectedSlides);
@@ -235,7 +235,7 @@ test("each page load centers Home even after navigating away from it", () => {
   const activeImage = visit => new Script('shotCards[activeShotIndex].getAttribute("data-img")').runInContext(visit.context);
   assert.equal(activeImage(firstVisit), "assets/home-v3.png");
   firstVisit.getElement("carouselNext").dispatch("click");
-  assert.equal(activeImage(firstVisit), "assets/text-v2.png");
+  assert.equal(activeImage(firstVisit), "assets/text-v3.png");
   const nextVisit = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
   assert.equal(activeImage(nextVisit), "assets/home-v3.png");
   assert.equal(new Script('shotPanels[0].dataset.shotSlot').runInContext(nextVisit.context), "active");
