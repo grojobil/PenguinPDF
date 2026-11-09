@@ -1,15 +1,15 @@
 const COUNT_ENDPOINT = "https://penguinpdf.goatcounter.com/count";
 const SITE_ORIGIN = "https://grojobil.github.io";
 const HOMEPAGE_PATH = "/PenguinPDF/";
-const INSTALLER_PREFIX = "/grojobil/PenguinPDF/releases/download/v2.0.0/";
+const INSTALLER_PREFIX = "/grojobil/PenguinPDF/releases/download/v3.0.0/";
 const ATTRIBUTION_VALUE = /^[a-zA-Z0-9_-]{1,80}$/;
 
 const INSTALLERS = Object.freeze({
-  "PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg": Object.freeze({
+  "PenguinPDF-3.0.0-macOS-Apple-Silicon.dmg": Object.freeze({
     event: "download-macos-apple-silicon",
     title: "Apple Silicon installer link clicked",
   }),
-  "PenguinPDF-2.0.0-macOS-Intel.dmg": Object.freeze({
+  "PenguinPDF-3.0.0-macOS-Intel.dmg": Object.freeze({
     event: "download-macos-intel",
     title: "Intel Mac installer link clicked",
   }),

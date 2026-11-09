@@ -5,26 +5,21 @@
 PenguinPDF handles documents on your computer. There are no uploads, accounts,
 subscriptions, paid APIs, or tracking.
 
-## Download PenguinPDF 2.0.0
+## Download PenguinPDF 3.0.0
 
-- [macOS Apple Silicon (DMG)](https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg) for M1 or newer Macs
-- [macOS Intel (DMG)](https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg) for Intel Macs
-- [Windows x64 (EXE)](https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe), the standard Windows installer
-- [Windows x64 (MSI)](https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64_en-US.msi), an alternative installer
+- [macOS Apple Silicon (DMG)](https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF-3.0.0-macOS-Apple-Silicon.dmg) for M1 or newer Macs
+- [macOS Intel (DMG)](https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF-3.0.0-macOS-Intel.dmg) for Intel Macs
+- [Windows x64 (EXE)](https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64-setup.exe), the standard Windows installer
+- [Windows x64 (MSI)](https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64_en-US.msi), an alternative installer
 
-The macOS installers are signed and notarized. The Windows v2.0.0 installers
-are not Authenticode-signed and may show a Microsoft Defender SmartScreen
-warning; consult the
-[release notes](https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0)
-before installing.
+The macOS installers are signed and notarized. The Windows installers are not
+Authenticode-signed and may show a Microsoft Defender SmartScreen warning.
+See the [release notes and checksums](https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.0).
+[Version 2.0.0](https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0) remains available.
 
-The 2.0.0 installers were refreshed on September 28, 2026. Existing 2.0.0
-users must download and reinstall; the in-app version check cannot distinguish
-two builds with the same version number.
+## PenguinPDF 3.0.0
 
-## PenguinPDF 2.0.0
-
-Version 2 provides distinct Edit Text, Annotate PDF, and Fill & Sign tools,
+PenguinPDF provides distinct Edit Text, Annotate PDF, and Fill & Sign tools,
 alongside page organization, conversion, and document utilities.
 
 ### Edit
@@ -84,10 +79,10 @@ Bug reports can also be filed through
 PenguinPDF is free to use. Optional support helps keep it available:
 [Support PenguinPDF](https://penguinpdf.gumroad.com/l/sqlly)
 
-## Mobile requests
+## Mobile
 
-Request iOS, iPadOS, or Android support in
-[the mobile support issue](https://github.com/grojobil/PenguinPDF/issues/1/).
+PenguinPDF is coming to iPhone. There is no public mobile download yet.
+Share requests or feedback in [the mobile support issue](https://github.com/grojobil/PenguinPDF/issues/1/).
 
 ## Licenses
 

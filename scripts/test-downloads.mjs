@@ -6,10 +6,10 @@ import { createContext, Script } from "node:vm";
 const site = readFileSync(new URL("../docs/index.html", import.meta.url), "utf8");
 const readme = readFileSync(new URL("../README.md", import.meta.url), "utf8");
 const siteScript = site.match(/<script>([\s\S]*?)<\/script>/)?.[1];
-const base = "https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/";
+const base = "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/";
 const assets = [
-  "PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg",
-  "PenguinPDF-2.0.0-macOS-Intel.dmg",
+  "PenguinPDF-3.0.0-macOS-Apple-Silicon.dmg",
+  "PenguinPDF-3.0.0-macOS-Intel.dmg",
   "PenguinPDF_x64-setup.exe",
   "PenguinPDF_x64_en-US.msi",
 ];
@@ -24,10 +24,14 @@ function evaluateJson(context, expression) {
   return JSON.parse(new Script(`JSON.stringify(${expression})`).runInContext(context));
 }
 
-test("browser tabs use the multi-size Windows penguin without changing the touch icon", () => {
-  assert.match(site, /<link rel="icon" type="image\/vnd\.microsoft\.icon" href="assets\/favicon-v2\.ico" \/>/);
-  assert.match(site, /<link rel="apple-touch-icon" href="assets\/app-icon\.png" \/>/);
-  const icon = readFileSync(new URL("../docs/assets/favicon-v2.ico", import.meta.url));
+test("browser tabs, touch bookmarks, and the hero use the refreshed penguin artwork", () => {
+  assert.match(site, /<link rel="icon" type="image\/vnd\.microsoft\.icon" href="assets\/penguinpdf-icon\.ico" \/>/);
+  assert.match(site, /<link rel="apple-touch-icon" href="assets\/penguinpdf-app\.png" \/>/);
+  assert.match(site, /<img src="assets\/penguinpdf-mascot\.png" alt="" /);
+  const touchIcon = readFileSync(new URL("../docs/assets/penguinpdf-app.png", import.meta.url));
+  assert.equal(touchIcon.readUInt32BE(16), 180);
+  assert.equal(touchIcon.readUInt32BE(20), 180);
+  const icon = readFileSync(new URL("../docs/assets/penguinpdf-icon.ico", import.meta.url));
   assert.equal(icon.readUInt16LE(0), 0);
   assert.equal(icon.readUInt16LE(2), 1);
   const sizes = [];
@@ -40,6 +44,34 @@ test("browser tabs use the multi-size Windows penguin without changing the touch
     sizes.push(width);
   }
   for (const size of [16, 32, 48, 256]) assert.ok(sizes.includes(size), `missing ${size}px icon`);
+});
+
+test("one platform group contains both downloads and the disabled iPhone item", () => {
+  const group = getElementMarkup("div", "downloadPlatforms");
+  assert.match(group, /role="group"/);
+  assert.match(site, /id="downloadPlatforms"[\s\S]*?id="macPlatformLink"[\s\S]*?id="windowsPlatformLink"[\s\S]*?id="iphonePlatform"[\s\S]*?<noscript>/);
+  const mac = getElementMarkup("a", "macPlatformLink");
+  assert.match(mac, /aria-controls="macDownloadDialog"/);
+  const windows = getElementMarkup("a", "windowsPlatformLink");
+  assert.match(windows, /href="[^"]+PenguinPDF_x64-setup\.exe"/);
+  const iphone = getElementMarkup("button", "iphonePlatform");
+  assert.match(iphone, /type="button" disabled>/);
+  assert.match(iphone, /<svg[^>]+aria-hidden="true"/);
+  assert.match(iphone, /<span>iPhone<\/span>/);
+  assert.match(iphone, />Coming soon</);
+  assert.doesNotMatch(iphone, /<img\b|\bhref=|\btabindex=|App Store/i);
+  assert.doesNotMatch(site, /class="mobileComingSoon"/);
+
+  const mobile = runSite("Mozilla/5.0 (iPhone; CPU iPhone OS)", false, 5);
+  assert.equal(mobile.getElement("downloadPlatforms").dataset.platform, "other");
+  assert.equal(new Script("I18N.en.iphone_coming_soon").runInContext(mobile.context), "Coming soon");
+  assert.equal(new Script("I18N.es.iphone_coming_soon").runInContext(mobile.context), "Próximamente");
+  const macVisit = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
+  assert.equal(macVisit.getElement("downloadPlatforms").dataset.platform, "mac");
+  assert.ok(macVisit.getElement("macPlatformLink").dispatch("click").defaultPrevented);
+  assert.ok(macVisit.getElement("macDownloadDialog").open);
+  const windowsVisit = runSite("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+  assert.equal(windowsVisit.getElement("downloadPlatforms").dataset.platform, "windows");
 });
 
 test("all release installers remain available without cluttering the hero", () => {
@@ -539,7 +571,7 @@ test("contact links are labeled plainly and Help has no stray arrows", () => {
 
 test("English and Spanish include the gallery and download labels without a version badge", () => {
   assert.doesNotMatch(site, /class="versionLabel"|\.versionLabel\{|\bversion_label:/);
-  assert.match(site, /<meta name="description" content="PenguinPDF 2\.0\.0:/);
+  assert.match(site, /<meta name="description" content="PenguinPDF 3\.0\.0:/);
   for (const key of [
     "download_button", "download_windows", "download_mac", "mac_apple", "mac_intel", "win_exe", "win_msi",
     "mac_dialog_intro", "mac_apple_detail", "mac_intel_detail", "mac_other_downloads",

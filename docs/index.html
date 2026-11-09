@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PenguinPDF</title>
-  <meta name="description" content="PenguinPDF 2.0.0: Edit PDFs, annotate, sign, convert, and organize files locally. Free, no accounts or subscriptions." />
-  <link rel="icon" type="image/vnd.microsoft.icon" href="assets/favicon-v2.ico" />
-  <link rel="apple-touch-icon" href="assets/app-icon.png" />
+  <meta name="description" content="PenguinPDF 3.0.0: Edit PDFs, annotate, sign, convert, and organize files locally. Free, no accounts or subscriptions." />
+  <link rel="icon" type="image/vnd.microsoft.icon" href="assets/penguinpdf-icon.ico" />
+  <link rel="apple-touch-icon" href="assets/penguinpdf-app.png" />
 
   <style>
     :root{
@@ -187,9 +187,7 @@
       width: 72px;
       height: 72px;
       object-fit: contain;
-      border-radius: 20px;
-      box-shadow: 0 18px 44px rgba(0,0,0,0.12);
-      background: transparent;
+      flex-shrink:0;
       display:block;
     }
 
@@ -287,64 +285,86 @@
 
     .osRow{
       display:flex;
-      align-items:center;
       justify-content:center;
       width:100%;
-      color: rgba(23,23,26,0.54);
-      font-weight: 500;
-      font-size: 14px;
-      margin-top: 1px;
+      margin-top:3px;
+      color:rgba(23,23,26,0.86);
     }
     .osRowInner{
       display:flex;
       align-items:center;
       justify-content:center;
-      gap: 12px;
+      position:relative;
+      box-sizing:border-box;
+      max-width:100%;
+      padding:3px;
+      gap:6px;
+      border:1px solid rgba(255,255,255,0.64);
+      border-radius:999px;
+      background:rgba(255,255,255,0.42);
     }
     .osItem{
       display:flex;
       align-items:center;
-      justify-content:center;
-      width:112px;
-      position: relative;
     }
     .osAction{
       display:flex;
       align-items:center;
       justify-content:center;
       gap:8px;
+      box-sizing:border-box;
       min-height:44px;
-      padding:5px 7px;
-      border-radius:8px;
+      padding:4px 12px;
+      border:0;
+      border-radius:999px;
+      background:none;
       color:inherit;
+      font:inherit;
+      font-size:14px;
+      font-weight:600;
+      line-height:1.15;
       text-decoration:none;
-      transition:background .15s ease, color .15s ease;
+      white-space:nowrap;
+      transition:background .15s ease;
     }
-    .osAction:hover{
-      color:rgba(23,23,26,0.76);
-      background:rgba(255,255,255,0.34);
+    a.osAction:hover{ background:rgba(255,255,255,0.54); }
+    .osRow[data-platform="mac"] .macos .osAction,
+    .osRow[data-platform="windows"] .windows .osAction{
+      background:rgba(237,111,79,0.14);
     }
+    .osAction:focus-visible,
+    .infoBadge:focus-visible{ outline:2px solid var(--text); outline-offset:1px; }
     .osLogo{
-      width: 32px;
-      height: 32px;
-      object-fit: contain;
-      opacity: 0.92;
+      flex:none;
+      width:24px;
+      height:24px;
+      object-fit:contain;
       display:block;
-      filter: grayscale(10%);
     }
+    .macos .osLogo{ filter:brightness(0) opacity(.66); }
+    .osChevron{ color:rgba(23,23,26,0.56); flex:none; }
     .osSep{
+      flex:none;
       width:1px;
-      height:20px;
+      height:22px;
       background: rgba(0,0,0,0.10);
-      border-radius: 99px;
+    }
+    .osAction:disabled{ color:rgba(23,23,26,0.66); opacity:1; }
+    .osActionLabel{ display:flex; align-items:center; gap:8px; }
+    .osStatus{
+      padding:3px 7px;
+      border-radius:999px;
+      background:rgba(23,23,26,0.07);
+      font-size:11px;
+      line-height:1.1;
     }
 
+    .windows .osAction{ padding-right:8px; }
     .infoBadge{
-      position:absolute;
-      top:-3px;
-      left:calc(100% - 4px);
-      width:20px;
-      height:20px;
+      flex:none;
+      width:24px;
+      height:24px;
+      margin-right:4px;
       padding:0;
       border-radius: 999px;
       display: inline-flex;
@@ -361,10 +381,12 @@
     }
 
     .tooltip{
-      position: absolute;
-      left:calc(100% + 30px);
-      bottom:0;
-      width:min(280px, calc(100vw - 32px));
+      position:absolute;
+      top:calc(100% + 8px);
+      left:50%;
+      transform:translateX(-50%);
+      box-sizing:border-box;
+      width:min(280px, 100%);
       padding:12px 14px;
       border-radius:8px;
       background: rgba(255,255,255,0.92);
@@ -1111,10 +1133,6 @@
 
     img { max-width: 100%; height: auto; }
 
-    @media (max-width: 900px){
-      .tooltip{ left:auto; right:-16px; bottom:auto; top:calc(100% + 8px); }
-    }
-
     @media (max-width: 600px){
       .container{ padding:16px 20px 84px; }
       .topbar{ height:78px; }
@@ -1129,9 +1147,14 @@
       .downloadBtn{ font-size:16px; padding:16px 24px; }
       .downloadOptions{ gap:6px 12px; }
       .downloadOptions a{ padding:5px 0; }
-      .osRowInner{ gap:12px; }
-      .osItem{ width:104px; }
-      .osLogo{ width:30px; height:30px; }
+      .osRowInner{ gap:3px; }
+      .osAction{ gap:4px; padding-inline:5px; font-size:13px; }
+      .osLogo{ width:18px; height:18px; }
+      .osChevron{ width:8px; }
+      .osActionLabel{ flex-direction:column; align-items:flex-start; gap:2px; }
+      .osStatus{ padding:0; background:none; font-size:10px; }
+      .windows .osAction{ padding-right:3px; }
+      .infoBadge{ margin-right:2px; }
       .shots{ margin-top:16px; }
       .carouselReady .shotPanel{ width:82%; }
       .carouselReady .shotPanel.is-prev{ --slot-x:-27%; }
@@ -1160,6 +1183,33 @@
       .heroTitle{ font-size:30px; }
       .brandHero img{ width:44px; height:44px; }
       .heroTagline{ font-size:22px; }
+    }
+    @media (max-width: 375px){
+      .osRowInner{
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        width:100%;
+        gap:0;
+        border-radius:18px;
+      }
+      .osSep{ display:none; }
+      .osItem:not(:first-child){ border-inline-start:1px solid rgba(0,0,0,0.10); }
+      .osAction{
+        flex:1;
+        min-width:0;
+        min-height:60px;
+        flex-direction:column;
+        justify-content:flex-start;
+        gap:4px;
+        padding:6px 2px;
+        border-radius:14px;
+        font-size:12px;
+      }
+      .windows .osAction{ padding-inline:0; }
+      .infoBadge{ margin-right:0; }
+      .osActionLabel{ align-items:center; }
+      .osStatus{ white-space:normal; }
+      .osChevron{ display:none; }
     }
     @media (max-width: 600px) and (max-height: 650px){
       .topbar{ height:78px; }
@@ -1196,7 +1246,7 @@
 
     <div class="hero">
       <div class="brandHero">
-        <img src="assets/penguin.png" alt="PenguinPDF logo" />
+        <img src="assets/penguinpdf-mascot.png" alt="" width="72" height="72" />
         <h1 class="heroTitle">PenguinPDF</h1>
       </div>
 
@@ -1205,7 +1255,7 @@
       <div class="heroDesc" data-i18n="hero_desc">Edit, annotate, fill &amp; sign, organize, and convert PDFs.</div>
 
       <div class="downloadWrap" id="download-options">
-        <a class="downloadBtn" id="downloadBtn" href="https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0">
+        <a class="downloadBtn" id="downloadBtn" href="https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.0">
           <svg class="dlIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 3v10" stroke="white" stroke-width="2" stroke-linecap="round"/>
             <path d="M8 11l4 4 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1214,19 +1264,20 @@
           <span data-i18n="download_button">Download</span>
         </a>
 
-        <div class="osRow" aria-label="Platforms" data-i18n-aria-label="platforms_label">
+        <div class="osRow" id="downloadPlatforms" role="group" aria-label="Platforms" data-i18n-aria-label="platforms_label">
           <div class="osRowInner">
             <div class="osItem macos">
-              <a class="osAction" id="macPlatformLink" href="https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0" aria-label="Download for macOS" data-i18n-aria-label="download_mac">
+              <a class="osAction" id="macPlatformLink" href="https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.0" aria-label="Download for macOS" data-i18n-aria-label="download_mac" aria-haspopup="dialog" aria-controls="macDownloadDialog" aria-expanded="false">
                 <img class="osLogo" src="assets/apple.png" alt="" aria-hidden="true" />
                 <span>macOS</span>
+                <svg class="osChevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
               </a>
             </div>
 
             <div class="osSep" aria-hidden="true"></div>
 
             <div class="osItem windows">
-              <a class="osAction" id="windowsPlatformLink" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe" aria-label="Download for Windows" data-i18n-aria-label="download_windows">
+              <a class="osAction" id="windowsPlatformLink" href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64-setup.exe" aria-label="Download for Windows" data-i18n-aria-label="download_windows">
                 <img class="osLogo" src="assets/windows.png" alt="" aria-hidden="true" />
                 <span>Windows</span>
               </a>
@@ -1235,15 +1286,30 @@
                 To keep PenguinPDF free, the Windows installer is unsigned. Windows may show a security prompt. For the official download, choose More info &gt; Run anyway.
               </div>
             </div>
+
+            <div class="osSep" aria-hidden="true"></div>
+
+            <div class="osItem iphone">
+              <button class="osAction" id="iphonePlatform" type="button" disabled>
+                <svg class="osLogo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+                  <rect x="6" y="2" width="12" height="20" rx="2"/>
+                  <path d="M11 18.5h2"/>
+                </svg>
+                <span class="osActionLabel">
+                  <span>iPhone</span>
+                  <span class="osStatus" data-i18n="iphone_coming_soon">Coming soon</span>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
 
         <noscript>
-          <nav class="downloadOptions" aria-label="PenguinPDF 2.0.0 downloads">
-            <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg">macOS Apple Silicon</a>
-            <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg">macOS Intel</a>
-            <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe">Windows EXE</a>
-            <a href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64_en-US.msi">Windows MSI</a>
+          <nav class="downloadOptions" aria-label="PenguinPDF 3.0.0 downloads">
+            <a href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF-3.0.0-macOS-Apple-Silicon.dmg">macOS Apple Silicon</a>
+            <a href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF-3.0.0-macOS-Intel.dmg">macOS Intel</a>
+            <a href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64-setup.exe">Windows EXE</a>
+            <a href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64_en-US.msi">Windows MSI</a>
           </nav>
         </noscript>
       </div>
@@ -1332,17 +1398,17 @@
 
     <div class="secondaryLinks">
       <div class="tinyLinks">
-        <a href="https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0" data-i18n="see_all_downloads">Release notes and downloads</a>
+        <a href="https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.0" data-i18n="see_all_downloads">Release notes and downloads</a>
       </div>
       <div class="requestLink">
-        <a href="https://github.com/grojobil/PenguinPDF/issues/1/" target="_blank" rel="noreferrer" data-i18n="request_mobile">Request iOS/Android</a>
+        <a href="https://github.com/grojobil/PenguinPDF/issues/1/" target="_blank" rel="noreferrer" data-i18n="request_mobile">Mobile feedback</a>
       </div>
     </div>
 
     <div class="footerWrap">
       <footer>
         <div class="links">
-          <a id="allDownloadsLink" href="https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0" data-i18n="footer_downloads">Downloads</a>
+          <a id="allDownloadsLink" href="https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.0" data-i18n="footer_downloads">Downloads</a>
           <a href="https://github.com/grojobil/PenguinPDF">GitHub</a>
           <a href="https://github.com/grojobil/PenguinPDF/blob/main/LICENSE.md" data-i18n="footer_license">License</a>
           <a href="https://github.com/grojobil/PenguinPDF/blob/main/THIRD_PARTY_LICENSES.md" data-i18n="footer_notices">Third-party licenses</a>
@@ -1411,7 +1477,7 @@
       </div>
       <p class="macIntro" id="macDownloadIntro" data-i18n="mac_dialog_intro">Choose the version for your Mac.</p>
       <div class="macChoices">
-        <a class="macChoice" id="macAppleDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg">
+        <a class="macChoice" id="macAppleDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF-3.0.0-macOS-Apple-Silicon.dmg">
           <span class="macDevice" aria-hidden="true">
             <!-- Lucide laptop-minimal, ISC licensed. -->
             <svg viewBox="0 0 24 24"><rect width="18" height="12" x="3" y="4" rx="2" ry="2"/><line x1="2" x2="22" y1="20" y2="20"/></svg>
@@ -1420,7 +1486,7 @@
           <span class="macChoiceCopy"><strong>Apple Silicon</strong><small data-i18n="mac_apple_detail">For Macs with an Apple chip</small></span>
           <svg class="macChevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
         </a>
-        <a class="macChoice" id="macIntelDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg">
+        <a class="macChoice" id="macIntelDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF-3.0.0-macOS-Intel.dmg">
           <span class="macDevice" aria-hidden="true">
             <!-- Lucide cpu outline, ISC licensed. -->
             <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 1v3m6-3v3M9 20v3m6-3v3M20 9h3m-3 5h3M1 9h3m-3 5h3"/></svg>
@@ -1432,7 +1498,7 @@
       </div>
       <p class="dialogHint" data-i18n="mac_guidance">Not sure? Open the Apple menu on your Mac and choose About This Mac. Look for Chip or Processor.</p>
       <div class="macPopoverFooter">
-        <a id="macAllDownloads" href="https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0"><span data-i18n="mac_other_downloads">Windows or other downloads</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+        <a id="macAllDownloads" href="https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.0"><span data-i18n="mac_other_downloads">Windows or other downloads</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
       </div>
     </div>
   </dialog>
@@ -1445,22 +1511,22 @@
       </div>
       <div class="downloadGroup">
         <h3 class="downloadGroupTitle">macOS</h3>
-        <a class="downloadChoice" id="allMacAppleDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg">
+        <a class="downloadChoice" id="allMacAppleDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF-3.0.0-macOS-Apple-Silicon.dmg">
           <span data-i18n="mac_apple">macOS Apple Silicon</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
         </a>
-        <a class="downloadChoice" id="allMacIntelDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg">
+        <a class="downloadChoice" id="allMacIntelDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF-3.0.0-macOS-Intel.dmg">
           <span data-i18n="mac_intel">macOS Intel</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
         </a>
       </div>
       <div class="downloadGroup">
         <h3 class="downloadGroupTitle">Windows</h3>
-        <a class="downloadChoice" id="allWindowsExeDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe">
+        <a class="downloadChoice" id="allWindowsExeDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64-setup.exe">
           <span data-i18n="win_exe">Windows EXE</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
         </a>
-        <a class="downloadChoice" id="allWindowsMsiDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64_en-US.msi">
+        <a class="downloadChoice" id="allWindowsMsiDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64_en-US.msi">
           <span data-i18n="win_msi">Windows MSI (alternative)</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
         </a>
@@ -1519,11 +1585,11 @@
 
   <script>
     const DOWNLOADS = Object.freeze({
-      macApple: "https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Apple-Silicon.dmg",
-      macIntel: "https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF-2.0.0-macOS-Intel.dmg",
-      win: "https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64-setup.exe",
-      winMsi: "https://github.com/grojobil/PenguinPDF/releases/download/v2.0.0/PenguinPDF_x64_en-US.msi",
-      release: "https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0"
+      macApple: "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF-3.0.0-macOS-Apple-Silicon.dmg",
+      macIntel: "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF-3.0.0-macOS-Intel.dmg",
+      win: "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64-setup.exe",
+      winMsi: "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64_en-US.msi",
+      release: "https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.0"
     });
 
     const I18N = {
@@ -1536,7 +1602,7 @@
         download_button: "Download",
         download_mac: "Download for macOS",
         download_windows: "Download for Windows",
-        downloads_label: "PenguinPDF 2.0.0 downloads",
+        downloads_label: "PenguinPDF 3.0.0 downloads",
         platforms_label: "Download by platform",
         language_selector: "Language selector",
         mac_dialog_title: "Download for macOS",
@@ -1553,7 +1619,8 @@
         win_msi: "Windows MSI (alternative)",
         windows_info: "Windows install information",
         windows_tooltip: "To keep PenguinPDF free, the Windows installer is unsigned. Windows may show a security prompt. For the official download, choose More info > Run anyway.",
-        request_mobile: "Request iOS/Android",
+        iphone_coming_soon: "Coming soon",
+        request_mobile: "Mobile feedback",
         see_all_downloads: "Release notes and downloads",
         screenshots_label: "PenguinPDF screenshots",
         choose_screenshot: "Choose screenshot",
@@ -1590,7 +1657,7 @@
         footer_contact: "Contact us",
         close: "Close",
         close_image: "Close image",
-        page_description: "PenguinPDF 2.0.0: Edit PDFs, annotate, sign, convert, and organize files locally. Free, no accounts or subscriptions."
+        page_description: "PenguinPDF 3.0.0: Edit PDFs, annotate, sign, convert, and organize files locally. Free, no accounts or subscriptions."
       },
       es: {
         top_download: "Descargar",
@@ -1601,7 +1668,7 @@
         download_button: "Descargar",
         download_mac: "Descargar para macOS",
         download_windows: "Descargar para Windows",
-        downloads_label: "Descargas de PenguinPDF 2.0.0",
+        downloads_label: "Descargas de PenguinPDF 3.0.0",
         platforms_label: "Descargar por plataforma",
         language_selector: "Selector de idioma",
         mac_dialog_title: "Descargar para macOS",
@@ -1618,7 +1685,8 @@
         win_msi: "Windows MSI (alternativa)",
         windows_info: "Información de instalación para Windows",
         windows_tooltip: "Para mantener PenguinPDF gratis, el instalador de Windows no está firmado. Windows puede mostrar un aviso de seguridad. Para la descarga oficial, elige Más información > Ejecutar de todas formas.",
-        request_mobile: "Solicitar iOS/Android",
+        iphone_coming_soon: "Próximamente",
+        request_mobile: "Sugerencias para la app móvil",
         see_all_downloads: "Notas de la versión y descargas",
         screenshots_label: "Capturas de PenguinPDF",
         choose_screenshot: "Elegir captura",
@@ -1655,7 +1723,7 @@
         footer_contact: "Contacto",
         close: "Cerrar",
         close_image: "Cerrar imagen",
-        page_description: "PenguinPDF 2.0.0: edita PDFs, anota, firma, convierte y organiza archivos en tu equipo. Gratis, sin cuentas ni suscripciones."
+        page_description: "PenguinPDF 3.0.0: edita PDFs, anota, firma, convierte y organiza archivos en tu equipo. Gratis, sin cuentas ni suscripciones."
       }
     };
 
@@ -1696,6 +1764,7 @@
     }
     const metaDescription = document.querySelector('meta[name="description"]');
     const downloadBtn = document.getElementById("downloadBtn");
+    const downloadPlatforms = document.getElementById("downloadPlatforms");
     const macPlatformLink = document.getElementById("macPlatformLink");
     const allDownloadsLink = document.getElementById("allDownloadsLink");
     const macAllDownloads = document.getElementById("macAllDownloads");
@@ -1781,6 +1850,7 @@
 
     function configureDownloadRoute() {
       currentDownloadPlatform = getDownloadPlatform();
+      if (downloadPlatforms) downloadPlatforms.dataset.platform = currentDownloadPlatform;
       if (!downloadBtn) return currentDownloadPlatform;
       downloadBtn.href = currentDownloadPlatform === "windows" ? DOWNLOADS.win : DOWNLOADS.release;
       downloadBtn.dataset.downloadPlatform = currentDownloadPlatform;
@@ -2155,6 +2225,6 @@
     loadDownloadStats();
   </script>
   <script type="module" src="reviews.mjs?v=e0e1a6819865"></script>
-  <script type="module" src="analytics.mjs?v=2"></script>
+  <script type="module" src="analytics.mjs?v=3"></script>
 </body>
 </html>
