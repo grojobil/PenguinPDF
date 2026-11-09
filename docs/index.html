@@ -349,12 +349,15 @@
       height:22px;
       background: rgba(0,0,0,0.10);
     }
-    .osAction:disabled{ color:rgba(23,23,26,0.66); opacity:1; }
+    .iphone .osAction:disabled{ color:#a09da6; font-weight:500; opacity:1; }
+    .iphone .osAction:disabled .osLogo{ color:#aaa6b1; }
     .osActionLabel{ display:flex; align-items:center; gap:8px; }
     .osStatus{
       padding:3px 7px;
       border-radius:999px;
-      background:rgba(23,23,26,0.07);
+      color:#696674;
+      background:rgba(45,40,55,0.045);
+      box-shadow:inset 0 0 0 1px rgba(45,40,55,0.12);
       font-size:11px;
       line-height:1.1;
     }
@@ -1152,7 +1155,7 @@
       .osLogo{ width:18px; height:18px; }
       .osChevron{ width:8px; }
       .osActionLabel{ flex-direction:column; align-items:flex-start; gap:2px; }
-      .osStatus{ padding:0; background:none; font-size:10px; }
+      .osStatus{ padding:0; background:none; box-shadow:none; font-size:10px; }
       .windows .osAction{ padding-right:3px; }
       .infoBadge{ margin-right:2px; }
       .shots{ margin-top:16px; }
