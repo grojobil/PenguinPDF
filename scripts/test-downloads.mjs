@@ -163,7 +163,7 @@ test("gallery retains four genuine screenshot links and uses dots instead of cap
   assert.ok(gallery, "missing screenshot carousel");
 
   const expectedSlides = [
-    "assets/home-v2.png",
+    "assets/home-v3.png",
     "assets/text-v2.png",
     "assets/fill-v2.png",
     "assets/edit-v2.png",
@@ -233,15 +233,15 @@ test("carousel and lightbox support bounded keyboard navigation without autoplay
 test("each page load centers Home even after navigating away from it", () => {
   const firstVisit = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
   const activeImage = visit => new Script('shotCards[activeShotIndex].getAttribute("data-img")').runInContext(visit.context);
-  assert.equal(activeImage(firstVisit), "assets/home-v2.png");
+  assert.equal(activeImage(firstVisit), "assets/home-v3.png");
   firstVisit.getElement("carouselNext").dispatch("click");
   assert.equal(activeImage(firstVisit), "assets/text-v2.png");
   const nextVisit = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
-  assert.equal(activeImage(nextVisit), "assets/home-v2.png");
+  assert.equal(activeImage(nextVisit), "assets/home-v3.png");
   assert.equal(new Script('shotPanels[0].dataset.shotSlot').runInContext(nextVisit.context), "active");
   assert.equal(new Script('shotDots[0].getAttribute("aria-current")').runInContext(nextVisit.context), "true");
   assert.match(site, /data-shot-index="0"[^>]*data-i18n-aria-label="show_shot_home"/);
-  const homeImage = site.match(/<img src="assets\/home-v2\.png"[^>]*>/)?.[0];
+  const homeImage = site.match(/<img src="assets\/home-v3\.png"[^>]*>/)?.[0];
   assert.ok(homeImage);
   assert.doesNotMatch(homeImage, /loading="lazy"/);
 });
