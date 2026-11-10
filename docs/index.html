@@ -362,25 +362,37 @@
       line-height:1.1;
     }
 
-    .windows .osAction{ padding-right:8px; }
+    .windows{ display:grid; }
+    .windows .osAction, .infoBadge{ grid-area:1 / 1; }
     .infoBadge{
-      flex:none;
+      position:relative;
+      top:-4px;
+      z-index:1;
+      align-self:start;
+      justify-self:end;
       width:24px;
       height:24px;
-      margin-right:4px;
-      padding:0;
-      border-radius: 999px;
-      display: inline-flex;
+      padding:0 2px 0 0;
+      border:0;
+      border-radius:6px;
+      background:none;
+      display:grid;
       align-items:center;
-      justify-content:center;
-      font-size: 12px;
-      font-weight: 700; /* less bold */
+      justify-items:end;
       color: rgba(23,23,26,0.52);
-      border: 1px solid rgba(0,0,0,0.10);
-      background: rgba(255,255,255,0.55);
       cursor: pointer;
       user-select: none;
-      backdrop-filter: blur(10px);
+    }
+    .infoBadge span{
+      box-sizing:border-box;
+      width:12px;
+      height:12px;
+      display:grid;
+      place-items:center;
+      border:1px solid rgba(0,0,0,0.10);
+      border-radius:50%;
+      background:rgba(255,255,255,0.7);
+      font:700 9px/1 system-ui,sans-serif;
     }
 
     .tooltip{
@@ -1156,8 +1168,7 @@
       .osChevron{ width:8px; }
       .osActionLabel{ flex-direction:column; align-items:flex-start; gap:2px; }
       .osStatus{ padding:0; background:none; box-shadow:none; font-size:10px; }
-      .windows .osAction{ padding-right:3px; }
-      .infoBadge{ margin-right:2px; }
+      .infoBadge{ padding:0; }
       .shots{ margin-top:16px; }
       .carouselReady .shotPanel{ width:82%; }
       .carouselReady .shotPanel.is-prev{ --slot-x:-27%; }
@@ -1208,8 +1219,7 @@
         border-radius:14px;
         font-size:12px;
       }
-      .windows .osAction{ padding-inline:0; }
-      .infoBadge{ margin-right:0; }
+      .infoBadge{ top:7px; justify-self:center; transform:translateX(19px); }
       .osActionLabel{ align-items:center; }
       .osStatus{ white-space:normal; }
       .osChevron{ display:none; }
@@ -1284,7 +1294,7 @@
                 <img class="osLogo" src="assets/windows.png" alt="" aria-hidden="true" />
                 <span>Windows</span>
               </a>
-              <button class="infoBadge" id="windowsInfoButton" type="button" aria-label="Windows install info" data-i18n-aria-label="windows_info" aria-expanded="false" aria-describedby="windowsTooltip">i</button>
+              <button class="infoBadge" id="windowsInfoButton" type="button" aria-label="Windows install info" data-i18n-aria-label="windows_info" aria-expanded="false" aria-describedby="windowsTooltip"><span aria-hidden="true">i</span></button>
               <div class="tooltip" id="windowsTooltip" role="tooltip" data-i18n="windows_tooltip">
                 To keep PenguinPDF free, the Windows installer is unsigned. Windows may show a security prompt. For the official download, choose More info &gt; Run anyway.
               </div>
