@@ -6,10 +6,10 @@ import { createContext, Script } from "node:vm";
 const site = readFileSync(new URL("../docs/index.html", import.meta.url), "utf8");
 const readme = readFileSync(new URL("../README.md", import.meta.url), "utf8");
 const siteScript = site.match(/<script>([\s\S]*?)<\/script>/)?.[1];
-const base = "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/";
+const base = "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/";
 const assets = [
-  "PenguinPDF-3.0.0-macOS-Apple-Silicon.dmg",
-  "PenguinPDF-3.0.0-macOS-Intel.dmg",
+  "PenguinPDF-3.0.1-macOS-Apple-Silicon.dmg",
+  "PenguinPDF-3.0.1-macOS-Intel.dmg",
   "PenguinPDF_x64-setup.exe",
   "PenguinPDF_x64_en-US.msi",
 ];
@@ -571,7 +571,7 @@ test("contact links are labeled plainly and Help has no stray arrows", () => {
 
 test("English and Spanish include the gallery and download labels without a version badge", () => {
   assert.doesNotMatch(site, /class="versionLabel"|\.versionLabel\{|\bversion_label:/);
-  assert.match(site, /<meta name="description" content="PenguinPDF 3\.0\.0:/);
+  assert.match(site, /<meta name="description" content="PenguinPDF 3\.0\.1:/);
   for (const key of [
     "download_button", "download_windows", "download_mac", "mac_apple", "mac_intel", "win_exe", "win_msi",
     "mac_dialog_intro", "mac_apple_detail", "mac_intel_detail", "mac_other_downloads",

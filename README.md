@@ -5,19 +5,19 @@
 PenguinPDF handles documents on your computer. There are no uploads, accounts,
 subscriptions, paid APIs, or tracking.
 
-## Download PenguinPDF 3.0.0
+## Download PenguinPDF 3.0.1
 
-- [macOS Apple Silicon (DMG)](https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF-3.0.0-macOS-Apple-Silicon.dmg) for M1 or newer Macs
-- [macOS Intel (DMG)](https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF-3.0.0-macOS-Intel.dmg) for Intel Macs
-- [Windows x64 (EXE)](https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64-setup.exe), the standard Windows installer
-- [Windows x64 (MSI)](https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64_en-US.msi), an alternative installer
+- [macOS Apple Silicon (DMG)](https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF-3.0.1-macOS-Apple-Silicon.dmg) for M1 or newer Macs
+- [macOS Intel (DMG)](https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF-3.0.1-macOS-Intel.dmg) for Intel Macs
+- [Windows x64 (EXE)](https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF_x64-setup.exe), the standard Windows installer
+- [Windows x64 (MSI)](https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF_x64_en-US.msi), an alternative installer
 
 The macOS installers are signed and notarized. The Windows installers are not
 Authenticode-signed and may show a Microsoft Defender SmartScreen warning.
-See the [release notes and checksums](https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.0).
+See the [release notes and checksums](https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.1).
 [Version 2.0.0](https://github.com/grojobil/PenguinPDF/releases/tag/v2.0.0) remains available.
 
-## PenguinPDF 3.0.0
+## PenguinPDF 3.0.1
 
 PenguinPDF provides distinct Edit Text, Annotate PDF, and Fill & Sign tools,
 alongside page organization, conversion, and document utilities.

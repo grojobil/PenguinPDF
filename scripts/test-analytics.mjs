@@ -14,12 +14,12 @@ import {
 } from "../docs/analytics.mjs";
 
 const site = "https://grojobil.github.io/PenguinPDF/";
-const release = "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/";
+const release = "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/";
 const siteHTML = readFileSync(new URL("../docs/index.html", import.meta.url), "utf8");
 const privacyHTML = readFileSync(new URL("../docs/privacy.html", import.meta.url), "utf8");
 const installers = [
-  ["PenguinPDF-3.0.0-macOS-Apple-Silicon.dmg", "download-macos-apple-silicon", "Apple Silicon installer link clicked"],
-  ["PenguinPDF-3.0.0-macOS-Intel.dmg", "download-macos-intel", "Intel Mac installer link clicked"],
+  ["PenguinPDF-3.0.1-macOS-Apple-Silicon.dmg", "download-macos-apple-silicon", "Apple Silicon installer link clicked"],
+  ["PenguinPDF-3.0.1-macOS-Intel.dmg", "download-macos-intel", "Intel Mac installer link clicked"],
   ["PenguinPDF_x64-setup.exe", "download-windows-exe", "Windows EXE installer link clicked"],
   ["PenguinPDF_x64_en-US.msi", "download-windows-msi", "Windows MSI installer link clicked"],
 ];
@@ -140,12 +140,13 @@ test("only the four exact release assets are recognized", () => {
     assert.deepEqual(installerEventForURL(`${release}${filename}?utm_source=secret#fragment`), { event, title });
   }
   for (const href of [
-    "https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.0",
+    "https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.1",
+    "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64-setup.exe",
     `${release}PenguinPDF-arm64.dmg`,
     `${release}PenguinPDF_x64-setup.exe/extra`,
-    "https://github.com/grojobil/Other/releases/download/v3.0.0/PenguinPDF_x64-setup.exe",
-    "https://user:secret@github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64-setup.exe",
-    "http://github.com/grojobil/PenguinPDF/releases/download/v3.0.0/PenguinPDF_x64-setup.exe",
+    "https://github.com/grojobil/Other/releases/download/v3.0.1/PenguinPDF_x64-setup.exe",
+    "https://user:secret@github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF_x64-setup.exe",
+    "http://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF_x64-setup.exe",
   ]) assert.equal(installerEventForURL(href), null, href);
 });
 
@@ -175,7 +176,7 @@ test("delegation excludes choosers, canceled, right, and disabled clicks but acc
   const env = harness({ visibilityState: "hidden" });
   setupWebsiteAnalytics(env.window, env.document);
   const installer = anchor(`${release}${installers[0][0]}`);
-  env.document.dispatch("click", { target: anchor("https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.0") });
+  env.document.dispatch("click", { target: anchor("https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.1") });
   env.document.dispatch("click", { target: installer, defaultPrevented: true });
   env.document.dispatch("click", { target: installer, button: 2 });
   env.document.dispatch("click", { target: installer, button: 1 });
