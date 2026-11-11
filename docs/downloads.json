@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "startedAt": "2026-09-29T19:18:43.806Z",
-  "updatedAt": "2026-11-10T19:51:14.699Z",
-  "total": 912,
+  "updatedAt": "2026-11-11T06:44:37.213Z",
+  "total": 914,
   "byPlatform": {
-    "macOS": 344,
+    "macOS": 346,
     "Windows": 568
   },
   "byRelease": {
     "v1.0.0": 169,
     "v2.0.0": 706,
     "v3.0.0": 24,
-    "v3.0.1": 13
+    "v3.0.1": 15
   },
   "assets": [
     {
@@ -124,7 +124,7 @@
       "name": "PenguinPDF-3.0.1-macOS-Apple-Silicon.dmg",
       "release": "v3.0.1",
       "platform": "macOS",
-      "downloads": 6
+      "downloads": 8
     }
   ]
 }
