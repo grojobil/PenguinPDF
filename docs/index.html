@@ -352,6 +352,7 @@
     }
     .iphone .osAction:disabled{ color:#a09da6; font-weight:500; opacity:1; }
     .iphone .osAction:disabled .osLogo{ color:#aaa6b1; }
+    .osRow .iphone .osAction[aria-expanded="true"]{ background:#edf4ff; box-shadow:inset 0 0 0 1px #97bcf7; }
     .osActionLabel{ display:flex; align-items:center; gap:8px; }
     .osStatus{
       padding:3px 7px;
@@ -1059,9 +1060,35 @@
     }
     .macDownloadPopover .downloadDialogHeader{ gap:12px; margin-bottom:4px; }
     .macDownloadPopover .downloadDialogTitle{ font-size:20px; }
-    .iphoneDownloadPopover{ width:min(300px, calc(100vw - 32px)); }
-    .iphoneStoreBadge{ display:inline-block; margin-top:10px; }
-    .iphoneStoreBadge img{ display:block; width:auto; height:48px; }
+    .iphoneDownloadPopover{ width:min(344px, calc(100vw - 32px)); }
+    .iphoneDownloadPopover .downloadDialogInner{ padding:16px; }
+    .iphoneDownloadPopover .downloadDialogHeader{
+      display:grid; grid-template-columns:36px minmax(0, 1fr) auto;
+      align-items:start; gap:11px; margin-bottom:12px;
+    }
+    .iphoneDownloadPopover .downloadDialogTitle{ font-size:16px; color:var(--text); }
+    .iphoneDownloadPopover .downloadDialogHeader .closeX{ width:32px; height:32px; }
+    .iphoneStoreGlyph{
+      display:grid; place-items:center; width:36px; height:36px; border-radius:8px;
+      color:#fff; background:#2365b5;
+    }
+    .iphoneStoreGlyph svg{ width:20px; height:20px; }
+    .iphoneStoreDescription{ margin:4px 0 0; color:var(--muted); font-size:13px; line-height:1.35; }
+    .iphoneStoreCard{
+      position:relative; display:grid; grid-template-columns:36px minmax(0, 1fr); align-items:center; gap:9px;
+      box-sizing:border-box; width:min(204px, 100%); margin-inline:auto; padding:9px 26px 9px 9px;
+      border:1px solid #e0d9ef; border-radius:8px; background:#f0eafa;
+      color:var(--text); text-decoration:none;
+    }
+    .iphoneStoreCard:hover{ border-color:#8f7ab9; background:#eae1f7; }
+    .iphoneStoreCard:focus-visible{ outline:2px solid #2365b5; outline-offset:2px; }
+    .iphoneStoreCard img{ display:block; width:36px; height:36px; border-radius:8px; }
+    .iphoneStoreCopy{ display:grid; gap:2px; min-width:0; }
+    .iphoneStoreCopy strong{ font-size:14px; line-height:1.2; }
+    .iphoneStoreCopy small{ color:var(--muted); font-size:12px; line-height:1.25; }
+    .iphoneStoreArrow{ position:absolute; top:8px; right:8px; width:15px; height:15px; color:#245daf; }
+    .iphoneStoreBadge{ display:inline-block; margin-top:4px; }
+    .iphoneStoreBadge img{ display:block; width:auto; height:44px; }
     .macHeading{ display:flex; align-items:center; gap:12px; }
     .macHeading img{ width:26px; height:28px; object-fit:contain; filter:brightness(0.42); }
     .macIntro{ margin:0 0 18px; font-size:13px; line-height:1.5; color:var(--muted); }
@@ -1521,14 +1548,22 @@
     </div>
   </dialog>
 
-  <dialog class="downloadDialog macDownloadPopover iphoneDownloadPopover" id="iphoneDownloadDialog" aria-labelledby="iphoneDownloadDialogTitle">
+  <dialog class="downloadDialog macDownloadPopover iphoneDownloadPopover" id="iphoneDownloadDialog" aria-labelledby="iphoneDownloadDialogTitle" aria-describedby="iphoneStoreDescription">
     <div class="downloadDialogInner">
       <div class="downloadDialogHeader">
-        <h2 class="downloadDialogTitle" id="iphoneDownloadDialogTitle" data-i18n="download_iphone">Download for iPhone</h2>
+        <span class="iphoneStoreGlyph" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18.5h2"/></svg>
+        </span>
+        <div>
+          <h2 class="downloadDialogTitle" id="iphoneDownloadDialogTitle" data-i18n="download_iphone">Download for iPhone</h2>
+          <p class="iphoneStoreDescription" id="iphoneStoreDescription" data-i18n="iphone_store_description">Edit, organize, and sign PDFs.</p>
+        </div>
         <button class="closeX" type="button" data-dialog-close aria-label="Close" data-i18n-aria-label="close">×</button>
       </div>
-      <a class="iphoneStoreBadge" id="iphoneStoreLink">
-        <img id="iphoneStoreBadge" src="assets/app-store-badge-en.svg" alt="Download on the App Store" data-i18n-alt="app_store_badge" />
+      <a class="iphoneStoreCard" id="iphoneStoreLink" aria-label="Open PenguinPDF in the App Store" data-i18n-aria-label="iphone_store_open">
+        <img src="assets/penguinpdf-app.png" alt="" width="36" height="36" />
+        <span class="iphoneStoreCopy"><strong>PenguinPDF</strong><small data-i18n="iphone_store_free">Free &middot; App Store</small></span>
+        <svg class="iphoneStoreArrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>
       </a>
     </div>
   </dialog>
@@ -1559,6 +1594,12 @@
         <a class="downloadChoice" id="allWindowsMsiDownload" href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF_x64_en-US.msi">
           <span data-i18n="win_msi">Windows MSI (alternative)</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        </a>
+      </div>
+      <div class="downloadGroup" id="allIphoneDownloadGroup" hidden>
+        <h3 class="downloadGroupTitle">iPhone</h3>
+        <a class="iphoneStoreBadge" id="allIphoneStoreLink">
+          <img id="iphoneStoreBadge" src="assets/app-store-badge-en.svg" alt="Download on the App Store" data-i18n-alt="app_store_badge" />
         </a>
       </div>
     </div>
@@ -1652,6 +1693,9 @@
         windows_tooltip: "To keep PenguinPDF free, the Windows installer is unsigned. Windows may show a security prompt. For the official download, choose More info > Run anyway.",
         iphone_coming_soon: "Coming soon",
         download_iphone: "Download for iPhone",
+        iphone_store_description: "Edit, organize, and sign PDFs.",
+        iphone_store_free: "Free · App Store",
+        iphone_store_open: "Open PenguinPDF in the App Store",
         app_store_badge: "Download on the App Store",
         apple_store_credit: "Apple and the Apple logo are trademarks of Apple Inc. App Store is a service mark of Apple Inc.",
         request_mobile: "Mobile feedback",
@@ -1721,6 +1765,9 @@
         windows_tooltip: "Para mantener PenguinPDF gratis, el instalador de Windows no está firmado. Windows puede mostrar un aviso de seguridad. Para la descarga oficial, elige Más información > Ejecutar de todas formas.",
         iphone_coming_soon: "Próximamente",
         download_iphone: "Descargar para iPhone",
+        iphone_store_description: "Edita, organiza y firma PDFs.",
+        iphone_store_free: "Gratis · App Store",
+        iphone_store_open: "Abrir PenguinPDF en el App Store",
         app_store_badge: "Descargar en el App Store",
         apple_store_credit: "Apple y el logotipo de Apple son marcas comerciales de Apple Inc. App Store es una marca de servicio de Apple Inc.",
         request_mobile: "Sugerencias para la app móvil",
@@ -1898,6 +1945,7 @@
       currentDownloadPlatform = getDownloadPlatform();
       if (downloadPlatforms) downloadPlatforms.dataset.platform = currentDownloadPlatform;
       iphonePlatform.disabled = !DOWNLOADS.iphone;
+      document.getElementById("allIphoneDownloadGroup").hidden = !DOWNLOADS.iphone;
       if (DOWNLOADS.iphone) {
         document.getElementById("iphoneComingSoon").hidden = true;
         document.getElementById("appleStoreCredit").hidden = false;
@@ -1905,6 +1953,7 @@
         iphonePlatform.setAttribute("aria-controls", "iphoneDownloadDialog");
         iphonePlatform.setAttribute("aria-expanded", "false");
         iphoneStoreLink.href = DOWNLOADS.iphone;
+        document.getElementById("allIphoneStoreLink").href = DOWNLOADS.iphone;
       }
       if (!downloadBtn) return currentDownloadPlatform;
       downloadBtn.href = currentDownloadPlatform === "windows" ? DOWNLOADS.win : currentDownloadPlatform === "iphone" ? DOWNLOADS.iphone : DOWNLOADS.release;

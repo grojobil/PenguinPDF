@@ -65,6 +65,8 @@ test("one platform group contains both downloads and the disabled iPhone item", 
   const mobile = runSite("Mozilla/5.0 (iPhone; CPU iPhone OS)", false, 5);
   assert.equal(mobile.getElement("downloadPlatforms").dataset.platform, "other");
   assert.equal(mobile.getElement("iphonePlatform").disabled, true);
+  assert.equal(mobile.getElement("allIphoneDownloadGroup").hidden, true);
+  assert.equal(mobile.getElement("allIphoneStoreLink").href, "");
   mobile.getElement("iphonePlatform").dispatch("click");
   assert.equal(mobile.getElement("iphoneDownloadDialog").open, false);
   assert.equal(new Script("I18N.en.iphone_coming_soon").runInContext(mobile.context), "Coming soon");
@@ -79,6 +81,12 @@ test("one platform group contains both downloads and the disabled iPhone item", 
 
 test("an enabled iPhone release opens a localized App Store popover without changing desktop routes", () => {
   const url = "https://apps.apple.com/app/id6830822105";
+  const popover = getElementMarkup("dialog", "iphoneDownloadDialog");
+  assert.equal((popover.match(/<a\b/g) ?? []).length, 1);
+  assert.match(popover, /id="iphoneStoreLink"[^>]+aria-label="Open PenguinPDF in the App Store"/);
+  assert.match(popover, /src="assets\/penguinpdf-app\.png"/);
+  assert.doesNotMatch(popover, /app-store-badge-/);
+  assert.match(getElementMarkup("a", "allIphoneStoreLink"), /src="assets\/app-store-badge-en\.svg"/);
   for (const [ua, touches, platform] of [
     ["Mozilla/5.0 (iPhone; CPU iPhone OS)", 5, "iphone"],
     ["Mozilla/5.0 (Macintosh)", 5, "iphone"],
@@ -91,6 +99,8 @@ test("an enabled iPhone release opens a localized App Store popover without chan
     assert.equal(trigger.disabled, false);
     assert.equal(visit.getElement("iphoneComingSoon").hidden, true);
     assert.equal(visit.getElement("iphoneStoreLink").href, url);
+    assert.equal(visit.getElement("allIphoneDownloadGroup").hidden, false);
+    assert.equal(visit.getElement("allIphoneStoreLink").href, url);
     assert.equal(trigger.getAttribute("aria-controls"), "iphoneDownloadDialog");
     const opener = platform === "iphone" ? visit.downloadButton : trigger;
     if (platform === "iphone") {
