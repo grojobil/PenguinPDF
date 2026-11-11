@@ -329,7 +329,8 @@
     }
     a.osAction:hover{ background:rgba(255,255,255,0.54); }
     .osRow[data-platform="mac"] .macos .osAction,
-    .osRow[data-platform="windows"] .windows .osAction{
+    .osRow[data-platform="windows"] .windows .osAction,
+    .osRow[data-platform="iphone"] .iphone .osAction{
       background:rgba(237,111,79,0.14);
     }
     .osAction:focus-visible,
@@ -1058,6 +1059,9 @@
     }
     .macDownloadPopover .downloadDialogHeader{ gap:12px; margin-bottom:4px; }
     .macDownloadPopover .downloadDialogTitle{ font-size:20px; }
+    .iphoneDownloadPopover{ width:min(300px, calc(100vw - 32px)); }
+    .iphoneStoreBadge{ display:inline-block; margin-top:10px; }
+    .iphoneStoreBadge img{ display:block; width:auto; height:48px; }
     .macHeading{ display:flex; align-items:center; gap:12px; }
     .macHeading img{ width:26px; height:28px; object-fit:contain; filter:brightness(0.42); }
     .macIntro{ margin:0 0 18px; font-size:13px; line-height:1.5; color:var(--muted); }
@@ -1310,7 +1314,7 @@
                 </svg>
                 <span class="osActionLabel">
                   <span>iPhone</span>
-                  <span class="osStatus" data-i18n="iphone_coming_soon">Coming soon</span>
+                  <span class="osStatus" id="iphoneComingSoon" data-i18n="iphone_coming_soon">Coming soon</span>
                 </span>
               </button>
             </div>
@@ -1430,6 +1434,7 @@
           <a href="mailto:penguin.pdf.tools@gmail.com" data-i18n="footer_contact">Contact us</a>
         </div>
         <span data-i18n="footer_note">The app runs locally, with no tracking or accounts.</span>
+        <span id="appleStoreCredit" hidden data-i18n="apple_store_credit">Apple and the Apple logo are trademarks of Apple Inc. App Store is a service mark of Apple Inc.</span>
       </footer>
     </div>
 
@@ -1516,6 +1521,18 @@
     </div>
   </dialog>
 
+  <dialog class="downloadDialog macDownloadPopover iphoneDownloadPopover" id="iphoneDownloadDialog" aria-labelledby="iphoneDownloadDialogTitle">
+    <div class="downloadDialogInner">
+      <div class="downloadDialogHeader">
+        <h2 class="downloadDialogTitle" id="iphoneDownloadDialogTitle" data-i18n="download_iphone">Download for iPhone</h2>
+        <button class="closeX" type="button" data-dialog-close aria-label="Close" data-i18n-aria-label="close">×</button>
+      </div>
+      <a class="iphoneStoreBadge" id="iphoneStoreLink">
+        <img id="iphoneStoreBadge" src="assets/app-store-badge-en.svg" alt="Download on the App Store" data-i18n-alt="app_store_badge" />
+      </a>
+    </div>
+  </dialog>
+
   <dialog class="downloadDialog" id="allDownloadsDialog" aria-labelledby="allDownloadsDialogTitle">
     <div class="downloadDialogInner">
       <div class="downloadDialogHeader">
@@ -1598,6 +1615,7 @@
 
   <script>
     const DOWNLOADS = Object.freeze({
+      iphone: "https://apps.apple.com/app/id6830822105",
       macApple: "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF-3.0.1-macOS-Apple-Silicon.dmg",
       macIntel: "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF-3.0.1-macOS-Intel.dmg",
       win: "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF_x64-setup.exe",
@@ -1633,6 +1651,9 @@
         windows_info: "Windows install information",
         windows_tooltip: "To keep PenguinPDF free, the Windows installer is unsigned. Windows may show a security prompt. For the official download, choose More info > Run anyway.",
         iphone_coming_soon: "Coming soon",
+        download_iphone: "Download for iPhone",
+        app_store_badge: "Download on the App Store",
+        apple_store_credit: "Apple and the Apple logo are trademarks of Apple Inc. App Store is a service mark of Apple Inc.",
         request_mobile: "Mobile feedback",
         see_all_downloads: "Release notes and downloads",
         screenshots_label: "PenguinPDF screenshots",
@@ -1699,6 +1720,9 @@
         windows_info: "Información de instalación para Windows",
         windows_tooltip: "Para mantener PenguinPDF gratis, el instalador de Windows no está firmado. Windows puede mostrar un aviso de seguridad. Para la descarga oficial, elige Más información > Ejecutar de todas formas.",
         iphone_coming_soon: "Próximamente",
+        download_iphone: "Descargar para iPhone",
+        app_store_badge: "Descargar en el App Store",
+        apple_store_credit: "Apple y el logotipo de Apple son marcas comerciales de Apple Inc. App Store es una marca de servicio de Apple Inc.",
         request_mobile: "Sugerencias para la app móvil",
         see_all_downloads: "Notas de la versión y descargas",
         screenshots_label: "Capturas de PenguinPDF",
@@ -1782,6 +1806,9 @@
     const allDownloadsLink = document.getElementById("allDownloadsLink");
     const macAllDownloads = document.getElementById("macAllDownloads");
     const macDownloadDialog = document.getElementById("macDownloadDialog");
+    const iphonePlatform = document.getElementById("iphonePlatform");
+    const iphoneDownloadDialog = document.getElementById("iphoneDownloadDialog");
+    const iphoneStoreLink = document.getElementById("iphoneStoreLink");
     const allDownloadsDialog = document.getElementById("allDownloadsDialog");
     const windowsInfoButton = document.getElementById("windowsInfoButton");
     const dialogReturnFocus = new WeakMap();
@@ -1790,7 +1817,8 @@
     function getDownloadPlatform(userAgent = navigator.userAgent, maxTouchPoints = navigator.maxTouchPoints || 0) {
       const ua = String(userAgent || "");
       const isIPadDesktop = /Macintosh/i.test(ua) && Number(maxTouchPoints) > 1;
-      if (isIPadDesktop || /Android|iPhone|iPad|iPod|Mobile/i.test(ua)) return "other";
+      if (isIPadDesktop || /iPhone|iPad|iPod/i.test(ua)) return DOWNLOADS.iphone ? "iphone" : "other";
+      if (/Android|Mobile/i.test(ua)) return "other";
       if (/Windows NT|Windows|Win64|Win32/i.test(ua)) return "windows";
       if (/Macintosh|Mac OS X/i.test(ua)) return "mac";
       return "other";
@@ -1816,23 +1844,28 @@
       };
     }
 
-    function positionMacDownloadPopover() {
-      if (!macDownloadDialog.open) return;
-      const trigger = dialogReturnFocus.get(macDownloadDialog);
+    function positionDownloadPopover(dialog) {
+      if (!dialog.open) return;
+      const trigger = dialogReturnFocus.get(dialog);
       if (!trigger?.getBoundingClientRect) return;
       const anchor = trigger.getBoundingClientRect();
       const viewport = { width: document.documentElement.clientWidth, height: window.innerHeight };
-      macDownloadDialog.style.maxHeight = `${viewport.height - 32}px`;
+      dialog.style.maxHeight = `${viewport.height - 32}px`;
       const panel = {
-        width: macDownloadDialog.getBoundingClientRect().width,
-        height: macDownloadDialog.querySelector(".downloadDialogInner").scrollHeight + 2
+        width: dialog.getBoundingClientRect().width,
+        height: dialog.querySelector(".downloadDialogInner").scrollHeight + 2
       };
       const position = getDownloadPopoverPosition(anchor, viewport, panel);
-      macDownloadDialog.style.left = `${position.left}px`;
-      macDownloadDialog.style.top = `${position.top}px`;
-      macDownloadDialog.style.maxHeight = `${position.maxHeight}px`;
-      macDownloadDialog.style.setProperty("--anchor-x", `${position.anchorX}px`);
-      macDownloadDialog.dataset.anchorVisible = String(position.top >= anchor.bottom);
+      dialog.style.left = `${position.left}px`;
+      dialog.style.top = `${position.top}px`;
+      dialog.style.maxHeight = `${position.maxHeight}px`;
+      dialog.style.setProperty("--anchor-x", `${position.anchorX}px`);
+      dialog.dataset.anchorVisible = String(position.top >= anchor.bottom);
+    }
+
+    function positionDownloadPopovers() {
+      positionDownloadPopover(macDownloadDialog);
+      positionDownloadPopover(iphoneDownloadDialog);
     }
 
     function openDownloadDialog(dialog, trigger = document.activeElement) {
@@ -1840,7 +1873,7 @@
       dialogReturnFocus.set(dialog, trigger);
       dialog.showModal();
       trigger?.setAttribute("aria-expanded", "true");
-      if (dialog === macDownloadDialog) positionMacDownloadPopover();
+      if (dialog === macDownloadDialog || dialog === iphoneDownloadDialog) positionDownloadPopover(dialog);
       dialog.querySelector("[data-dialog-close]")?.focus();
       return true;
     }
@@ -1864,8 +1897,17 @@
     function configureDownloadRoute() {
       currentDownloadPlatform = getDownloadPlatform();
       if (downloadPlatforms) downloadPlatforms.dataset.platform = currentDownloadPlatform;
+      iphonePlatform.disabled = !DOWNLOADS.iphone;
+      if (DOWNLOADS.iphone) {
+        document.getElementById("iphoneComingSoon").hidden = true;
+        document.getElementById("appleStoreCredit").hidden = false;
+        iphonePlatform.setAttribute("aria-haspopup", "dialog");
+        iphonePlatform.setAttribute("aria-controls", "iphoneDownloadDialog");
+        iphonePlatform.setAttribute("aria-expanded", "false");
+        iphoneStoreLink.href = DOWNLOADS.iphone;
+      }
       if (!downloadBtn) return currentDownloadPlatform;
-      downloadBtn.href = currentDownloadPlatform === "windows" ? DOWNLOADS.win : DOWNLOADS.release;
+      downloadBtn.href = currentDownloadPlatform === "windows" ? DOWNLOADS.win : currentDownloadPlatform === "iphone" ? DOWNLOADS.iphone : DOWNLOADS.release;
       downloadBtn.dataset.downloadPlatform = currentDownloadPlatform;
       if (currentDownloadPlatform !== "windows") downloadBtn.setAttribute("aria-haspopup", "dialog");
       return currentDownloadPlatform;
@@ -1883,7 +1925,7 @@
       if (!downloadLabel) return;
       const key = currentDownloadPlatform === "mac"
         ? "download_mac"
-        : currentDownloadPlatform === "windows" ? "download_windows" : "download_button";
+        : currentDownloadPlatform === "windows" ? "download_windows" : currentDownloadPlatform === "iphone" ? "download_iphone" : "download_button";
       downloadLabel.textContent = dict[key];
     }
 
@@ -1912,12 +1954,13 @@
       }
 
       updateDownloadLabel(dict);
+      if (DOWNLOADS.iphone) document.getElementById("iphoneStoreBadge").src = `assets/app-store-badge-${selectedLang}.svg`;
       document.getElementById("privacyLink").href = selectedLang === "es" ? "privacy.html?lang=es" : "privacy.html";
       renderDownloadCount(selectedLang);
       updateShotCardCaptions(dict);
       carouselStatus.textContent = shotPanels[activeShotIndex]?.getAttribute("aria-label") || "";
       if (imgOverlay.open && lightboxShotIndex >= 0) renderLightboxShot(lightboxShotIndex);
-      positionMacDownloadPopover();
+      positionDownloadPopovers();
       if (metaDescription && dict.page_description) metaDescription.setAttribute("content", dict.page_description);
 
       document.querySelectorAll(".langBtn").forEach((btn) => {
@@ -1945,7 +1988,7 @@
       return (navigator.language || "").toLowerCase().startsWith("es") ? "es" : "en";
     }
 
-    for (const dialog of [macDownloadDialog, allDownloadsDialog]) {
+    for (const dialog of [macDownloadDialog, allDownloadsDialog, iphoneDownloadDialog]) {
       dialog.querySelector("[data-dialog-close]").addEventListener("click", () => closeDownloadDialog(dialog));
       dialog.addEventListener("cancel", (event) => {
         event.preventDefault();
@@ -1958,7 +2001,7 @@
 
     downloadBtn.addEventListener("click", (event) => {
       if (isModifiedLinkClick(event) || currentDownloadPlatform === "windows") return;
-      const dialog = currentDownloadPlatform === "mac" ? macDownloadDialog : allDownloadsDialog;
+      const dialog = currentDownloadPlatform === "mac" ? macDownloadDialog : currentDownloadPlatform === "iphone" ? iphoneDownloadDialog : allDownloadsDialog;
       if (typeof dialog.showModal !== "function") return;
       event.preventDefault();
       openDownloadDialog(dialog, downloadBtn);
@@ -1967,6 +2010,14 @@
       if (isModifiedLinkClick(event) || typeof macDownloadDialog.showModal !== "function") return;
       event.preventDefault();
       openDownloadDialog(macDownloadDialog, macPlatformLink);
+    });
+    iphonePlatform.addEventListener("click", () => {
+      if (DOWNLOADS.iphone && !openDownloadDialog(iphoneDownloadDialog, iphonePlatform)) {
+        if (typeof iphoneDownloadDialog.showModal !== "function") location.assign(DOWNLOADS.iphone);
+      }
+    });
+    iphoneStoreLink.addEventListener("click", (event) => {
+      if (!isModifiedLinkClick(event)) closeDownloadDialog(iphoneDownloadDialog);
     });
     allDownloadsLink.addEventListener("click", (event) => {
       if (isModifiedLinkClick(event) || typeof allDownloadsDialog.showModal !== "function") return;
@@ -1985,8 +2036,8 @@
         if (!isModifiedLinkClick(event)) closeDownloadDialog(macDownloadDialog);
       });
     }
-    window.addEventListener("resize", positionMacDownloadPopover);
-    window.addEventListener("scroll", positionMacDownloadPopover, { passive: true });
+    window.addEventListener("resize", positionDownloadPopovers);
+    window.addEventListener("scroll", positionDownloadPopovers, { passive: true });
 
     windowsInfoButton.addEventListener("click", () => {
       windowsInfoButton.removeAttribute("data-dismissed");

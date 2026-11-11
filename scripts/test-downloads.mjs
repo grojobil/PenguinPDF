@@ -64,6 +64,9 @@ test("one platform group contains both downloads and the disabled iPhone item", 
 
   const mobile = runSite("Mozilla/5.0 (iPhone; CPU iPhone OS)", false, 5);
   assert.equal(mobile.getElement("downloadPlatforms").dataset.platform, "other");
+  assert.equal(mobile.getElement("iphonePlatform").disabled, true);
+  mobile.getElement("iphonePlatform").dispatch("click");
+  assert.equal(mobile.getElement("iphoneDownloadDialog").open, false);
   assert.equal(new Script("I18N.en.iphone_coming_soon").runInContext(mobile.context), "Coming soon");
   assert.equal(new Script("I18N.es.iphone_coming_soon").runInContext(mobile.context), "Próximamente");
   const macVisit = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
@@ -72,6 +75,37 @@ test("one platform group contains both downloads and the disabled iPhone item", 
   assert.ok(macVisit.getElement("macDownloadDialog").open);
   const windowsVisit = runSite("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
   assert.equal(windowsVisit.getElement("downloadPlatforms").dataset.platform, "windows");
+});
+
+test("an enabled iPhone release opens a localized App Store popover without changing desktop routes", () => {
+  const url = "https://apps.apple.com/app/id6830822105";
+  for (const [ua, touches, platform] of [
+    ["Mozilla/5.0 (iPhone; CPU iPhone OS)", 5, "iphone"],
+    ["Mozilla/5.0 (Macintosh)", 5, "iphone"],
+    ["Mozilla/5.0 (Macintosh)", 0, "mac"],
+    ["Mozilla/5.0 (Windows NT 10.0)", 0, "windows"],
+  ]) {
+    const visit = runSite(ua, false, touches, undefined, url);
+    const trigger = visit.getElement("iphonePlatform");
+    assert.equal(visit.getElement("downloadPlatforms").dataset.platform, platform);
+    assert.equal(trigger.disabled, false);
+    assert.equal(visit.getElement("iphoneComingSoon").hidden, true);
+    assert.equal(visit.getElement("iphoneStoreLink").href, url);
+    assert.equal(trigger.getAttribute("aria-controls"), "iphoneDownloadDialog");
+    const opener = platform === "iphone" ? visit.downloadButton : trigger;
+    if (platform === "iphone") {
+      assert.equal(opener.href, url);
+      assert.equal(visit.downloadLabel.textContent, "Download for iPhone");
+    }
+    opener.dispatch("click");
+    assert.equal(visit.getElement("iphoneDownloadDialog").open, true);
+    assert.equal(opener.getAttribute("aria-expanded"), "true");
+    new Script('applyLanguage("es")').runInContext(visit.context);
+    assert.equal(visit.getElement("iphoneStoreBadge").src, "assets/app-store-badge-es.svg");
+    visit.getElement("iphoneDownloadDialog").dispatch("cancel");
+    assert.equal(visit.getElement("iphoneDownloadDialog").open, false);
+    assert.equal(visit.getActiveElement(), opener);
+  }
 });
 
 test("all release installers remain available without cluttering the hero", () => {
@@ -246,7 +280,7 @@ test("each page load centers Home even after navigating away from it", () => {
   assert.doesNotMatch(homeImage, /loading="lazy"/);
 });
 
-function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0, fetcher) {
+function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0, fetcher, iphoneStore = null) {
   let activeElement;
   const element = (id = "") => {
     const listeners = new Map();
@@ -331,7 +365,8 @@ function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0, fetcher)
     document, window, localStorage, URLSearchParams, AbortSignal, fetch: fetcher,
     navigator: { userAgent, platform: "", language: "en-US", maxTouchPoints },
   });
-  new Script(siteScript).runInContext(context);
+  const script = siteScript.replace(/(\biphone: )(?:null|"[^"]*")/, `$1${JSON.stringify(iphoneStore)}`);
+  new Script(script).runInContext(context);
   onReady?.();
   return {
     context,
