@@ -83,6 +83,7 @@ test("an enabled iPhone release opens a localized App Store popover without chan
   const url = "https://apps.apple.com/app/id6830822105";
   const popover = getElementMarkup("dialog", "iphoneDownloadDialog");
   assert.equal((popover.match(/<a\b/g) ?? []).length, 1);
+  assert.match(popover, /class="iphoneStoreGlyph" src="assets\/apple-app-store-icon\.png"[^>]*>[\s\S]*?id="iphoneDownloadDialogTitle"/);
   assert.match(popover, /id="iphoneStoreLink"[^>]+aria-label="Open PenguinPDF in the App Store"/);
   assert.match(popover, /src="assets\/penguinpdf-app\.png"/);
   assert.doesNotMatch(popover, /app-store-badge-/);

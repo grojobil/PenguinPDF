@@ -1069,10 +1069,8 @@
     .iphoneDownloadPopover .downloadDialogTitle{ font-size:16px; color:var(--text); }
     .iphoneDownloadPopover .downloadDialogHeader .closeX{ width:32px; height:32px; }
     .iphoneStoreGlyph{
-      display:grid; place-items:center; width:36px; height:36px; border-radius:8px;
-      color:#fff; background:#2365b5;
+      display:block; width:36px; height:36px; border-radius:8px;
     }
-    .iphoneStoreGlyph svg{ width:20px; height:20px; }
     .iphoneStoreDescription{ margin:4px 0 0; color:var(--muted); font-size:13px; line-height:1.35; }
     .iphoneStoreCard{
       position:relative; display:grid; grid-template-columns:36px minmax(0, 1fr); align-items:center; gap:9px;
@@ -1551,9 +1549,7 @@
   <dialog class="downloadDialog macDownloadPopover iphoneDownloadPopover" id="iphoneDownloadDialog" aria-labelledby="iphoneDownloadDialogTitle" aria-describedby="iphoneStoreDescription">
     <div class="downloadDialogInner">
       <div class="downloadDialogHeader">
-        <span class="iphoneStoreGlyph" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18.5h2"/></svg>
-        </span>
+        <img class="iphoneStoreGlyph" src="assets/apple-app-store-icon.png" alt="" width="36" height="36" />
         <div>
           <h2 class="downloadDialogTitle" id="iphoneDownloadDialogTitle" data-i18n="download_iphone">Download for iPhone</h2>
           <p class="iphoneStoreDescription" id="iphoneStoreDescription" data-i18n="iphone_store_description">Edit, organize, and sign PDFs.</p>
