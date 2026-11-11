@@ -352,6 +352,9 @@
     }
     .iphone .osAction:disabled{ color:#a09da6; font-weight:500; opacity:1; }
     .iphone .osAction:disabled .osLogo{ color:#aaa6b1; }
+    .osRow .iphone .osAction[aria-expanded="true"]{
+      background:#edf4ff; box-shadow:inset 0 0 0 1px #97bcf7;
+    }
     .osActionLabel{ display:flex; align-items:center; gap:8px; }
     .osStatus{
       padding:3px 7px;
@@ -1059,9 +1062,23 @@
     }
     .macDownloadPopover .downloadDialogHeader{ gap:12px; margin-bottom:4px; }
     .macDownloadPopover .downloadDialogTitle{ font-size:20px; }
-    .iphoneDownloadPopover{ width:min(300px, calc(100vw - 32px)); }
-    .iphoneStoreBadge{ display:inline-block; margin-top:10px; }
-    .iphoneStoreBadge img{ display:block; width:auto; height:48px; }
+    .iphoneDownloadPopover{ width:min(344px, calc(100vw - 32px)); }
+    .iphoneDownloadPopover .downloadDialogInner{ padding:16px; }
+    .iphoneDownloadPopover .downloadDialogHeader{
+      display:grid; grid-template-columns:auto minmax(0, 1fr) auto;
+      align-items:start; gap:12px; margin-bottom:0;
+    }
+    .iphoneDownloadPopover .downloadDialogTitle{ font-size:16px; color:var(--text); }
+    .iphoneDownloadPopover .downloadDialogHeader .closeX{ width:28px; height:28px; }
+    .iphoneStoreDescription{ margin:4px 0 0; color:var(--muted); font-size:13px; line-height:1.35; }
+    .iphoneStoreBadge{
+      display:table; margin:12px auto 0; border-radius:8px;
+    }
+    .iphoneStoreBadge:focus-visible{ outline:2px solid #2365b5; outline-offset:2px; }
+    .iphoneStoreBadge img{ display:block; width:auto; height:44px; }
+    .iphoneStoreGlyph{
+      display:block; width:36px; height:36px; object-fit:contain;
+    }
     .macHeading{ display:flex; align-items:center; gap:12px; }
     .macHeading img{ width:26px; height:28px; object-fit:contain; filter:brightness(0.42); }
     .macIntro{ margin:0 0 18px; font-size:13px; line-height:1.5; color:var(--muted); }
@@ -1521,10 +1538,14 @@
     </div>
   </dialog>
 
-  <dialog class="downloadDialog macDownloadPopover iphoneDownloadPopover" id="iphoneDownloadDialog" aria-labelledby="iphoneDownloadDialogTitle">
+  <dialog class="downloadDialog macDownloadPopover iphoneDownloadPopover" id="iphoneDownloadDialog" aria-labelledby="iphoneDownloadDialogTitle" aria-describedby="iphoneStoreDescription">
     <div class="downloadDialogInner">
       <div class="downloadDialogHeader">
-        <h2 class="downloadDialogTitle" id="iphoneDownloadDialogTitle" data-i18n="download_iphone">Download for iPhone</h2>
+        <img class="iphoneStoreGlyph" src="assets/penguinpdf-app.png" alt="" width="36" height="36" />
+        <div>
+          <h2 class="downloadDialogTitle" id="iphoneDownloadDialogTitle" data-i18n="download_iphone">Download for iPhone</h2>
+          <p class="iphoneStoreDescription" id="iphoneStoreDescription" data-i18n="iphone_store_description">Edit, organize, and sign PDFs on the go.</p>
+        </div>
         <button class="closeX" type="button" data-dialog-close aria-label="Close" data-i18n-aria-label="close">×</button>
       </div>
       <a class="iphoneStoreBadge" id="iphoneStoreLink">
@@ -1652,6 +1673,7 @@
         windows_tooltip: "To keep PenguinPDF free, the Windows installer is unsigned. Windows may show a security prompt. For the official download, choose More info > Run anyway.",
         iphone_coming_soon: "Coming soon",
         download_iphone: "Download for iPhone",
+        iphone_store_description: "Edit, organize, and sign PDFs on the go.",
         app_store_badge: "Download on the App Store",
         apple_store_credit: "Apple and the Apple logo are trademarks of Apple Inc. App Store is a service mark of Apple Inc.",
         request_mobile: "Mobile feedback",
@@ -1721,6 +1743,7 @@
         windows_tooltip: "Para mantener PenguinPDF gratis, el instalador de Windows no está firmado. Windows puede mostrar un aviso de seguridad. Para la descarga oficial, elige Más información > Ejecutar de todas formas.",
         iphone_coming_soon: "Próximamente",
         download_iphone: "Descargar para iPhone",
+        iphone_store_description: "Edita, organiza y firma PDFs desde tu iPhone.",
         app_store_badge: "Descargar en el App Store",
         apple_store_credit: "Apple y el logotipo de Apple son marcas comerciales de Apple Inc. App Store es una marca de servicio de Apple Inc.",
         request_mobile: "Sugerencias para la app móvil",
