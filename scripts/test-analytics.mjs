@@ -207,6 +207,40 @@ test("page visibility is delayed, prerender is silent, and setup cannot bind twi
   }
 });
 
+test("App Store download clicks are attributed separately from installers, reviews and chooser opens", () => {
+  const appStore = "https://apps.apple.com/app/id6830822105";
+  assert.match(siteHTML, /<a\b[^>]*\bid="iphonePlatform"[^>]*\bhref="https:\/\/apps\.apple\.com\/app\/id6830822105"/);
+  const env = harness({ href: `${site}?utm_source=IG&utm_campaign=52610842701555&fbclid=private` });
+  setupWebsiteAnalytics(env.window, env.document);
+  const download = anchor(appStore);
+  env.document.dispatch("click", { target: download, defaultPrevented: true });
+  env.document.dispatch("click", { target: anchor("https://apps.apple.com/us/app/penguinpdf/id6830822105#productRatings") });
+  env.document.dispatch("click", { target: anchor("https://apps.apple.com/app/id123") });
+  env.document.dispatch("click", { target: anchor(`${appStore}?extra=unknown`) });
+  assert.equal(env.calls.length, 1);
+
+  const click = env.document.dispatch("click", { target: download });
+  const [, event] = payloads(env.calls);
+  assert.equal(click.defaultPrevented, false);
+  assert.equal(env.calls.length, 2);
+  assert.equal(event.p, "download-app-store");
+  assert.equal(event.t, "App Store download link clicked");
+  assert.equal(event.e, "true");
+  assert.equal(event.r, "ig / 52610842701555");
+  assert.equal(event.q, "");
+  assert.doesNotMatch(env.calls.map(([url]) => url).join(""), /fbclid|private/);
+
+  for (const [mode, expected] of [["off", []], ["qa", ["/qa-page-view/", "qa-download-app-store"]]]) {
+    const visit = harness({ href: `${site}?analytics=${mode}` });
+    setupWebsiteAnalytics(visit.window, visit.document);
+    visit.document.dispatch("click", { target: download });
+    assert.deepEqual(payloads(visit.calls).map(item => item.p), expected);
+  }
+  env.window.navigator.globalPrivacyControl = true;
+  env.document.dispatch("click", { target: download });
+  assert.equal(env.calls.length, 2);
+});
+
 test("local, offsite, framed, and live privacy states do not collect", () => {
   for (const href of ["http://localhost:8000/PenguinPDF/", "https://example.com/PenguinPDF/"]) {
     const env = harness({ href });

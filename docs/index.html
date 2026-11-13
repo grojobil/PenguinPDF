@@ -327,7 +327,8 @@
       white-space:nowrap;
       transition:background .15s ease;
     }
-    a.osAction:hover{ background:rgba(255,255,255,0.54); }
+    a.osAction[href]{ cursor:pointer; }
+    a.osAction[href]:hover{ background:rgba(255,255,255,0.54); }
     .osRow[data-platform="mac"] .macos .osAction,
     .osRow[data-platform="windows"] .windows .osAction,
     .osRow[data-platform="iphone"] .iphone .osAction{
@@ -350,19 +351,7 @@
       height:22px;
       background: rgba(0,0,0,0.10);
     }
-    .iphone .osAction:disabled{ color:#a09da6; font-weight:500; opacity:1; }
-    .iphone .osAction:disabled .osLogo{ color:#aaa6b1; }
     .osRow .iphone .osAction[aria-expanded="true"]{ background:#edf4ff; box-shadow:inset 0 0 0 1px #97bcf7; }
-    .osActionLabel{ display:flex; align-items:center; gap:8px; }
-    .osStatus{
-      padding:3px 7px;
-      border-radius:999px;
-      color:#696674;
-      background:rgba(45,40,55,0.045);
-      box-shadow:inset 0 0 0 1px rgba(45,40,55,0.12);
-      font-size:11px;
-      line-height:1.1;
-    }
 
     .windows{ display:grid; }
     .windows .osAction, .infoBadge{ grid-area:1 / 1; }
@@ -1196,8 +1185,6 @@
       .osAction{ gap:4px; padding-inline:5px; font-size:13px; }
       .osLogo{ width:18px; height:18px; }
       .osChevron{ width:8px; }
-      .osActionLabel{ flex-direction:column; align-items:flex-start; gap:2px; }
-      .osStatus{ padding:0; background:none; box-shadow:none; font-size:10px; }
       .infoBadge{ padding:0; }
       .shots{ margin-top:16px; }
       .carouselReady .shotPanel{ width:82%; }
@@ -1250,8 +1237,6 @@
         font-size:12px;
       }
       .infoBadge{ top:7px; justify-self:center; transform:translateX(19px); }
-      .osActionLabel{ align-items:center; }
-      .osStatus{ white-space:normal; }
       .osChevron{ display:none; }
     }
     @media (max-width: 600px) and (max-height: 650px){
@@ -1311,7 +1296,7 @@
           <div class="osRowInner">
             <div class="osItem macos">
               <a class="osAction" id="macPlatformLink" href="https://github.com/grojobil/PenguinPDF/releases/tag/v3.0.1" aria-label="Download for macOS" data-i18n-aria-label="download_mac" aria-haspopup="dialog" aria-controls="macDownloadDialog" aria-expanded="false">
-                <img class="osLogo" src="assets/apple.png" alt="" aria-hidden="true" />
+                <img class="osLogo" src="assets/apple-96.webp" alt="" aria-hidden="true" />
                 <span>macOS</span>
                 <svg class="osChevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
               </a>
@@ -1321,7 +1306,7 @@
 
             <div class="osItem windows">
               <a class="osAction" id="windowsPlatformLink" href="https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF_x64-setup.exe" aria-label="Download for Windows" data-i18n-aria-label="download_windows">
-                <img class="osLogo" src="assets/windows.png" alt="" aria-hidden="true" />
+                <img class="osLogo" src="assets/windows-96.webp" alt="" aria-hidden="true" />
                 <span>Windows</span>
               </a>
               <button class="infoBadge" id="windowsInfoButton" type="button" aria-label="Windows install info" data-i18n-aria-label="windows_info" aria-expanded="false" aria-describedby="windowsTooltip"><span aria-hidden="true">i</span></button>
@@ -1333,16 +1318,13 @@
             <div class="osSep" aria-hidden="true"></div>
 
             <div class="osItem iphone">
-              <button class="osAction" id="iphonePlatform" type="button" disabled>
+              <a class="osAction" id="iphonePlatform" href="https://apps.apple.com/app/id6830822105" aria-haspopup="dialog" aria-controls="iphoneDownloadDialog" aria-expanded="false">
                 <svg class="osLogo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
                   <rect x="6" y="2" width="12" height="20" rx="2"/>
                   <path d="M11 18.5h2"/>
                 </svg>
-                <span class="osActionLabel">
-                  <span>iPhone</span>
-                  <span class="osStatus" id="iphoneComingSoon" data-i18n="iphone_coming_soon">Coming soon</span>
-                </span>
-              </button>
+                <span>iPhone</span>
+              </a>
             </div>
           </div>
         </div>
@@ -1364,25 +1346,25 @@
         <div class="carouselSlides">
           <figure class="shotPanel" role="group" aria-label="Slide 1 of 4" data-i18n-aria-label="slide_1_of_4">
             <a class="shotCard" href="assets/home-v3.png" data-img="assets/home-v3.png" data-cap="All tools in one place" data-i18n-cap="shot_home" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
-              <img src="assets/home-v3.png" width="3024" height="1792" alt="PenguinPDF home screen with all PDF tools" data-i18n-alt="alt_home" decoding="async" />
+              <img src="assets/home-v3.webp" width="3024" height="1792" alt="PenguinPDF home screen with all PDF tools" data-i18n-alt="alt_home" decoding="async" fetchpriority="high" />
               <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
             </a>
           </figure>
           <figure class="shotPanel" role="group" aria-label="Slide 2 of 4" data-i18n-aria-label="slide_2_of_4">
             <a class="shotCard" href="assets/text-v3.png" data-img="assets/text-v3.png" data-cap="Edit Text" data-i18n-cap="shot_text" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
-              <img src="assets/text-v3.png" width="3024" height="1792" alt="PenguinPDF Edit Text workspace" data-i18n-alt="alt_text" decoding="async" loading="lazy" />
+              <img src="assets/text-v3.webp" width="3024" height="1792" alt="PenguinPDF Edit Text workspace" data-i18n-alt="alt_text" decoding="async" loading="lazy" />
               <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
             </a>
           </figure>
           <figure class="shotPanel" role="group" aria-label="Slide 3 of 4" data-i18n-aria-label="slide_3_of_4">
             <a class="shotCard" href="assets/fill-v3.png" data-img="assets/fill-v3.png" data-cap="Fill &amp; Sign" data-i18n-cap="shot_fill" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
-              <img src="assets/fill-v3.png" width="3024" height="1792" alt="PenguinPDF Fill and Sign workspace" data-i18n-alt="alt_fill" decoding="async" loading="lazy" />
+              <img src="assets/fill-v3.webp" width="3024" height="1792" alt="PenguinPDF Fill and Sign workspace" data-i18n-alt="alt_fill" decoding="async" loading="lazy" />
               <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
             </a>
           </figure>
           <figure class="shotPanel" role="group" aria-label="Slide 4 of 4" data-i18n-aria-label="slide_4_of_4">
             <a class="shotCard" href="assets/edit-v3.png" data-img="assets/edit-v3.png" data-cap="Annotate PDF" data-i18n-cap="shot_edit" title="Enlarge screenshot" data-i18n-title="enlarge_image" aria-haspopup="dialog">
-              <img src="assets/edit-v3.png" width="3024" height="1792" alt="PenguinPDF Annotate PDF workspace with highlighted sample text" data-i18n-alt="alt_edit" decoding="async" loading="lazy" />
+              <img src="assets/edit-v3.webp" width="3024" height="1792" alt="PenguinPDF Annotate PDF workspace with highlighted sample text" data-i18n-alt="alt_edit" decoding="async" loading="lazy" />
               <span class="screenshotChrome" aria-hidden="true"><span class="chromeLights"><span class="chromeDot red"></span><span class="chromeDot yellow"></span><span class="chromeDot green"></span></span><span class="chromeLabel">PenguinPDF</span></span>
             </a>
           </figure>
@@ -1459,7 +1441,7 @@
           <a href="mailto:penguin.pdf.tools@gmail.com" data-i18n="footer_contact">Contact us</a>
         </div>
         <span data-i18n="footer_note">The app runs locally, with no tracking or accounts.</span>
-        <span id="appleStoreCredit" hidden data-i18n="apple_store_credit">Apple and the Apple logo are trademarks of Apple Inc. App Store is a service mark of Apple Inc.</span>
+        <span data-i18n="apple_store_credit">Apple and the Apple logo are trademarks of Apple Inc. App Store is a service mark of Apple Inc.</span>
       </footer>
     </div>
 
@@ -1513,7 +1495,7 @@
     <div class="downloadDialogInner">
       <div class="downloadDialogHeader">
         <div class="macHeading">
-          <img src="assets/apple.png" alt="" aria-hidden="true" />
+          <img src="assets/apple-96.webp" alt="" aria-hidden="true" />
           <h2 class="downloadDialogTitle" id="macDownloadDialogTitle" data-i18n="mac_dialog_title">Download for macOS</h2>
         </div>
         <button class="closeX" type="button" data-dialog-close aria-label="Close" data-i18n-aria-label="close">×</button>
@@ -1524,7 +1506,7 @@
           <span class="macDevice" aria-hidden="true">
             <!-- Lucide laptop-minimal, ISC licensed. -->
             <svg viewBox="0 0 24 24"><rect width="18" height="12" x="3" y="4" rx="2" ry="2"/><line x1="2" x2="22" y1="20" y2="20"/></svg>
-            <img class="deviceAppleLogo" src="assets/apple.png" alt="" />
+            <img class="deviceAppleLogo" src="assets/apple-96.webp" alt="" />
           </span>
           <span class="macChoiceCopy"><strong>Apple Silicon</strong><small data-i18n="mac_apple_detail">For Macs with an Apple chip</small></span>
           <svg class="macChevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
@@ -1592,7 +1574,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
         </a>
       </div>
-      <div class="downloadGroup" id="allIphoneDownloadGroup" hidden>
+      <div class="downloadGroup">
         <h3 class="downloadGroupTitle">iPhone</h3>
         <a class="iphoneStoreBadge" id="allIphoneStoreLink">
           <img id="iphoneStoreBadge" src="assets/app-store-badge-en.svg" alt="Download on the App Store" data-i18n-alt="app_store_badge" />
@@ -1654,8 +1636,9 @@
   </dialog>
 
   <script>
+    const iphonePlatform = document.getElementById("iphonePlatform");
     const DOWNLOADS = Object.freeze({
-      iphone: "https://apps.apple.com/app/id6830822105",
+      iphone: iphonePlatform.getAttribute("href"),
       macApple: "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF-3.0.1-macOS-Apple-Silicon.dmg",
       macIntel: "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF-3.0.1-macOS-Intel.dmg",
       win: "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/PenguinPDF_x64-setup.exe",
@@ -1691,7 +1674,6 @@
         win_msi: "Windows MSI (alternative)",
         windows_info: "Windows install information",
         windows_tooltip: "To keep PenguinPDF free, the Windows installer is unsigned. Windows may show a security prompt. For the official download, choose More info > Run anyway.",
-        iphone_coming_soon: "Coming soon",
         download_iphone: "Download for iPhone",
         iphone_store_description: "Edit, organize, and sign PDFs.",
         iphone_store_free: "Free · App Store",
@@ -1764,7 +1746,6 @@
         win_msi: "Windows MSI (alternativa)",
         windows_info: "Información de instalación para Windows",
         windows_tooltip: "Para mantener PenguinPDF gratis, el instalador de Windows no está firmado. Windows puede mostrar un aviso de seguridad. Para la descarga oficial, elige Más información > Ejecutar de todas formas.",
-        iphone_coming_soon: "Próximamente",
         download_iphone: "Descargar para iPhone",
         iphone_store_description: "Edita, organiza y firma PDFs.",
         iphone_store_free: "Gratis · App Store",
@@ -1868,7 +1849,6 @@
     const allDownloadsLink = document.getElementById("allDownloadsLink");
     const macAllDownloads = document.getElementById("macAllDownloads");
     const macDownloadDialog = document.getElementById("macDownloadDialog");
-    const iphonePlatform = document.getElementById("iphonePlatform");
     const iphoneDownloadDialog = document.getElementById("iphoneDownloadDialog");
     const iphoneStoreLink = document.getElementById("iphoneStoreLink");
     const allDownloadsDialog = document.getElementById("allDownloadsDialog");
@@ -1879,7 +1859,7 @@
     function getDownloadPlatform(userAgent = navigator.userAgent, maxTouchPoints = navigator.maxTouchPoints || 0) {
       const ua = String(userAgent || "");
       const isIPadDesktop = /Macintosh/i.test(ua) && Number(maxTouchPoints) > 1;
-      if (isIPadDesktop || /iPhone|iPad|iPod/i.test(ua)) return DOWNLOADS.iphone ? "iphone" : "other";
+      if (isIPadDesktop || /iPhone|iPad|iPod/i.test(ua)) return "iphone";
       if (/Android|Mobile/i.test(ua)) return "other";
       if (/Windows NT|Windows|Win64|Win32/i.test(ua)) return "windows";
       if (/Macintosh|Mac OS X/i.test(ua)) return "mac";
@@ -1959,17 +1939,8 @@
     function configureDownloadRoute() {
       currentDownloadPlatform = getDownloadPlatform();
       if (downloadPlatforms) downloadPlatforms.dataset.platform = currentDownloadPlatform;
-      iphonePlatform.disabled = !DOWNLOADS.iphone;
-      document.getElementById("allIphoneDownloadGroup").hidden = !DOWNLOADS.iphone;
-      if (DOWNLOADS.iphone) {
-        document.getElementById("iphoneComingSoon").hidden = true;
-        document.getElementById("appleStoreCredit").hidden = false;
-        iphonePlatform.setAttribute("aria-haspopup", "dialog");
-        iphonePlatform.setAttribute("aria-controls", "iphoneDownloadDialog");
-        iphonePlatform.setAttribute("aria-expanded", "false");
-        iphoneStoreLink.href = DOWNLOADS.iphone;
-        document.getElementById("allIphoneStoreLink").href = DOWNLOADS.iphone;
-      }
+      iphoneStoreLink.href = DOWNLOADS.iphone;
+      document.getElementById("allIphoneStoreLink").href = DOWNLOADS.iphone;
       if (!downloadBtn) return currentDownloadPlatform;
       downloadBtn.href = currentDownloadPlatform === "windows" ? DOWNLOADS.win : currentDownloadPlatform === "iphone" ? DOWNLOADS.iphone : DOWNLOADS.release;
       downloadBtn.dataset.downloadPlatform = currentDownloadPlatform;
@@ -2018,7 +1989,7 @@
       }
 
       updateDownloadLabel(dict);
-      if (DOWNLOADS.iphone) document.getElementById("iphoneStoreBadge").src = `assets/app-store-badge-${selectedLang}.svg`;
+      document.getElementById("iphoneStoreBadge").src = `assets/app-store-badge-${selectedLang}.svg`;
       document.getElementById("privacyLink").href = selectedLang === "es" ? "privacy.html?lang=es" : "privacy.html";
       renderDownloadCount(selectedLang);
       updateShotCardCaptions(dict);
@@ -2075,10 +2046,10 @@
       event.preventDefault();
       openDownloadDialog(macDownloadDialog, macPlatformLink);
     });
-    iphonePlatform.addEventListener("click", () => {
-      if (DOWNLOADS.iphone && !openDownloadDialog(iphoneDownloadDialog, iphonePlatform)) {
-        if (typeof iphoneDownloadDialog.showModal !== "function") location.assign(DOWNLOADS.iphone);
-      }
+    iphonePlatform.addEventListener("click", (event) => {
+      if (isModifiedLinkClick(event) || typeof iphoneDownloadDialog.showModal !== "function") return;
+      event.preventDefault();
+      openDownloadDialog(iphoneDownloadDialog, iphonePlatform);
     });
     iphoneStoreLink.addEventListener("click", (event) => {
       if (!isModifiedLinkClick(event)) closeDownloadDialog(iphoneDownloadDialog);
@@ -2353,6 +2324,6 @@
     const downloadStatsReady = loadDownloadStats();
   </script>
   <script type="module" src="reviews.mjs?v=d8ac0225c5e5"></script>
-  <script type="module" src="analytics.mjs?v=3"></script>
+  <script type="module" src="analytics.mjs?v=4"></script>
 </body>
 </html>

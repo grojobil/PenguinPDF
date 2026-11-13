@@ -3,6 +3,7 @@ const SITE_ORIGIN = "https://grojobil.github.io";
 const HOMEPAGE_PATH = "/PenguinPDF/";
 const INSTALLER_PREFIX = "/grojobil/PenguinPDF/releases/download/v3.0.1/";
 const ATTRIBUTION_VALUE = /^[a-zA-Z0-9_-]{1,80}$/;
+const APP_STORE_DOWNLOAD = "https://apps.apple.com/app/id6830822105";
 
 const INSTALLERS = Object.freeze({
   "PenguinPDF-3.0.1-macOS-Apple-Silicon.dmg": Object.freeze({
@@ -140,7 +141,7 @@ export function setupWebsiteAnalytics(windowObject, documentObject) {
   const mode = analyticsMode(initialURL.search);
   const query = sanitizeAttribution(initialURL.search);
   const referrer = sanitizeReferrer(documentObject.referrer, initialURL.origin);
-  const installerReferrer = installerAttributionLabel(initialURL.search, documentObject.referrer, initialURL.origin);
+  const downloadReferrer = installerAttributionLabel(initialURL.search, documentObject.referrer, initialURL.origin);
   const seenInteractions = new WeakSet();
   let sequence = 0;
 
@@ -185,21 +186,26 @@ export function setupWebsiteAnalytics(windowObject, documentObject) {
     recordVisiblePage();
   }
 
-  const recordInstaller = event => {
+  const recordDownload = event => {
     if (event.defaultPrevented || seenInteractions.has(event)) return;
     if ((event.type === "click" && event.button !== 0) ||
         (event.type === "auxclick" && event.button !== 1)) return;
     const anchor = event.target?.closest?.("a[href]");
     if (!anchor || isDisabledAnchor(anchor)) return;
-    const installer = installerEventForURL(anchor.getAttribute("href"), initialURL.href);
-    if (!installer || !canCollect()) return;
+    const href = anchor.getAttribute("href");
+    const installer = installerEventForURL(href, initialURL.href);
+    if ((!installer && href !== APP_STORE_DOWNLOAD) || !canCollect()) return;
     seenInteractions.add(event);
-    post("download-installer", "Installer link clicked", true, installerReferrer, "");
-    post(installer.event, installer.title, true, installerReferrer, "");
+    if (installer) {
+      post("download-installer", "Installer link clicked", true, downloadReferrer, "");
+      post(installer.event, installer.title, true, downloadReferrer, "");
+    } else {
+      post("download-app-store", "App Store download link clicked", true, downloadReferrer, "");
+    }
   };
 
-  documentObject.addEventListener("click", recordInstaller);
-  documentObject.addEventListener("auxclick", recordInstaller);
+  documentObject.addEventListener("click", recordDownload);
+  documentObject.addEventListener("auxclick", recordDownload);
   return true;
 }
 

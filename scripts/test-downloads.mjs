@@ -7,6 +7,7 @@ const site = readFileSync(new URL("../docs/index.html", import.meta.url), "utf8"
 const readme = readFileSync(new URL("../README.md", import.meta.url), "utf8");
 const siteScript = site.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 const base = "https://github.com/grojobil/PenguinPDF/releases/download/v3.0.1/";
+const appStoreUrl = "https://apps.apple.com/app/id6830822105";
 const assets = [
   "PenguinPDF-3.0.1-macOS-Apple-Silicon.dmg",
   "PenguinPDF-3.0.1-macOS-Intel.dmg",
@@ -46,7 +47,7 @@ test("browser tabs, touch bookmarks, and the hero use the refreshed penguin artw
   for (const size of [16, 32, 48, 256]) assert.ok(sizes.includes(size), `missing ${size}px icon`);
 });
 
-test("one platform group contains both downloads and the disabled iPhone item", () => {
+test("all three platform links are actionable and share pointer and hover styling on first render", () => {
   const group = getElementMarkup("div", "downloadPlatforms");
   assert.match(group, /role="group"/);
   assert.match(site, /id="downloadPlatforms"[\s\S]*?id="macPlatformLink"[\s\S]*?id="windowsPlatformLink"[\s\S]*?id="iphonePlatform"[\s\S]*?<noscript>/);
@@ -54,23 +55,15 @@ test("one platform group contains both downloads and the disabled iPhone item", 
   assert.match(mac, /aria-controls="macDownloadDialog"/);
   const windows = getElementMarkup("a", "windowsPlatformLink");
   assert.match(windows, /href="[^"]+PenguinPDF_x64-setup\.exe"/);
-  const iphone = getElementMarkup("button", "iphonePlatform");
-  assert.match(iphone, /type="button" disabled>/);
+  const iphone = getElementMarkup("a", "iphonePlatform");
+  assert.ok(iphone.includes(`href="${appStoreUrl}"`));
+  assert.match(iphone, /aria-controls="iphoneDownloadDialog" aria-expanded="false"/);
   assert.match(iphone, /<svg[^>]+aria-hidden="true"/);
   assert.match(iphone, /<span>iPhone<\/span>/);
-  assert.match(iphone, />Coming soon</);
-  assert.doesNotMatch(iphone, /<img\b|\bhref=|\btabindex=|App Store/i);
-  assert.doesNotMatch(site, /class="mobileComingSoon"/);
+  assert.doesNotMatch(iphone, /\bdisabled\b|Coming soon/);
+  assert.match(site, /a\.osAction\[href\]\s*\{\s*cursor:pointer/);
+  assert.match(site, /a\.osAction\[href\]:hover\s*\{\s*background:/);
 
-  const mobile = runSite("Mozilla/5.0 (iPhone; CPU iPhone OS)", false, 5);
-  assert.equal(mobile.getElement("downloadPlatforms").dataset.platform, "other");
-  assert.equal(mobile.getElement("iphonePlatform").disabled, true);
-  assert.equal(mobile.getElement("allIphoneDownloadGroup").hidden, true);
-  assert.equal(mobile.getElement("allIphoneStoreLink").href, "");
-  mobile.getElement("iphonePlatform").dispatch("click");
-  assert.equal(mobile.getElement("iphoneDownloadDialog").open, false);
-  assert.equal(new Script("I18N.en.iphone_coming_soon").runInContext(mobile.context), "Coming soon");
-  assert.equal(new Script("I18N.es.iphone_coming_soon").runInContext(mobile.context), "Próximamente");
   const macVisit = runSite("Mozilla/5.0 (Macintosh; Intel Mac OS X)");
   assert.equal(macVisit.getElement("downloadPlatforms").dataset.platform, "mac");
   assert.ok(macVisit.getElement("macPlatformLink").dispatch("click").defaultPrevented);
@@ -79,8 +72,7 @@ test("one platform group contains both downloads and the disabled iPhone item", 
   assert.equal(windowsVisit.getElement("downloadPlatforms").dataset.platform, "windows");
 });
 
-test("an enabled iPhone release opens a localized App Store popover without changing desktop routes", () => {
-  const url = "https://apps.apple.com/app/id6830822105";
+test("iPhone opens a localized App Store popover and preserves native link fallbacks", () => {
   const popover = getElementMarkup("dialog", "iphoneDownloadDialog");
   assert.equal((popover.match(/<a\b/g) ?? []).length, 1);
   assert.match(popover, /class="iphoneStoreGlyph" src="assets\/apple-app-store-icon\.png"[^>]*>[\s\S]*?id="iphoneDownloadDialogTitle"/);
@@ -94,28 +86,29 @@ test("an enabled iPhone release opens a localized App Store popover without chan
     ["Mozilla/5.0 (Macintosh)", 0, "mac"],
     ["Mozilla/5.0 (Windows NT 10.0)", 0, "windows"],
   ]) {
-    const visit = runSite(ua, false, touches, undefined, url);
+    const visit = runSite(ua, false, touches);
     const trigger = visit.getElement("iphonePlatform");
+    const dialog = visit.getElement("iphoneDownloadDialog");
     assert.equal(visit.getElement("downloadPlatforms").dataset.platform, platform);
-    assert.equal(trigger.disabled, false);
-    assert.equal(visit.getElement("iphoneComingSoon").hidden, true);
-    assert.equal(visit.getElement("iphoneStoreLink").href, url);
-    assert.equal(visit.getElement("allIphoneDownloadGroup").hidden, false);
-    assert.equal(visit.getElement("allIphoneStoreLink").href, url);
-    assert.equal(trigger.getAttribute("aria-controls"), "iphoneDownloadDialog");
+    assert.equal(visit.getElement("iphoneStoreLink").href, appStoreUrl);
+    assert.equal(visit.getElement("allIphoneStoreLink").href, appStoreUrl);
+    assert.equal(trigger.dispatch("click", { metaKey: true }).defaultPrevented, false);
+    assert.equal(dialog.open, false);
     const opener = platform === "iphone" ? visit.downloadButton : trigger;
     if (platform === "iphone") {
-      assert.equal(opener.href, url);
+      assert.equal(opener.href, appStoreUrl);
       assert.equal(visit.downloadLabel.textContent, "Download for iPhone");
     }
-    opener.dispatch("click");
-    assert.equal(visit.getElement("iphoneDownloadDialog").open, true);
+    assert.equal(opener.dispatch("click").defaultPrevented, true);
+    assert.equal(dialog.open, true);
     assert.equal(opener.getAttribute("aria-expanded"), "true");
     new Script('applyLanguage("es")').runInContext(visit.context);
     assert.equal(visit.getElement("iphoneStoreBadge").src, "assets/app-store-badge-es.svg");
-    visit.getElement("iphoneDownloadDialog").dispatch("cancel");
-    assert.equal(visit.getElement("iphoneDownloadDialog").open, false);
+    dialog.dispatch("cancel");
+    assert.equal(dialog.open, false);
     assert.equal(visit.getActiveElement(), opener);
+    dialog.showModal = undefined;
+    assert.equal(trigger.dispatch("click").defaultPrevented, false);
   }
 });
 
@@ -193,7 +186,7 @@ test("Mac downloads use a compact light popover with explicit architecture choic
   assert.match(dialog, /\bid="macAllDownloads"/);
   assert.match(dialog, /class="deviceAppleLogo"/);
   assert.match(dialog, /class="intelLabel">Intel<\/span>/);
-  assert.match(dialog, /<img\b[^>]*\bsrc="assets\/apple\.png"[^>]*\baria-hidden="true"/);
+  assert.match(dialog, /<img\b[^>]*\bsrc="assets\/apple-96\.webp"[^>]*\baria-hidden="true"/);
   assert.doesNotMatch(dialog, /\brecommended\b|\brecomendad[oa]\b/i);
   assert.doesNotMatch(siteScript, /navigator\.userAgentData|getHighEntropyValues|detectMac(?:Cpu|Architecture)/i);
 });
@@ -220,7 +213,11 @@ test("gallery retains four genuine screenshot links and uses dots instead of cap
     assert.equal(png.subarray(1, 4).toString(), "PNG", asset);
     assert.equal(png.readUInt32BE(16), 3024, `${asset} width`);
     assert.equal(png.readUInt32BE(20), 1792, `${asset} height`);
-    assert.match(gallery, new RegExp(`<img src="${asset.replace(".", "\\.")}" width="3024" height="1792"`));
+    const preview = asset.replace(/\.png$/, ".webp");
+    const webp = readFileSync(new URL(`../docs/${preview}`, import.meta.url));
+    assert.equal(webp.subarray(8, 12).toString(), "WEBP", preview);
+    assert.ok(webp.length < png.length * 0.65, `${preview} should save at least 35% over the original`);
+    assert.match(gallery, new RegExp(`<img src="${preview.replace(".", "\\.")}" width="3024" height="1792"`));
   }
 
   assert.equal(gallery.match(/class="shotPanel"/g)?.length, 4);
@@ -286,12 +283,13 @@ test("each page load centers Home even after navigating away from it", () => {
   assert.equal(new Script('shotPanels[0].dataset.shotSlot').runInContext(nextVisit.context), "active");
   assert.equal(new Script('shotDots[0].getAttribute("aria-current")').runInContext(nextVisit.context), "true");
   assert.match(site, /data-shot-index="0"[^>]*data-i18n-aria-label="show_shot_home"/);
-  const homeImage = site.match(/<img src="assets\/home-v3\.png"[^>]*>/)?.[0];
+  const homeImage = site.match(/<img src="assets\/home-v3\.webp"[^>]*>/)?.[0];
   assert.ok(homeImage);
   assert.doesNotMatch(homeImage, /loading="lazy"/);
+  assert.match(homeImage, /fetchpriority="high"/);
 });
 
-function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0, fetcher, iphoneStore = null) {
+function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0, fetcher) {
   let activeElement;
   const element = (id = "") => {
     const listeners = new Map();
@@ -333,7 +331,9 @@ function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0, fetcher,
   const downloadButton = element("downloadBtn");
   const downloadLabel = { textContent: "", getAttribute: () => "download_button" };
   downloadButton.querySelector = () => downloadLabel;
-  const elements = new Map([["downloadBtn", downloadButton]]);
+  const iphonePlatform = element("iphonePlatform");
+  iphonePlatform.setAttribute("href", getElementMarkup("a", "iphonePlatform").match(/\bhref="([^"]+)"/)?.[1]);
+  const elements = new Map([["downloadBtn", downloadButton], ["iphonePlatform", iphonePlatform]]);
   const cards = [...site.matchAll(/<a class="shotCard"[^>]*data-img="([^"]+)"/g)].map((match) => {
     const card = element();
     card.setAttribute("data-img", match[1]);
@@ -376,8 +376,7 @@ function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0, fetcher,
     document, window, localStorage, URLSearchParams, AbortSignal, fetch: fetcher,
     navigator: { userAgent, platform: "", language: "en-US", maxTouchPoints },
   });
-  const script = siteScript.replace(/(\biphone: )(?:null|"[^"]*")/, `$1${JSON.stringify(iphoneStore)}`);
-  new Script(script).runInContext(context);
+  new Script(siteScript).runInContext(context);
   onReady?.();
   return {
     context,
@@ -522,10 +521,10 @@ test("platform routing distinguishes desktop Windows and Mac from mobile and unk
   const cases = [
     ["Mozilla/5.0 (Windows NT 10.0; Win64; x64)", 0, "windows"],
     ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", 0, "mac"],
-    ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", 5, "other"],
+    ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", 5, "iphone"],
     ["Mozilla/5.0 (Windows Phone; Mobile)", 5, "other"],
-    ["Mozilla/5.0 (iPhone; CPU iPhone OS)", 5, "other"],
-    ["Mozilla/5.0 (iPad; CPU OS)", 5, "other"],
+    ["Mozilla/5.0 (iPhone; CPU iPhone OS)", 5, "iphone"],
+    ["Mozilla/5.0 (iPad; CPU OS)", 5, "iphone"],
     ["Mozilla/5.0 (Linux; Android 15)", 5, "other"],
     ["Mozilla/5.0 (X11; Linux x86_64)", 0, "other"],
     ["", 0, "other"],

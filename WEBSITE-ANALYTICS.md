@@ -2,7 +2,7 @@
 
 The private dashboard is https://penguinpdf.goatcounter.com/. Sign in using
 the PenguinPDF account. No API key or analytics account is required by visitors.
-This integration is only in the public website, not the desktop application.
+This integration is only in the public website, not in any app.
 If widgets stay blank or controls stall, use
 https://penguinpdf.goatcounter.com/?no-websocket=1. This is GoatCounter's own
 dashboard-loading fallback; it does not change data collection or site settings.
@@ -13,10 +13,12 @@ dashboard-loading fallback; it does not change data collection or site settings.
 - `download-installer`: approximate unique visits that clicked any installer.
 - `download-macos-apple-silicon`, `download-macos-intel`,
   `download-windows-exe`, and `download-windows-msi`: installer choices.
+- `download-app-store`: visits that clicked the PenguinPDF App Store download
+  link. Opening the iPhone chooser or following the reviews link does not count.
 - Top referrers: referring domains when the browser supplies them. Missing
   referral data does not prove that the visitor came directly.
-- Campaigns: homepage visits associated with a tagged link. For installer
-  attribution, open `download-installer` or a platform event to expand its
+- Campaigns: homepage visits associated with a tagged link. For download-link
+  attribution, open `download-installer` or `download-app-store` to expand its
   referrers. Tagged clicks have a label such as `facebook / video-ad` (spaces
   may be displayed as `%20` by GoatCounter).
   GoatCounter does not populate its Campaigns widget from event query tags.
@@ -31,11 +33,11 @@ GoatCounter deduplicates each path/event for a session lasting up to eight
 hours. This is not lifetime unique users; shared networks, changing IPs,
 different browsers/devices, and repeat visits on later days affect estimates.
 
-Installer clicks are not completed downloads, installs, or active users. Direct
-GitHub downloads, blocked analytics, privacy opt-outs, and lost requests are
+Download-link clicks are not completed downloads, installs, or active users.
+Direct GitHub and App Store downloads, blocked analytics, privacy opt-outs, and lost requests are
 not attributed by this integration. Existing historical GitHub counts cannot
-be retrospectively attributed. The public download sticker continues using
-GitHub asset counts, including repeat/test downloads, on its six-hour refresh.
+be retrospectively attributed. The public download sticker uses aggregate
+GitHub asset and App Store download counts, independently of website clicks.
 
 ## Facebook Campaign Links
 
@@ -51,7 +53,7 @@ Only `utm_source` and `utm_campaign` values consisting of 1-80 letters, digits,
 hyphens, or underscores are transmitted. Use campaign codes, never names,
 email addresses, document names, or other personal data. Other query data,
 including `fbclid`, is not forwarded. Referrer paths and queries are stripped.
-Visits receive the sanitized query tags. Installer events carry the same codes
+Visits receive the sanitized query tags. Download events carry the same codes
 in their referrer label, because GoatCounter ignores query tags on events.
 With no tags, an event retains the referring domain. A source-only label is
 `source:facebook`; a campaign-only label is `campaign:video-ad`. These labels
@@ -59,9 +61,9 @@ describe attribution, not extra clicks or identities.
 
 Website integration alone does not change existing ad destinations. Updating
 active ads may require review; this task does not change ad spend, targeting,
-creatives, or publish changes to campaigns. Compare recorded installer-link
-clicks per campaign with that campaign's actual spend to estimate cost per
-installer click, not cost per installed or active user.
+creatives, or publish changes to campaigns. Compare attributed installer or
+App Store clicks with spend for the same campaign and dates. Report them
+separately: neither is a verified install, and one visit can click both.
 
 ## Privacy And Owner Exclusion
 
