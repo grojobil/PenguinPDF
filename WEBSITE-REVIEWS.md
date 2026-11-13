@@ -78,6 +78,17 @@ feedback link. See `REVIEW-AUTOMATION-PLAN.md` for the implementation boundaries
 
 ## Normal Owner Workflow
 
+The review summary and its existing dialog use one weighted average: the exact
+website star sum plus the public U.S. App Store average times its rating count,
+divided by the combined count. The dialog identifies the sources and links to
+the original App Store reviews. The download statistics workflow refreshes the
+rating through Apple's public lookup endpoint without credentials. Zero, invalid,
+or stale (over seven days old) Apple rating data is excluded from the average.
+Star-only ratings contribute to the total without creating review cards. Written
+App Store reviews are not copied to the website; Apple's
+[ratings and reviews guidance](https://developer.apple.com/app-store/ratings-and-reviews/)
+requires reviewer permission to use them in marketing.
+
 - [Private responses dashboard](https://docs.google.com/forms/d/1lzXxFY48a3T8KtpanpeGh1UblQh2wbJSS2nnKCw5Wis/edit#responses),
   accessible with the PenguinPDF Google account. The URL does not grant access.
 - [Public feedback form](https://docs.google.com/forms/d/e/1FAIpQLSdDG363hP184VcRrEbm67f1sHMdC1gQ4e8KNolZITTuYUiQAA/viewform?usp=header).

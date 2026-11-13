@@ -6,6 +6,15 @@ on:
   release:
     types: [published, edited]
   workflow_dispatch:
+    inputs:
+      app_store_downloads:
+        description: Cumulative App Store Total Downloads (leave both fields blank to keep the last count)
+        type: string
+        required: false
+      app_store_downloads_through:
+        description: Last day of the Apple report (YYYY-MM-DD, UTC)
+        type: string
+        required: false
 
 permissions:
   contents: write
@@ -28,16 +37,18 @@ jobs:
           node-version: '22'
       - name: Test statistics and download routing
         run: node --test scripts/test-download-stats.mjs scripts/test-downloads.mjs
-      - name: Read public installer download counts
+      - name: Refresh download counts and public App Store rating
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          APP_STORE_DOWNLOADS: ${{ inputs.app_store_downloads }}
+          APP_STORE_DOWNLOADS_THROUGH: ${{ inputs.app_store_downloads_through }}
         run: node scripts/update-download-stats.mjs
       - name: Save observed counts
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add docs/downloads.json
-          git commit -m 'Update recorded installer download totals'
+          git commit -m 'Update recorded downloads and App Store rating'
           git push origin HEAD:main
       - name: Refresh the published Pages site
         env:

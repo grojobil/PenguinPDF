@@ -15,6 +15,12 @@ DMG, EXE, and MSI assets count. Checksums, source archives, drafts, and prerelea
 do not count. Repeat downloads and QA downloads are included; unique users and
 successful installations cannot be inferred.
 
+The one website counter adds Apple's cumulative App Store Total Downloads to
+the recorded desktop installer count. This includes App Store first-time
+downloads and redownloads, but not updates or TestFlight. The counter tooltip
+gives both sources and the Apple reporting cutoff. App Store downloads remain
+separate from the GitHub platform and release breakdowns in the snapshot.
+
 The baseline includes v1.0.0 and the replacement v2.0.0 installers visible on
 September 29, 2026. Counts for previously deleted assets are unknown and excluded.
 This is a recorded total, not a complete lifetime total.
@@ -24,6 +30,23 @@ and on manual dispatch. It uses public-repository Actions, with no paid service
 or visitor-side GitHub API calls. The page reads one same-origin JSON snapshot.
 Lookup failures leave the last published snapshot unchanged; malformed JSON is
 not displayed. The GitHub token stays in Actions and is never shipped to browsers.
+
+### Refresh the App Store count
+
+Open PenguinPDF in App Store Connect -> Analytics -> Metrics -> Downloads ->
+Total Downloads. Use a date range covering the entire time PenguinPDF has been
+live, with all devices and territories. In the download-statistics
+workflow's Run workflow dialog, enter the Total and the report's last UTC day.
+Enter the full total, not the change since the last refresh. Ordinary scheduled
+runs keep the last supplied Apple count and cutoff. The local equivalent is:
+
+```sh
+APP_STORE_DOWNLOADS=7 APP_STORE_DOWNLOADS_THROUGH=2026-11-12 node scripts/update-download-stats.mjs
+```
+
+The initial seven downloads were verified in App Store Connect through November
+12, 2026 UTC. Only these two aggregate values are copied from private analytics.
+No Apple credential or raw report is needed by the public site or its workflows.
 
 Owner access:
 

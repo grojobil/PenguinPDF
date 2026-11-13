@@ -16,6 +16,9 @@ const COPY = {
     plural: "from {count} ratings",
     private: "Optional feedback via Google Forms. Comments are published only with permission.",
     aggregate: "The average includes all valid submitted ratings, not just featured comments.",
+    combined: "Combined average of website ratings and U.S. App Store ratings, weighted by rating count.",
+    storeOnly: "Ratings from the U.S. App Store.",
+    websiteUnavailable: "Website reviews are unavailable right now.",
     featured: "Selected feedback, shared with permission. The average includes all valid submitted ratings.",
     fiveStar: "Selected five-star reviews, shared with permission. The average includes all valid submitted ratings.",
     previous: "Previous reviews",
@@ -24,6 +27,7 @@ const COPY = {
     allTitle: "All reviews",
     browse: "View all reviews ({count} ratings)",
     publicNotice: "Comments shared with permission. Newest first.",
+    storeReviews: "See App Store reviews",
     noComments: "No public comments yet.",
     close: "Close reviews",
     submittedDate: "Feedback received on {date}",
@@ -42,6 +46,9 @@ const COPY = {
     plural: "de {count} valoraciones",
     private: "Opinión opcional mediante Google Forms. Solo publicamos comentarios con permiso.",
     aggregate: "La media incluye todas las valoraciones válidas enviadas, no solo los comentarios destacados.",
+    combined: "Media ponderada de las valoraciones del sitio web y del App Store de EE. UU.",
+    storeOnly: "Valoraciones del App Store de EE. UU.",
+    websiteUnavailable: "Las reseñas del sitio web no están disponibles ahora.",
     featured: "Opiniones seleccionadas, publicadas con permiso. La media incluye todas las valoraciones válidas enviadas.",
     fiveStar: "Reseñas seleccionadas de cinco estrellas, publicadas con permiso. La media incluye todas las valoraciones válidas enviadas.",
     previous: "Reseñas anteriores",
@@ -50,24 +57,40 @@ const COPY = {
     allTitle: "Todas las reseñas",
     browse: "Ver todas las reseñas ({count} valoraciones)",
     publicNotice: "Comentarios publicados con permiso. Los más recientes primero.",
+    storeReviews: "Ver reseñas en el App Store",
     noComments: "Todavía no hay comentarios públicos.",
     close: "Cerrar reseñas",
     submittedDate: "Opinión recibida el {date}",
   },
 };
 
-export function reviewView(data, language, failed = false) {
+function usableStoreRating(rating, siteCount) {
+  const age = Date.now() - Date.parse(rating?.updatedAt);
+  return rating?.storefront === "US" && typeof rating.updatedAt === "string" &&
+    Number.isSafeInteger(rating.count) && rating.count > 0 &&
+    rating.count <= Math.floor(Number.MAX_SAFE_INTEGER / 5) - siteCount &&
+    Number.isFinite(rating.average) && rating.average >= 1 && rating.average <= 5 &&
+    age >= 0 && age <= 7 * 24 * 60 * 60 * 1000;
+}
+
+export function reviewView(data, language, failed = false, storeRating) {
   const lang = language === "es" ? "es" : "en";
   const copy = COPY[lang];
   const valid = isValidReviews(data);
-  const count = valid ? data.ratingCount : 0;
+  const siteCount = valid ? data.ratingCount : 0;
+  const storeCount = usableStoreRating(storeRating, siteCount) ? storeRating.count : 0;
+  const count = siteCount + storeCount;
+  const sum = (valid ? data.ratingSum : 0) + (storeCount ? storeRating.average * storeCount : 0);
   return {
     lang,
     copy,
     title: copy.title,
-    average: count ? (data.ratingSum / count).toLocaleString(lang, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " / 5" : "",
+    average: count ? (sum / count).toLocaleString(lang, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " / 5" : "",
     count: count === 1 ? copy.single : copy.plural.replace("{count}", count.toLocaleString(lang)),
-    status: failed ? copy.unavailable : count ? copy.intro : copy.invitation,
+    ratingCount: count,
+    ratingSource: storeCount ? (siteCount ? copy.combined : copy.storeOnly) : copy.aggregate,
+    includesStore: storeCount > 0,
+    status: failed ? (storeCount ? copy.websiteUnavailable : copy.unavailable) : count ? copy.intro : copy.invitation,
     policy: valid && data.featured.length ? data.featured.every(review => review.rating === 5) ? copy.fiveStar : copy.featured : count ? copy.aggregate : copy.private,
     featured: valid ? data.featured : [],
     all: valid && data.schemaVersion === 2 ? data.reviews : [],
@@ -95,19 +118,20 @@ function makeStars(doc, rating, label) {
   return stars;
 }
 
-export function renderReviews(doc, data, language, failed = false) {
-  const view = reviewView(data, language, failed);
+export function renderReviews(doc, data, language, failed = false, storeRating) {
+  const view = reviewView(data, language, failed, storeRating);
   const element = id => doc.getElementById(id);
+  const canBrowse = view.hasArchive || view.includesStore;
   element("reviewsTag").textContent = view.copy.tag;
   element("reviewsTitle").textContent = view.title;
   element("reviewLinkLabel").textContent = view.copy.link;
   element("reviewAverage").textContent = view.average;
   element("reviewCount").textContent = view.count;
-  element("reviewCount").disabled = !view.hasArchive;
-  element("reviewCount").setAttribute("title", view.hasArchive ? view.copy.allTitle : view.copy.aggregate);
-  element("reviewCount").setAttribute("aria-label", view.copy.browse.replace("{count}", view.hasRatings ? data.ratingCount.toLocaleString(view.lang) : "0"));
+  element("reviewCount").disabled = !canBrowse;
+  element("reviewCount").setAttribute("title", canBrowse ? view.copy.allTitle : view.ratingSource);
+  element("reviewCount").setAttribute("aria-label", view.copy.browse.replace("{count}", view.ratingCount.toLocaleString(view.lang)));
   element("reviewSummary").hidden = !view.hasRatings;
-  element("reviewSummary").setAttribute("title", view.copy.aggregate);
+  element("reviewSummary").setAttribute("title", view.ratingSource);
   element("reviewLink").setAttribute("title", view.copy.private);
   element("reviewStatus").textContent = view.status;
   element("reviewStatus").hidden = !view.status;
@@ -183,13 +207,14 @@ export function reviewPage(total, requested = 0) {
   return { page, pages, start: page * 10, end: Math.min(total, (page + 1) * 10), previous: page > 0, next: page + 1 < pages };
 }
 
-export function renderAllReviews(doc, data, language, requested = 0) {
-  const view = reviewView(data, language);
+export function renderAllReviews(doc, data, language, requested = 0, storeRating) {
+  const view = reviewView(data, language, false, storeRating);
   const range = reviewPage(view.all.length, requested);
   const element = id => doc.getElementById(id);
   element("allReviewsTitle").textContent = view.copy.allTitle;
   element("allReviewsSummary").textContent = view.hasRatings ? `${view.average} ${view.count}` : "";
-  element("allReviewsNotice").textContent = view.copy.publicNotice;
+  element("allReviewsNotice").textContent = view.includesStore ? view.ratingSource + " " + view.copy.publicNotice : view.copy.publicNotice;
+  element("allReviewsAppStoreLink").textContent = view.copy.storeReviews;
   element("allReviewsEmpty").textContent = view.copy.noComments;
   element("allReviewsEmpty").hidden = view.all.length > 0;
   element("allReviewsList").replaceChildren(...view.all.slice(range.start, range.end).map(review => makeReviewCard(doc, review, view, true)));
@@ -207,12 +232,12 @@ export function renderAllReviews(doc, data, language, requested = 0) {
   return range;
 }
 
-export function setupReviewDialog(doc, getData) {
+export function setupReviewDialog(doc, getData, getStoreRating = () => undefined) {
   const dialog = doc.getElementById("allReviewsDialog");
   const trigger = doc.getElementById("reviewCount");
   let page = 0;
   let returnFocus;
-  const render = () => { page = renderAllReviews(doc, getData(), doc.documentElement.lang, page).page; };
+  const render = () => { page = renderAllReviews(doc, getData(), doc.documentElement.lang, page, getStoreRating()).page; };
   const move = direction => {
     page += direction;
     render();
@@ -260,11 +285,12 @@ export async function fetchReviews(fetcher) {
 
 if (typeof document !== "undefined" && document.getElementById("reviews")) {
   let snapshot = null;
+  let storeRating;
   let failed = false;
   const grid = document.getElementById("reviewGrid");
   const previous = document.getElementById("reviewsPrevious");
   const next = document.getElementById("reviewsNext");
-  const renderDialog = setupReviewDialog(document, () => snapshot);
+  const renderDialog = setupReviewDialog(document, () => snapshot, () => storeRating);
   const updateNavigation = () => {
     const view = reviewView(snapshot, document.documentElement.lang, failed);
     const step = (grid.firstElementChild?.getBoundingClientRect().width || grid.clientWidth) + 14;
@@ -289,11 +315,17 @@ if (typeof document !== "undefined" && document.getElementById("reviews")) {
   });
   new ResizeObserver(updateNavigation).observe(grid);
   const render = () => {
-    renderReviews(document, snapshot, document.documentElement.lang, failed);
+    renderReviews(document, snapshot, document.documentElement.lang, failed, storeRating);
     renderDialog();
     updateNavigation();
   };
   render();
   new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   fetchReviews(fetch).then(data => { snapshot = data; }).catch(() => { failed = true; }).finally(render);
+  if (typeof downloadStatsReady !== "undefined") {
+    downloadStatsReady.then(stats => {
+      storeRating = stats?.appStoreRating;
+      if (storeRating) render();
+    });
+  }
 }

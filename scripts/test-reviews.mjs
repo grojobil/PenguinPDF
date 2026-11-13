@@ -260,6 +260,43 @@ test("the rating count opens the full-review dialog without adding another secti
   assert.equal(doc.getElementById("reviewCount").disabled, true, "Legacy featured-only data must not pretend to contain all reviews");
 });
 
+test("the App Store rating contributes to the same weighted average and dialog, not a review card", () => {
+  const data = archiveFixture(2);
+  const apple = { count: 7, average: 4.5, storefront: "US", updatedAt: new Date().toISOString() };
+  const doc = fakeDocument();
+  renderReviews(doc, data, "en", false, apple);
+  assert.equal(doc.getElementById("reviewAverage").textContent, "4.3 / 5");
+  assert.equal(doc.getElementById("reviewCount").textContent, "from 10 ratings");
+  assert.match(doc.getElementById("reviewCount").getAttribute("aria-label"), /10 ratings/);
+  assert.match(doc.getElementById("reviewSummary").getAttribute("title"), /website ratings and U.S. App Store ratings/);
+  assert.equal(doc.getElementById("reviewGrid").children.length, data.featured.length);
+  setupReviewDialog(doc, () => data, () => apple);
+  doc.getElementById("reviewCount").dispatch("click");
+  assert.equal(doc.getElementById("allReviewsSummary").textContent, "4.3 / 5 from 10 ratings");
+  assert.match(doc.getElementById("allReviewsNotice").textContent, /U.S. App Store/);
+  assert.equal(doc.getElementById("allReviewsList").children.length, data.reviews.length);
+  renderAllReviews(doc, data, "es", 0, apple);
+  assert.equal(doc.getElementById("allReviewsSummary").textContent, "4,3 / 5 de 10 valoraciones");
+  assert.equal(doc.getElementById("allReviewsAppStoreLink").textContent, "Ver reseñas en el App Store");
+  assert.doesNotMatch(site, /appStoreReviews|appStoreRatingSummary/);
+  assert.match(site, /id="allReviewsDialog"[\s\S]*?id="allReviewsAppStoreLink" href="https:\/\/apps\.apple\.com\/us\/app\/penguinpdf\/id6830822105#productRatings"/);
+});
+
+test("missing, invalid, or stale ratings from either source do not erase the other source", () => {
+  const apple = { count: 1, average: 5, storefront: "US", updatedAt: new Date().toISOString() };
+  const doc = fakeDocument();
+  renderReviews(doc, null, "en", true, apple);
+  assert.equal(doc.getElementById("reviewCount").textContent, "from 1 rating");
+  assert.equal(doc.getElementById("reviewAverage").textContent, "5.0 / 5");
+  assert.equal(doc.getElementById("reviewSummary").getAttribute("title"), "Ratings from the U.S. App Store.");
+  assert.equal(doc.getElementById("reviewCount").disabled, false);
+  assert.equal(doc.getElementById("reviewGrid").hidden, true);
+  for (const bad of [{ count: 0 }, { count: Number.MAX_SAFE_INTEGER }, { average: 6 },
+    { updatedAt: "2000-01-01" }, { updatedAt: "2999-01-01" }, { storefront: "GB" }]) {
+    assert.equal(reviewView(fixture(), "en", false, { ...apple, ...bad }).count, "from 3 ratings");
+  }
+});
+
 test("all public reviews include lower ratings and retain the complete aggregate", () => {
   const data = archiveFixture();
   const doc = fakeDocument();

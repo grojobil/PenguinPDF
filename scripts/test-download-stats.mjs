@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { fetchReleases, mergeDownloadStats } from "./update-download-stats.mjs";
+import { fetchAppStoreRating, fetchReleases, mergeDownloadStats, readAppStoreDownloadInput } from "./update-download-stats.mjs";
 
 const asset = (id, count, name = "PenguinPDF_x64-setup.exe") => ({ id, name, download_count: count });
 const release = (assets, tag_name = "v2.0.0", extra = {}) => ({ tag_name, assets, ...extra });
@@ -70,4 +70,53 @@ test("invalid history timestamps and unsafe totals fail, and release tags are pl
   const special = mergeDownloadStats(null, [release([asset(1, 3)], "__proto__")], timestamp);
   assert.equal(Object.hasOwn(special.byRelease, "__proto__"), true);
   assert.equal(special.byRelease["__proto__"], 3);
+});
+
+test("the cumulative App Store total is included once and kept on ordinary refreshes", () => {
+  const releases = [release([asset(1, 11), asset(2, 8, "PenguinPDF-macOS.dmg")])];
+  const appStoreDownloads = readAppStoreDownloadInput("7", "2026-09-28");
+  const first = mergeDownloadStats(null, releases, timestamp, { appStoreDownloads });
+  assert.equal(first.total, 26);
+  assert.deepEqual(first.byPlatform, { macOS: 8, Windows: 11 });
+  assert.deepEqual(first.appStoreDownloads, { total: 7, through: "2026-09-28" });
+  assert.deepEqual(first.byRelease, { "v2.0.0": 19 });
+  assert.deepEqual(mergeDownloadStats(first, releases, timestamp), first);
+  const corrected = mergeDownloadStats(first, releases, timestamp, { appStoreDownloads: readAppStoreDownloadInput("5", "2026-09-28") });
+  assert.equal(corrected.total, 24, "a verified Apple correction replaces the old number");
+  const next = mergeDownloadStats(first, releases, timestamp, { appStoreDownloads: readAppStoreDownloadInput("10", "2026-09-29") });
+  assert.equal(next.total, 29);
+  assert.throws(() => mergeDownloadStats(next, releases, timestamp, { appStoreDownloads }), /older report/);
+  assert.throws(() => mergeDownloadStats(first, releases, timestamp, { appStoreDownloads: readAppStoreDownloadInput("20", "2026-09-30") }), /Invalid App Store/);
+});
+
+test("manual report inputs reject malformed or incomplete values", () => {
+  assert.equal(readAppStoreDownloadInput(), undefined);
+  assert.deepEqual(readAppStoreDownloadInput("0", "2024-02-29"), { total: 0, through: "2024-02-29" });
+  for (const args of [["", "2026-09-29"], ["1", ""], ["1", "2026-02-29"], ["1", "2026-09-31"],
+    ["1e3", "2026-09-29"], ["-1", "2026-09-29"], ["1.5", "2026-09-29"], ["9007199254740992", "2026-09-29"]]) {
+    assert.throws(() => readAppStoreDownloadInput(...args));
+  }
+});
+
+test("only the public PenguinPDF storefront rating is kept, separately from downloads", async () => {
+  const app = { trackId: 6830822105, userRatingCount: 1, averageUserRating: 5, sellerName: "Not exported" };
+  const appStoreRating = await fetchAppStoreRating(async (url, options) => {
+    assert.equal(url, "https://itunes.apple.com/lookup?id=6830822105&country=us");
+    assert.equal(options.credentials, "omit");
+    assert.equal(options.headers, undefined);
+    return { ok: true, json: async () => ({ resultCount: 1, results: [app] }) };
+  }, timestamp);
+  assert.deepEqual(appStoreRating, { count: 1, average: 5, storefront: "US", updatedAt: timestamp });
+  const releases = [release([asset(1, 11)])];
+  const snapshot = mergeDownloadStats(null, releases, timestamp, { appStoreRating });
+  assert.equal(snapshot.total, 11);
+  assert.deepEqual(mergeDownloadStats(snapshot, releases, timestamp).appStoreRating, appStoreRating);
+  const zero = await fetchAppStoreRating(async () => ({ ok: true, json: async () => ({
+    resultCount: 1, results: [{ trackId: app.trackId, userRatingCount: 0 }],
+  }) }), timestamp);
+  assert.deepEqual(mergeDownloadStats(snapshot, releases, timestamp, { appStoreRating: zero }).appStoreRating, zero);
+  for (const bad of [{ ...app, trackId: 42 }, { ...app, averageUserRating: 5.1 }, { ...app, userRatingCount: -1 }]) {
+    await assert.rejects(fetchAppStoreRating(async () => ({ ok: true, json: async () => ({ resultCount: 1, results: [bad] }) }), timestamp));
+  }
+  await assert.rejects(fetchAppStoreRating(async () => ({ ok: false, status: 503 }), timestamp), /503/);
 });

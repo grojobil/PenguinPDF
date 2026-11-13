@@ -953,6 +953,7 @@
     .reviewsDialog .downloadDialogHeader{ flex:0 0 auto; margin-bottom:6px; }
     .reviewsDialogSummary{ margin:0; font-size:15px; font-weight:500; color:rgba(23,23,26,0.72); }
     .reviewsDialogNotice{ margin:8px 0 16px; font-size:12px; line-height:1.5; color:rgba(23,23,26,0.58); }
+    .reviewsDialogNotice a{ color:inherit; text-underline-offset:2px; }
     .allReviewList{ min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:0 6px; border-top:1px solid rgba(23,23,26,0.08); }
     .allReviewList .reviewCard{ padding:20px 0; border:0; border-bottom:1px solid rgba(23,23,26,0.08); border-radius:0; background:none; box-shadow:none; backdrop-filter:none; gap:10px; }
     .allReviewList .reviewCard blockquote{ font-size:14px; }
@@ -1436,7 +1437,6 @@
           <span id="reviewLinkLabel">Leave a review</span>
         </a>
       </div>
-    </section>
 
     <div class="secondaryLinks">
       <div class="tinyLinks">
@@ -1611,7 +1611,10 @@
         </button>
       </div>
       <p class="reviewsDialogSummary" id="allReviewsSummary"></p>
-      <p class="reviewsDialogNotice" id="allReviewsNotice">Comments shared with permission. Newest first.</p>
+      <p class="reviewsDialogNotice">
+        <span id="allReviewsNotice">Comments shared with permission. Newest first.</span>
+        <a id="allReviewsAppStoreLink" href="https://apps.apple.com/us/app/penguinpdf/id6830822105#productRatings" target="_blank" rel="noopener noreferrer">See App Store reviews</a>
+      </p>
       <div class="allReviewList" id="allReviewsList" role="region" aria-label="All reviews" tabindex="0"></div>
       <p class="reviewStatus" id="allReviewsEmpty" hidden>No public comments yet.</p>
       <div class="reviewNavigation" id="allReviewsNavigation" hidden>
@@ -1665,6 +1668,7 @@
         top_download: "Download",
         download_count_label: "Downloads",
         download_count_detail: "Recorded GitHub installer downloads, including repeat and test downloads. Earlier deleted installers are not included. Updated {date}.",
+        download_count_app_store: "App Store: {count} downloads including redownloads through {through}, excluding updates. Combined total is not unique users or installs.",
         hero_tagline: "Your free, local PDF toolbox.",
         hero_desc: "Edit, annotate, fill & sign, organize, and convert PDFs.",
         download_button: "Download",
@@ -1737,6 +1741,7 @@
         top_download: "Descargar",
         download_count_label: "Descargas",
         download_count_detail: "Descargas registradas de instaladores en GitHub, incluidas repeticiones y pruebas. No incluye instaladores eliminados anteriormente. Actualizado: {date}.",
+        download_count_app_store: "App Store: {count} descargas, incluidas las repetidas, hasta el {through}. No incluye actualizaciones ni representa usuarios o instalaciones únicos.",
         hero_tagline: "Tus herramientas PDF, gratis y en tu equipo.",
         hero_desc: "Edita, anota, rellena y firma, organiza y convierte PDFs.",
         download_button: "Descargar",
@@ -1814,19 +1819,31 @@
     let downloadStats = null;
 
     function isValidDownloadStats(stats) {
-      return stats?.schemaVersion === 1 && Number.isSafeInteger(stats.total) && stats.total >= 0 &&
-        typeof stats.updatedAt === "string" && Number.isFinite(Date.parse(stats.updatedAt));
+      if (stats?.schemaVersion !== 1 || !Number.isSafeInteger(stats.total) || stats.total < 0 ||
+          typeof stats.updatedAt !== "string" || !Number.isFinite(Date.parse(stats.updatedAt))) return false;
+      if (stats.appStoreDownloads === undefined) return true;
+      const store = stats.appStoreDownloads;
+      const platforms = stats.byPlatform;
+      const through = new Date(`${store?.through}T00:00:00Z`);
+      return Number.isFinite(through.getTime()) && through.toISOString().slice(0, 10) === store.through &&
+        [platforms?.macOS, platforms?.Windows, store.total].every(count => Number.isSafeInteger(count) && count >= 0) &&
+        stats.total === platforms.macOS + platforms.Windows + store.total;
     }
 
     function renderDownloadCount(lang) {
-      if (!isValidDownloadStats(downloadStats)) return;
       const selectedLang = I18N[lang] ? lang : "en";
       const dict = I18N[selectedLang];
+      if (!isValidDownloadStats(downloadStats)) return;
       const count = downloadStats.total.toLocaleString(selectedLang);
       const date = new Date(downloadStats.updatedAt).toLocaleDateString(selectedLang, { dateStyle: "medium" });
       downloadCountValue.textContent = count;
       downloadCountLabel.textContent = dict.download_count_label;
       downloadCount.title = dict.download_count_detail.replace("{date}", date);
+      const store = downloadStats.appStoreDownloads;
+      if (store) {
+        const through = new Date(`${store.through}T00:00:00Z`).toLocaleDateString(selectedLang, { dateStyle: "medium", timeZone: "UTC" });
+        downloadCount.title += " " + dict.download_count_app_store.replace("{count}", store.total.toLocaleString(selectedLang)).replace("{through}", through);
+      }
       downloadCount.hidden = false;
     }
 
@@ -1835,9 +1852,11 @@
         const response = await fetch("downloads.json", { credentials: "omit", cache: "no-cache", signal: AbortSignal.timeout(8000) });
         if (!response.ok) return;
         const stats = await response.json();
-        if (!isValidDownloadStats(stats)) return;
-        downloadStats = stats;
-        renderDownloadCount(document.documentElement.lang);
+        if (isValidDownloadStats(stats)) {
+          downloadStats = stats;
+          renderDownloadCount(document.documentElement.lang);
+        }
+        return stats;
       } catch (_) {
         // Statistics never block downloads or replace an unavailable count with zero.
       }
@@ -2331,9 +2350,9 @@
     });
     configureDownloadRoute();
     applyLanguage(getInitialLanguage());
-    loadDownloadStats();
+    const downloadStatsReady = loadDownloadStats();
   </script>
-  <script type="module" src="reviews.mjs?v=e0e1a6819865"></script>
+  <script type="module" src="reviews.mjs?v=d8ac0225c5e5"></script>
   <script type="module" src="analytics.mjs?v=3"></script>
 </body>
 </html>

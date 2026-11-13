@@ -476,6 +476,28 @@ test("a verified zero is displayed, but malformed statistics are never shown as 
   }
 });
 
+test("one homepage counter includes App Store downloads with a localized cutoff", async () => {
+  const now = new Date();
+  const stats = {
+    schemaVersion: 1, total: 961, updatedAt: now.toISOString(),
+    byPlatform: { macOS: 358, Windows: 596 },
+    appStoreDownloads: { total: 7, through: "2026-11-12" },
+  };
+  const render = async data => {
+    const visit = runSite("", false, 0, async () => ({ ok: true, json: async () => data }));
+    await new Promise(setImmediate);
+    return visit;
+  };
+  const { getElement, context } = await render(stats);
+  assert.equal(getElement("downloadCountValue").textContent, "961");
+  assert.match(getElement("downloadCount").title, /App Store: 7 downloads including redownloads through Nov 12, 2026/);
+  new Script('applyLanguage("es")').runInContext(context);
+  assert.match(getElement("downloadCount").title, /7 descargas, incluidas las repetidas/);
+  assert.equal(site.match(/id="downloadCount"/g)?.length, 1);
+  const badTotal = await render({ ...stats, total: 960 });
+  assert.equal(badTotal.getElement("downloadCount").hidden, true);
+});
+
 test("statistics failures leave download routing and the Mac chooser functional", async () => {
   for (const fetcher of [
     async () => { throw new Error("offline"); },
