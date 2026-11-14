@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "startedAt": "2026-09-29T19:18:43.806Z",
-  "updatedAt": "2026-11-13T20:19:34.059Z",
+  "updatedAt": "2026-11-14T06:42:28.947Z",
   "total": 961,
   "byPlatform": {
     "macOS": 358,
@@ -135,6 +135,6 @@
     "count": 1,
     "average": 5,
     "storefront": "US",
-    "updatedAt": "2026-11-13T20:19:33.835Z"
+    "updatedAt": "2026-11-14T06:42:28.767Z"
   }
 }
