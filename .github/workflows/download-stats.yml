@@ -2,7 +2,7 @@ name: Refresh download statistics
 
 on:
   schedule:
-    - cron: '23 */6 * * *'
+    - cron: '23 * * * *'
   release:
     types: [published, edited]
   workflow_dispatch:

@@ -25,9 +25,10 @@ The baseline includes v1.0.0 and the replacement v2.0.0 installers visible on
 September 29, 2026. Counts for previously deleted assets are unknown and excluded.
 This is a recorded total, not a complete lifetime total.
 
-The GitHub workflow refreshes the snapshot every six hours, on release edits,
-and on manual dispatch. It uses public-repository Actions, with no paid service
-or visitor-side GitHub API calls. The page reads one same-origin JSON snapshot.
+The GitHub workflow is scheduled to refresh the snapshot at 23 minutes past each
+hour. It also runs when a release is published or edited, or on manual dispatch.
+It uses public-repository Actions, with no paid service or visitor-side GitHub
+API calls. The page reads one same-origin JSON snapshot.
 Lookup failures leave the last published snapshot unchanged; malformed JSON is
 not displayed. The GitHub token stays in Actions and is never shipped to browsers.
 
