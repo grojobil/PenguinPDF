@@ -90,39 +90,6 @@
       z-index: 5;
     }
 
-    .downloadCount{
-      position:absolute;
-      left:0;
-      top:0;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:4px;
-      min-width:92px;
-      padding:8px 14px;
-      border-radius:8px;
-      background:rgba(255,255,255,0.55);
-      border:1px solid rgba(255,255,255,0.60);
-      box-shadow:0 5px 16px rgba(0,0,0,0.04);
-      backdrop-filter:blur(14px);
-      transform:rotate(-3deg);
-      cursor:default;
-      font-variant-numeric:tabular-nums;
-    }
-    .downloadCountValue{
-      font-size:22px;
-      font-weight:500;
-      line-height:1;
-      color:var(--muted);
-    }
-    .downloadCountLabel{
-      font-size:10px;
-      font-weight:500;
-      line-height:1.2;
-      letter-spacing:0;
-      text-transform:uppercase;
-      color:var(--muted);
-    }
     .pill{
       display:inline-flex;
       align-items:center;
@@ -709,6 +676,7 @@
     button.reviewCount:hover{ color:rgba(23,23,26,0.88); text-decoration-color:currentColor; }
     button.reviewCount:disabled{ cursor:default; text-decoration:none; }
     .reviewStatus{ margin:10px 0 0; font-size:16px; text-align:center; }
+    .downloadCount{ margin:4px 0 0; text-align:center; color:rgba(23,23,26,0.74); font-size:13px; font-weight:700; line-height:1.4; }
     .reviewCaption{ margin:20px 0 10px; color:rgba(23,23,26,0.54); font-size:12px; font-weight:500; line-height:1.4; }
     .reviewGrid{
       --review-count:3;
@@ -1170,7 +1138,6 @@
     @media (max-width: 600px){
       .container{ padding:16px 20px 84px; }
       .topbar{ height:78px; }
-      .downloadCount{ min-width:80px; padding:8px 10px; }
       .hero{ margin-top:8px; }
       .brandHero{ gap:12px; }
       .brandHero img{ width:52px; height:52px; border-radius:12px; }
@@ -1258,10 +1225,6 @@
   <div class="container" id="mainContainer">
 
     <div class="topbar">
-      <div class="downloadCount" id="downloadCount" hidden>
-        <span class="downloadCountValue" id="downloadCountValue"></span>
-        <span class="downloadCountLabel" id="downloadCountLabel"></span>
-      </div>
       <div class="topright">
         <div class="pill">
           <a href="#download-options" data-i18n="top_download">Download</a>
@@ -1399,6 +1362,7 @@
           <span class="reviewAverage" id="reviewAverage"></span>
           <button class="reviewCount" id="reviewCount" type="button" aria-haspopup="dialog" aria-controls="allReviewsDialog" disabled></button>
       </div>
+      <p class="downloadCount" id="downloadCount" hidden></p>
       <p class="reviewCaption" id="reviewCaption" hidden>Featured reviews</p>
       <div class="reviewGrid" id="reviewGrid" role="group" aria-labelledby="reviewCaption" tabindex="0" hidden></div>
       <div class="reviewNavigation" id="reviewNavigation" hidden>
@@ -1649,7 +1613,7 @@
     const I18N = {
       en: {
         top_download: "Download",
-        download_count_label: "Downloads",
+        download_count_label: "{count} downloads",
         download_count_detail: "Recorded GitHub installer downloads, including repeat and test downloads. Earlier deleted installers are not included. Updated {date}.",
         download_count_app_store: "App Store: {count} downloads including redownloads through {through}, excluding updates. Combined total is not unique users or installs.",
         hero_tagline: "Your free, local PDF toolbox.",
@@ -1721,7 +1685,7 @@
       },
       es: {
         top_download: "Descargar",
-        download_count_label: "Descargas",
+        download_count_label: "{count} descargas",
         download_count_detail: "Descargas registradas de instaladores en GitHub, incluidas repeticiones y pruebas. No incluye instaladores eliminados anteriormente. Actualizado: {date}.",
         download_count_app_store: "App Store: {count} descargas, incluidas las repetidas, hasta el {through}. No incluye actualizaciones ni representa usuarios o instalaciones únicos.",
         hero_tagline: "Tus herramientas PDF, gratis y en tu equipo.",
@@ -1795,8 +1759,6 @@
 
     const LANG_STORAGE_KEY = "penguinpdf_lang";
     const downloadCount = document.getElementById("downloadCount");
-    const downloadCountValue = document.getElementById("downloadCountValue");
-    const downloadCountLabel = document.getElementById("downloadCountLabel");
     let downloadStats = null;
 
     function isValidDownloadStats(stats) {
@@ -1815,10 +1777,11 @@
       const selectedLang = I18N[lang] ? lang : "en";
       const dict = I18N[selectedLang];
       if (!isValidDownloadStats(downloadStats)) return;
-      const count = downloadStats.total.toLocaleString(selectedLang);
+      const total = downloadStats.total;
+      const milestone = total - (total % 100);
+      const count = total < 100 ? total.toLocaleString(selectedLang) : milestone.toLocaleString(selectedLang) + "+";
       const date = new Date(downloadStats.updatedAt).toLocaleDateString(selectedLang, { dateStyle: "medium" });
-      downloadCountValue.textContent = count;
-      downloadCountLabel.textContent = dict.download_count_label;
+      downloadCount.textContent = dict.download_count_label.replace("{count}", count);
       downloadCount.title = dict.download_count_detail.replace("{date}", date);
       const store = downloadStats.appStoreDownloads;
       if (store) {

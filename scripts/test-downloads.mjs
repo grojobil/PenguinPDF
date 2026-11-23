@@ -387,38 +387,23 @@ function runSite(userAgent, blockedStorage = false, maxTouchPoints = 0, fetcher)
   };
 }
 
-test("the download counter is display-only and has no inflated claim", () => {
-  const counter = getElementMarkup("div", "downloadCount");
-  const openingTag = counter.match(/^<div\b[^>]*>/)?.[0];
+test("the download milestone is display-only and sits between the rating and featured reviews", () => {
+  const counter = getElementMarkup("p", "downloadCount");
+  const openingTag = counter.match(/^<p\b[^>]*>/)?.[0];
   assert.doesNotMatch(openingTag, /\b(?:href|tabindex|onclick|role)=/);
   assert.doesNotMatch(counter, /<(?:a|button)\b/);
-  assert.doesNotMatch(openingTag, /\bclass="[^"]*\bpill\b/);
-  assert.doesNotMatch(counter, /<svg\b/);
-  assert.match(counter, /\bid="downloadCountValue"/);
-  assert.match(counter, /\bid="downloadCountLabel"/);
-  assert.match(site, /\.downloadCount\{[^}]*cursor:default/);
-  assert.match(site, /\.downloadCountLabel\{[^}]*text-transform:uppercase/);
-  assert.doesNotMatch(site, /\.downloadCount:hover/);
-  assert.doesNotMatch(site, /1,000\+|thousands of downloads|thousand-plus downloads/i);
+  assert.match(openingTag, /\bhidden\b/);
+  assert.match(site, /id="reviewSummary"[^>]*>[\s\S]*?<\/div>\s*<p[^>]*id="downloadCount"[^>]*><\/p>\s*<p[^>]*id="reviewCaption"/);
+  assert.equal(site.match(/id="downloadCount"/g)?.length, 1);
+  const styles = site.match(/\.downloadCount\{([^}]+)\}/)?.[1];
+  assert.match(styles, /text-align:center/);
+  assert.match(styles, /font-weight:700/);
+  assert.doesNotMatch(styles, /position:absolute|rotate\(|backdrop-filter/);
 });
 
-test("the download statistic uses a soft sticker treatment with lighter text", () => {
-  assert.match(site, /\.downloadCount\{[^}]*background:rgba\(255,255,255,0\.55\)/);
-  assert.match(site, /\.downloadCount\{[^}]*backdrop-filter:blur\(14px\)/);
-  assert.match(site, /\.downloadCount\{[^}]*transform:rotate\(-3deg\)/);
-  for (const className of ["downloadCountValue", "downloadCountLabel"]) {
-    const styles = site.match(new RegExp(`\\.${className}\\{([^}]+)\\}`))?.[1];
-    assert.match(styles, /font-weight:500/);
-    assert.match(styles, /color:var\(--muted\)/);
-  }
-});
-
-test("mobile retains the stacked tilted sticker and a fixed bottom-right language selector", () => {
+test("mobile retains a fixed bottom-right language selector", () => {
   const mobileStyles = site.split("@media (max-width: 600px){")[1]?.split("@media (max-width: 360px){")[0];
   assert.ok(mobileStyles);
-  const stickerStyles = mobileStyles.match(/\.downloadCount\{([^}]+)\}/)?.[1];
-  assert.match(stickerStyles, /min-width:80px/);
-  assert.doesNotMatch(stickerStyles, /flex-direction:row|transform:none|top:/);
   const languageStyles = mobileStyles.match(/\.langSwitch\{([^}]+)\}/)?.[1];
   assert.match(languageStyles, /position:fixed/);
   assert.match(languageStyles, /top:auto/);
@@ -435,19 +420,15 @@ test("download statistics stay hidden while loading and use localized copy after
     return new Promise(resolve => { resolveResponse = resolve; });
   });
   const counter = visit.getElement("downloadCount");
-  const value = visit.getElement("downloadCountValue");
-  const label = visit.getElement("downloadCountLabel");
   assert.equal(counter.hidden, true);
   new Script('applyLanguage("es")').runInContext(visit.context);
   resolveResponse({ ok: true, json: async () => ({ schemaVersion: 1, total: 204, updatedAt: "2026-09-29T20:00:00Z" }) });
   await new Promise(setImmediate);
   assert.equal(counter.hidden, false);
-  assert.equal(value.textContent, "204");
-  assert.equal(label.textContent, "Descargas");
+  assert.equal(counter.textContent, "200+ descargas");
   assert.match(counter.title, /incluidas repeticiones y pruebas/);
   new Script('applyLanguage("en")').runInContext(visit.context);
-  assert.equal(value.textContent, "204");
-  assert.equal(label.textContent, "Downloads");
+  assert.equal(counter.textContent, "200+ downloads");
   assert.match(counter.title, /including repeat and test downloads/);
   assert.match(counter.title, /Earlier deleted installers are not included/);
   assert.equal(requests.length, 1);
@@ -460,8 +441,7 @@ test("download statistics stay hidden while loading and use localized copy after
 test("a verified zero is displayed, but malformed statistics are never shown as zero", async () => {
   const valid = runSite("", false, 0, async () => ({ ok: true, json: async () => ({ schemaVersion: 1, total: 0, updatedAt: "2026-09-29" }) }));
   await new Promise(setImmediate);
-  assert.equal(valid.getElement("downloadCountValue").textContent, "0");
-  assert.equal(valid.getElement("downloadCountLabel").textContent, "Downloads");
+  assert.equal(valid.getElement("downloadCount").textContent, "0 downloads");
   assert.equal(valid.getElement("downloadCount").hidden, false);
   for (const stats of [null, {}, { schemaVersion: 1, total: -1, updatedAt: "2026-09-29" },
     { schemaVersion: 1, total: "204", updatedAt: "2026-09-29" },
@@ -470,8 +450,17 @@ test("a verified zero is displayed, but malformed statistics are never shown as 
     const visit = runSite("", false, 0, async () => ({ ok: true, json: async () => stats }));
     await new Promise(setImmediate);
     assert.equal(visit.getElement("downloadCount").hidden, true);
-    assert.equal(visit.getElement("downloadCountValue").textContent, "");
-    assert.equal(visit.getElement("downloadCountLabel").textContent, "");
+    assert.equal(visit.getElement("downloadCount").textContent, "");
+  }
+});
+
+test("the display never rounds up to an unreached download milestone", async () => {
+  for (const [total, label] of [[99, "99"], [100, "100+"], [1615, "1,600+"], [1699, "1,600+"], [1700, "1,700+"]]) {
+    const visit = runSite("", false, 0, async () => ({
+      ok: true, json: async () => ({ schemaVersion: 1, total, updatedAt: "2026-11-23" }),
+    }));
+    await new Promise(setImmediate);
+    assert.equal(visit.getElement("downloadCount").textContent, label + " downloads");
   }
 });
 
@@ -488,7 +477,7 @@ test("one homepage counter includes App Store downloads with a localized cutoff"
     return visit;
   };
   const { getElement, context } = await render(stats);
-  assert.equal(getElement("downloadCountValue").textContent, "961");
+  assert.equal(getElement("downloadCount").textContent, "900+ downloads");
   assert.match(getElement("downloadCount").title, /App Store: 7 downloads including redownloads through Nov 12, 2026/);
   new Script('applyLanguage("es")').runInContext(context);
   assert.match(getElement("downloadCount").title, /7 descargas, incluidas las repetidas/);
