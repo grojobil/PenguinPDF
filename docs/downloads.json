@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "startedAt": "2026-09-29T19:18:43.806Z",
-  "updatedAt": "2026-11-23T20:22:37.047Z",
-  "total": 1615,
+  "updatedAt": "2026-11-24T04:53:37.328Z",
+  "total": 1638,
   "byPlatform": {
-    "macOS": 547,
-    "Windows": 1009
+    "macOS": 548,
+    "Windows": 1031
   },
   "byRelease": {
     "v1.0.0": 169,
     "v2.0.0": 706,
     "v3.0.0": 24,
-    "v3.0.1": 657
+    "v3.0.1": 680
   },
   "assets": [
     {
@@ -103,14 +103,14 @@
       "name": "PenguinPDF_x64_en-US.msi",
       "release": "v3.0.1",
       "platform": "Windows",
-      "downloads": 72
+      "downloads": 75
     },
     {
       "id": 730553832,
       "name": "PenguinPDF_x64-setup.exe",
       "release": "v3.0.1",
       "platform": "Windows",
-      "downloads": 373
+      "downloads": 392
     },
     {
       "id": 730553833,
@@ -124,7 +124,7 @@
       "name": "PenguinPDF-3.0.1-macOS-Apple-Silicon.dmg",
       "release": "v3.0.1",
       "platform": "macOS",
-      "downloads": 131
+      "downloads": 132
     }
   ],
   "appStoreDownloads": {
@@ -135,6 +135,6 @@
     "count": 2,
     "average": 5,
     "storefront": "US",
-    "updatedAt": "2026-11-23T20:22:36.825Z"
+    "updatedAt": "2026-11-24T04:53:37.075Z"
   }
 }
