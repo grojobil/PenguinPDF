@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "startedAt": "2026-09-29T19:18:43.806Z",
-  "updatedAt": "2026-11-25T23:51:06.326Z",
-  "total": 1750,
+  "updatedAt": "2026-11-25T23:59:28.726Z",
+  "total": 1767,
   "byPlatform": {
     "macOS": 563,
     "Windows": 1108
@@ -128,13 +128,13 @@
     }
   ],
   "appStoreDownloads": {
-    "total": 79,
-    "through": "2026-11-23"
+    "total": 96,
+    "through": "2026-11-24"
   },
   "appStoreRating": {
     "count": 2,
     "average": 5,
     "storefront": "US",
-    "updatedAt": "2026-11-25T23:51:06.295Z"
+    "updatedAt": "2026-11-25T23:59:28.627Z"
   }
 }
