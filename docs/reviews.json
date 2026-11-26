@@ -1,9 +1,21 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T18:04:11.137Z",
-  "ratingCount": 37,
-  "ratingSum": 183,
+  "updatedAt": "2026-11-26T19:03:44.071Z",
+  "ratingCount": 39,
+  "ratingSum": 193,
   "featured": [
+    {
+      "id": "30a0952849c7c3f9",
+      "rating": 5,
+      "comment": "Uso PenguinPDF para el trabajo, súper útil, fácil de usar y con muchas funcionalidades. Además es gratis! La app está muy bien cuidada y funciona muy bien.",
+      "displayName": "Beatriz Ruiz"
+    },
+    {
+      "id": "cfc97cd69d59ccda",
+      "rating": 5,
+      "comment": "Brutal. No me puedo creer que sea gratis. Maravilla.",
+      "displayName": "P."
+    },
     {
       "id": "3dd138789ba651a1",
       "rating": 5,
@@ -51,18 +63,6 @@
       "rating": 5,
       "comment": "Great polished app with all the functionality you would ever want for your pdfs, can’t believe it’s free",
       "displayName": "James Saba"
-    },
-    {
-      "id": "5c688ea391cce87c",
-      "rating": 5,
-      "comment": "Penguin PDF makes a strong case for keeping everyday software simple and accessible.",
-      "displayName": "Arjun Mehta"
-    },
-    {
-      "id": "a8ec62a17705e8d6",
-      "rating": 5,
-      "comment": "A charming app with a practical purpose. The straightforward design is its biggest strength.",
-      "displayName": "Léonie Dubois"
     }
   ]
 }
